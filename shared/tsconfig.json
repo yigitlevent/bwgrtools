@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false
+  },
+  "include": [
+    "./@types/*",
+    "./db/*",
+    "./db/utils/*",
+    "./utils/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+}

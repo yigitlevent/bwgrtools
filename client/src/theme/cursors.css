@@ -1,0 +1,18 @@
+:root {
+  --cursor-default: url("/cursors/default.png") 8 3, auto;
+  --cursor-edit: url("/cursors/edit.png") 2 27, auto;
+  --cursor-grab-closed: url("/cursors/grab_closed.png") 16 16, grab;
+  --cursor-grab-open: url("/cursors/grab_open.png") 16 16, grab;
+  --cursor-help: url("/cursors/help.png") 3 1, help;
+  --cursor-invalid: url("/cursors/invalid.png") 16 16, not-allowed;
+  --cursor-loading: url("/cursors/loading.png") 16 16, wait;
+  --cursor-pointer: url("/cursors/pointer.png") 7 4, pointer;
+  --cursor-steps: url("/cursors/steps.png") 16 16, auto;
+  --cursor-text: url("/cursors/text.png") 16 16, text;
+
+  /* Mantine's Input component resolves its own cursor from this variable (defaulting to
+     "text", switching to "pointer" via data-pointer on Select/DateInput/etc.) — pointing it
+     here covers TextInput/NumberInput/Select/Textarea/PasswordInput/ColorInput in one place
+     rather than a per-component theme override for each. */
+  --input-cursor: var(--cursor-text);
+}

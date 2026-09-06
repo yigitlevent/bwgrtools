@@ -1,0 +1,15 @@
+.mantine-datatable-header-cell-sortable {
+  cursor: var(--cursor-pointer);
+}
+
+.mantine-datatable-row {
+  cursor: var(--cursor-pointer);
+}
+
+.recharts-surface {
+  cursor: var(--cursor-pointer);
+}
+
+.mantine-ChartLegend-legend {
+  cursor: var(--cursor-pointer);
+}

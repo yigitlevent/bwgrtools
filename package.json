@@ -1,0 +1,28 @@
+{
+  "name": "bwgrtools",
+  "author": "Yiğit Levent",
+  "version": "0.0.0",
+  "homepage": "http://yigitlevent.com/bwgrtools",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yigitlevent/bwgrtools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yigitlevent/bwgrtools/issues"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "npx concurrently \"cd api && npm run dev\" \"cd client && npm run dev\" -c \"black.dim.bold.bgCyan,black.dim.bold.bgYellow\"",
+    "db:all": "cd shared && npm run db:all",
+    "test": "cd .tests && npm test",
+    "test:watch": "cd .tests && npm run test:watch",
+    "test:coverage": "cd .tests && npm run test:coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.5",
+    "tsx": "^4.23.12"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
+  }
+}

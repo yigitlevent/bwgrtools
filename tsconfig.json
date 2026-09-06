@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,
+    "types": ["node"]
+  },
+  "include": [
+    "./.script/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

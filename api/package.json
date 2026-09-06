@@ -1,0 +1,60 @@
+{
+  "name": "blacktower-project-api",
+  "author": "Yiğit Levent",
+  "version": "0.0.0",
+  "homepage": "http://yigitlevent.com/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yigitlevent/blacktower-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yigitlevent/blacktower-project/issues"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "npm run build && npx concurrently \"npx tsc --watch --preserveWatchOutput\" \"nodemon -q dist/api/src/index.js\" --names \"TSC,API\" -c \"black.dim.bold.bgBlue,black.dim.bold.bgMagenta\"",
+    "build": "npx tsc --build --verbose",
+    "start": "npm run build && node dist/api/src/index.js",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lintfix": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.1.2",
+    "@fastify/cors": "^11.3.0",
+    "@fastify/helmet": "^13.1.1",
+    "@fastify/rate-limit": "^11.2.0",
+    "@fastify/session": "^11.1.2",
+    "@fastify/websocket": "^11.3.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "bcrypt": "^6.0.0",
+    "fastify": "^5.12.1",
+    "pg": "^8.23.0",
+    "pino": "^10.3.1",
+    "resend": "^6.22.0",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^25.9.5",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.2.18",
+    "@types/ws": "^8.18.1",
+    "dotenv": "^17.4.2",
+    "eslint": "^9.7.0",
+    "eslint-plugin-import-x": "^4.17.1",
+    "eslint-plugin-json": "^5.0.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.11.0",
+    "nodemon": "^3.1.14",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0"
+  },
+  "allowScripts": {
+    "bcrypt@6.0.0": true,
+    "unrs-resolver@1.12.2": true
+  }
+}
