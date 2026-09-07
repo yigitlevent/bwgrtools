@@ -101,7 +101,10 @@ export function DiceRoller(): React.JSX.Element {
         <Group align="center" style={{ width: "max-content" }}>
           <Text style={{ display: "inline-block", marginRight: 8 }}>Dice Pool</Text>
 
-          <AbilityButton style={{ height: "30px" }} onClick={() => { setShade(v => v === "W" ? "B" : v === "B" ? "G" : "W"); }}>
+          <AbilityButton
+            style={{ height: "30px" }}
+            onClick={() => { setShade(v => v === "W" ? "B" : v === "B" ? "G" : "W"); }}
+          >
             {shade}
           </AbilityButton>
 

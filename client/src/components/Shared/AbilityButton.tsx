@@ -44,7 +44,7 @@ export function AbilityButtonWithArrows(props: AbilityButtonProps): React.JSX.El
         {...rest}
         size="xs"
         variant="outline"
-        style={{ minWidth: "30px", width: "30px", display: "inline-block", marginRight: "8px" }}
+        style={{ minWidth: "30px", width: "30px", display: "inline-block", marginRight: "8px", padding: 0 }}
         onClick={e => { handle(e, onClick); }}
         onContextMenu={e => { handle(e, onContextMenu); }}
       />
