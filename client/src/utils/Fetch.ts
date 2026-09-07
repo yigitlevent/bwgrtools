@@ -2,7 +2,7 @@ import { Env } from "./GetEnvironment";
 
 
 async function Fetch<Response>(method: "GET" | "POST", endpoint: string, body: object | null): Promise<Response> {
-  const url = `${Env.apiUrl}${endpoint}`;
+  const url = `${Env.apiUrl}/api${endpoint}`;
 
   const response = await fetch(
     url,

@@ -38,8 +38,8 @@ App.register(fastifySession, {
   }
 });
 
-App.register(UserRoutes);
-App.register(BwgrRoutes);
+App.register(UserRoutes, { prefix: "/api" });
+App.register(BwgrRoutes, { prefix: "/api" });
 
 App.setErrorHandler((err: FastifyError, _request, reply) => {
   if (reply.sent) return;
