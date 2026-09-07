@@ -2,6 +2,7 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
@@ -53,11 +54,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
       addLifepath: (lifepath: Lifepath): void => {
         set(produce<CharacterBurnerLifepathState>(state => { state.lifepaths.push(lifepath); }));
         get().updateAvailableLifepaths();
-        useCharacterBurnerStatStore.getState().reset();
-        useCharacterBurnerSkillStore.getState().updateSkills();
-        useCharacterBurnerTraitStore.getState().updateTraits();
-        useCharacterBurnerAttributeStore.getState().updateAttributes();
-        useCharacterBurnerMiscStore.getState().refreshQuestions();
+        RecomputeCharacter("stat");
       },
 
       removeLastLifepath: (): void => {
@@ -65,11 +62,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
           state.lifepaths = state.lifepaths.slice(0, state.lifepaths.length - 1);
         }));
         get().updateAvailableLifepaths();
-        useCharacterBurnerStatStore.getState().reset();
-        useCharacterBurnerSkillStore.getState().updateSkills();
-        useCharacterBurnerTraitStore.getState().updateTraits();
-        useCharacterBurnerAttributeStore.getState().updateAttributes();
-        useCharacterBurnerMiscStore.getState().refreshQuestions();
+        RecomputeCharacter("stat");
       },
 
       hasLifepath: (id: dat.LifepathId): number => {
@@ -100,9 +93,13 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
 
         if (lps.length === 0) return 0;
 
-        // TODO: Special lifepaths should matter here
-        const yrs = lps.map(v => v.years).filter(v => typeof v === "number");
-        const sum = yrs.reduce((prev, curr) => prev + curr);
+        const { special } = useCharacterBurnerMiscStore.getState();
+
+        const yrs = lps.map(v => {
+          if (typeof v.years === "number") return v.years;
+          return (v.id !== null ? special.variableAge[v.id] : undefined) ?? v.years[0];
+        });
+        const sum = yrs.reduce((prev, curr) => prev + curr, 0);
         return sum + get().getLeadCount();
       },
 

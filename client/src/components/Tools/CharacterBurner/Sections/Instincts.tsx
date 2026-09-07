@@ -11,7 +11,7 @@ export function Instincts(): React.JSX.Element {
 
   return (
     <Grid columns={6} align="center" justify="center" mb="xl">
-      <Grid.Col span={4}>
+      <Grid.Col span={6}>
         <Title order={4}>Instincts</Title>
       </Grid.Col>
 

@@ -23,48 +23,56 @@ export function RandomLifepathsBasics({ chosenLifepaths }: { chosenLifepaths: Li
   return (
     <Grid columns={2}>
       <Grid.Col span={1}>
-        <Text size="xs">
+        <Text>
           Years:
+          {" "}
           {age}
         </Text>
       </Grid.Col>
 
       <Grid.Col span={1}>
-        <Text size="xs">
+        <Text>
           Resources:
+          {" "}
           {resourcePoints.total}
         </Text>
       </Grid.Col>
 
       <Grid.Col span={1}>
-        <Text size="xs">
+        <Text>
           Stats:
+          {" "}
           {mentalPool.total}
           M,
+          {" "}
           {physicalPool.total}
           P,
+          {" "}
           {eitherPool.total}
           M/P
         </Text>
       </Grid.Col>
 
       <Grid.Col span={1}>
-        <Text size="xs">
+        <Text>
           Trait Points:
+          {" "}
           {traitPools.total}
         </Text>
       </Grid.Col>
 
       <Grid.Col span={1}>
-        <Text size="xs">
+        <Text>
           General Skill Points:
+          {" "}
           {skillPools.general.total}
         </Text>
       </Grid.Col>
 
       <Grid.Col span={1}>
-        <Text size="xs">
+        <Text>
           Lifepath Skill Points:
+          {" "}
           {skillPools.lifepath.total}
         </Text>
       </Grid.Col>

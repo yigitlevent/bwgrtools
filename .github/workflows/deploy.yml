@@ -124,7 +124,7 @@ jobs:
 
       # ── Restart PM2 process ─────────────────────────────────────────────────
       # PM2's restart/start/save subcommands print the FULL process table as a side effect,
-      # including every other app on this shared server (e.g. blacktower-project's) — not
+      # including every other app on this shared server — not
       # something to leak into a public/shared CI log. `pm2 id <name>` scopes status output
       # to just this app; stdout is discarded on restart/start/save since none of them emit
       # anything else worth keeping, while stderr still surfaces real failures.

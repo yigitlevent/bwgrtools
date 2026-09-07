@@ -8,12 +8,14 @@ import { Clamp } from "../../utils/Clamp";
 interface LifepathRandomizerState {
   stock: dat.StockId | "Random";
   setting: dat.SettingId | "Random";
+  gender: "Male" | "Female" | "Random";
   noDuplicates: boolean;
   maxLeads: number;
   maxLifepaths: number;
   minLifepaths: number;
 
   changeStock: (stock: dat.StockId | "Random") => void;
+  changeGender: (gender: "Male" | "Female" | "Random") => void;
   changeMaxLeads: (value: string) => void;
   changeMaxLifepaths: (value: string) => void;
   changeMinLifepaths: (value: string) => void;
@@ -25,6 +27,7 @@ export const useLifepathRandomizerStore = create<LifepathRandomizerState>()(
     (set, get) => ({
       stock: "Random",
       setting: "Random",
+      gender: "Random",
       noDuplicates: true,
       maxLeads: 3,
       maxLifepaths: 6,
@@ -32,6 +35,10 @@ export const useLifepathRandomizerStore = create<LifepathRandomizerState>()(
 
       changeStock: (stock: dat.StockId | "Random") => {
         set(produce<LifepathRandomizerState>(state => { state.stock = stock; }));
+      },
+
+      changeGender: (gender: "Male" | "Female" | "Random") => {
+        set(produce<LifepathRandomizerState>(state => { state.gender = gender; }));
       },
 
       changeMaxLeads: (value: string) => {

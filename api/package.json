@@ -1,14 +1,14 @@
 {
-  "name": "blacktower-project-api",
+  "name": "bwgrtools-api",
   "author": "Yiğit Levent",
   "version": "0.0.0",
   "homepage": "http://yigitlevent.com/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yigitlevent/blacktower-project.git"
+    "url": "git+https://github.com/yigitlevent/bwgrtools.git"
   },
   "bugs": {
-    "url": "https://github.com/yigitlevent/blacktower-project/issues"
+    "url": "https://github.com/yigitlevent/bwgrtools/issues"
   },
   "private": true,
   "scripts": {

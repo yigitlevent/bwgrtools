@@ -233,9 +233,6 @@ cat > "$ENV_FILE" <<EOF
 VITE_ENV=prod
 
 # API
-# Port 3001, not 3000 — this server also runs blacktower-project's API on 3000; reusing
-# it causes both PM2 apps to race for the same listening socket and intermittently answer
-# each other's requests instead of erroring outright.
 API_PORT=3001
 API_INTERNAL_URL=http://127.0.0.1:3001
 API_SECRET=$API_SECRET

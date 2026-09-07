@@ -105,14 +105,18 @@ function TraitPop({ trait }: { trait: Trait; }): React.JSX.Element {
   );
 }
 
-export const PopoverLink = memo(({ data, noColor }: { data: Skill | Trait; noColor?: boolean; }): React.JSX.Element => {
+export const PopoverLink = memo(({ data, noColor, hasComma }: { data: Skill | Trait; noColor?: boolean; hasComma?: boolean; }): React.JSX.Element => {
   return (
     <Box style={{ cursor: "var(--cursor-pointer)", width: "max-content", display: "inline-block" }}>
       <Popover withArrow position="bottom-start">
         <Popover.Target>
-          <Anchor underline="hover" c={noColor ? "var(--mantine-color-text)" : undefined} style={{ cursor: "var(--cursor-pointer)" }}>
-            {data.name}
-          </Anchor>
+          <Box>
+            <Anchor underline="hover" c={noColor ? "var(--mantine-color-text)" : undefined} style={{ cursor: "var(--cursor-pointer)" }}>
+              {data.name}
+            </Anchor>
+
+            {hasComma ? <Box mr={4} style={{ display: "inline-block" }}>,</Box> : null}
+          </Box>
         </Popover.Target>
 
         <Popover.Dropdown style={{ maxWidth: "400px" }}>

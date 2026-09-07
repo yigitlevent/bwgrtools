@@ -1,4 +1,4 @@
-import { Box, Grid, Paper } from "@mantine/core";
+import { Box, Grid, Text } from "@mantine/core";
 
 import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore";
 import { UniqueArray } from "../../../../../utils/UniqueArray";
@@ -17,42 +17,34 @@ export function RandomLifepathsLists({ chosenLifepaths }: { chosenLifepaths: Lif
   return (
     <Grid columns={1} gap="xs">
       <Grid.Col span={1}>
-        Mandatory Skills:
-        {mandatorySkills.length > 0 ? mandatorySkills.map((skill, i) => (
-          <Paper key={i} shadow="sm" style={{ padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
-            <PopoverLink data={skill} />
-          </Paper>
-        )
+        <Text mr={4} fw={700} style={{ display: "inline-block" }}>Mandatory Skills:</Text>
+
+        {mandatorySkills.length > 0 ? mandatorySkills.map((skill, i) =>
+          <PopoverLink key={skill.id} data={skill} hasComma={i < mandatorySkills.length - 1} />
         ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
       </Grid.Col>
 
       <Grid.Col span={1}>
-        Skills:
-        {lifepathSkills.length > 0 ? lifepathSkills.map((skill, i) => (
-          <Paper key={i} shadow="sm" style={{ padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
-            <PopoverLink data={skill} />
-          </Paper>
-        )
+        <Text mr={4} fw={700} style={{ display: "inline-block" }}>Skills:</Text>
+
+        {lifepathSkills.length > 0 ? lifepathSkills.map((skill, i) =>
+          <PopoverLink key={skill.id} data={skill} hasComma={i < lifepathSkills.length - 1} />
         ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
       </Grid.Col>
 
       <Grid.Col span={1}>
-        Mandatory Traits:
-        {mandatoryTraits.length > 0 ? mandatoryTraits.map((trait, i) => (
-          <Paper key={i} shadow="sm" style={{ padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
-            <PopoverLink data={trait} />
-          </Paper>
-        )
+        <Text mr={4} fw={700} style={{ display: "inline-block" }}>Mandatory Traits:</Text>
+
+        {mandatoryTraits.length > 0 ? mandatoryTraits.map((trait, i) =>
+          <PopoverLink key={trait.id} data={trait} hasComma={i < mandatoryTraits.length - 1} />
         ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
       </Grid.Col>
 
       <Grid.Col span={1}>
-        Traits:
-        {lifepathTraits.length > 0 ? lifepathTraits.map((trait, i) => (
-          <Paper key={i} shadow="sm" style={{ padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
-            <PopoverLink data={trait} />
-          </Paper>
-        )
+        <Text mr={4} fw={700} style={{ display: "inline-block" }}>Traits:</Text>
+
+        {lifepathTraits.length > 0 ? lifepathTraits.map((trait, i) =>
+          <PopoverLink key={trait.id} data={trait} hasComma={i < lifepathTraits.length - 1} />
         ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
       </Grid.Col>
     </Grid>

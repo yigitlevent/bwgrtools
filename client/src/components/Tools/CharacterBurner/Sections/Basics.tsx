@@ -1,16 +1,28 @@
 import { Button, Grid, Select, Textarea, TextInput } from "@mantine/core";
+import { useCallback } from "react";
 
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
+import { useCharacterBurnerAttributeStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
+import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerResourceStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerResource";
 import { useCharacterBurnerSkillStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
+import { useCharacterBurnerStatStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
+import { useCharacterBurnerTraitStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
+import { DownloadFile } from "../../../../utils/DownloadFile";
 
 
 export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals) => void; }): React.JSX.Element {
   const ruleset = useRulesetStore();
-  const { name, stock, gender, concept, setName, setGender, setConcept, setStockAndReset } = useCharacterBurnerBasicsStore();
+  const { name, stock, gender, concept, beliefs, instincts, setName, setGender, setConcept, setStockAndReset } = useCharacterBurnerBasicsStore();
   const { getAge, lifepaths } = useCharacterBurnerLifepathStore();
+  const { stats } = useCharacterBurnerStatStore();
+  const { attributes } = useCharacterBurnerAttributeStore();
   const { skills } = useCharacterBurnerSkillStore();
+  const { traits } = useCharacterBurnerTraitStore();
+  const { resources } = useCharacterBurnerResourceStore();
+  const { special, questions, limits, traitEffects } = useCharacterBurnerMiscStore();
 
   const rulesetStock = ruleset.getStock(stock[0]);
 
@@ -22,9 +34,29 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
     lifepaths.some(lifepath => Array.isArray(lifepath.years) || (lifepath.companion?.givesSkills));
 
   const hasSpecialSkills =
-    skills.filter(charSkill => { return charSkill.name === "Any Skill" || charSkill.name === "Any Wise" || ruleset.getSkill(charSkill.id).subskillIds !== undefined; }).length > 0;
+    lifepaths.some(lifepath => (lifepath.skills ?? []).some(skillId => {
+      const rulesetSkill = ruleset.getSkill(skillId);
+      return rulesetSkill.name === "Any Skill" || rulesetSkill.name === "Any Wise" || rulesetSkill.subskillIds !== undefined;
+    }));
 
   const disableSpecialOptionsModal = !hasSpecialStock && !hasSpecialLifepath && !hasSpecialSkills;
+
+  const exportChar = useCallback(() => {
+    const json: CharacterBurnerExportSnapshot = {
+      basics: { name, concept, gender, stock, beliefs, instincts },
+      lifepaths: { lifepaths },
+      stats: { stats },
+      skills: { skills: skills.items },
+      traits: { traits: traits.items },
+      attributes: { attributes: attributes.items },
+      resources: { resources },
+      misc: { special, questions, limits, traitEffects }
+    };
+
+    const filename = `character-${json.basics.name.replaceAll(" ", "-")}.json`;
+    const content = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json));
+    DownloadFile(filename, content);
+  }, [attributes.items, beliefs, concept, gender, instincts, lifepaths, limits, name, questions, resources, skills.items, special, stats, stock, traitEffects, traits.items]);
 
   return (
     <Grid columns={12} align="center" justify="center" mb="xl">
@@ -73,20 +105,28 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
         <Textarea label="Lifepaths" value={lifepathsText} variant="filled" disabled autosize minRows={1} />
       </Grid.Col>
 
-      <Grid.Col span={{ base: 12, sm: 6 }}>
+      <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={() => { openModal("lp"); }} fullWidth>Select</Button>
       </Grid.Col>
 
-      <Grid.Col span={{ base: 12, sm: 6 }}>
+      <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={() => { openModal("randLp"); }} fullWidth>Random</Button>
       </Grid.Col>
 
-      <Grid.Col span={{ base: 12, sm: 6 }}>
+      <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={() => { openModal("qu"); }} disabled={lifepaths.length === 0} fullWidth>Questions</Button>
       </Grid.Col>
 
-      <Grid.Col span={{ base: 12, sm: 6 }}>
+      <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={() => { openModal("so"); }} disabled={disableSpecialOptionsModal} fullWidth>Special</Button>
+      </Grid.Col>
+
+      <Grid.Col span={{ base: 6, sm: 2 }}>
+        <Button variant="outline" size="md" onClick={() => { openModal("import"); }} fullWidth>Import</Button>
+      </Grid.Col>
+
+      <Grid.Col span={{ base: 6, sm: 2 }}>
+        <Button variant="outline" size="md" onClick={exportChar} fullWidth>Export</Button>
       </Grid.Col>
     </Grid>
   );

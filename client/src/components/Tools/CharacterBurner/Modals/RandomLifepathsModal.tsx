@@ -6,27 +6,47 @@ import { RandomLifepathsLists } from "./RandomLifepathsModal/RandomLifepathsList
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerBasicsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
+import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
 import { useLifepathRandomizerStore } from "../../../../hooks/featureStores/useLifepathRandomizerStore";
 import { FilterLifepaths } from "../../../../utils/FilterLifepaths";
 import { RandomNumber } from "../../../../utils/RandomNumber";
+import { UniqueArray } from "../../../../utils/UniqueArray";
 
 
 export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close: () => void; }): React.JSX.Element {
   const ruleset = useRulesetStore();
   const {
-    stock, setting, noDuplicates, maxLeads, maxLifepaths, minLifepaths,
-    changeStock, changeMaxLeads, changeMaxLifepaths, changeMinLifepaths, toggleNoDuplicates
+    stock, setting, gender, noDuplicates, maxLeads, maxLifepaths, minLifepaths,
+    changeStock, changeGender, changeMaxLeads, changeMaxLifepaths, changeMinLifepaths, toggleNoDuplicates
   } = useLifepathRandomizerStore();
 
-  const { setStockAndReset } = useCharacterBurnerBasicsStore();
+  const { setStockAndReset, setGender } = useCharacterBurnerBasicsStore();
   const { addLifepath } = useCharacterBurnerLifepathStore();
+  const { modifyVariableAge } = useCharacterBurnerMiscStore();
 
   const [newStock, setNewStock] = useState<Stock>();
+  const [newGender, setNewGender] = useState<"Male" | "Female">("Male");
   const [chosenLifepaths, setChosen] = useState<Lifepath[]>([]);
+  const [resolvedVariableAges, setResolvedVariableAges] = useState<Partial<Record<dat.LifepathId, number>>>({});
   const [triedTooMuch, setTriedTooMuch] = useState(false);
 
   const createRandom = useCallback((): void => {
     const tempChosenLifepaths: Lifepath[] = [];
+    const tempResolvedAges: Partial<Record<dat.LifepathId, number>> = {};
+
+    const resolveYears = (lp: Lifepath): number => {
+      if (typeof lp.years === "number") return lp.years;
+      const existing = lp.id !== null ? tempResolvedAges[lp.id] : undefined;
+      if (existing !== undefined) return existing;
+      const resolved = RandomNumber(lp.years[0], lp.years[1]);
+      if (lp.id !== null) {
+        tempResolvedAges[lp.id] = resolved;
+        // Applied immediately (not just at transfer) so getAge()'s preview in
+        // RandomLifepathsBasics reflects the resolved value while still rolling.
+        modifyVariableAge(lp.id, resolved, lp.years);
+      }
+      return resolved;
+    };
 
     let leadsCounter = 0;
     let chosenAmount = 0;
@@ -41,7 +61,26 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
     const possibleSettings = ruleset.settings.filter(setting => (chosenStock.settingIds ?? []).includes(setting.id ?? -1 as dat.SettingId) && !setting.isSubsetting);
     const chosenSetting = ruleset.settings[ruleset.settings.findIndex(v => v.id === setting)] || possibleSettings[RandomNumber(0, possibleSettings.length - 1)];
 
-    const bornLPs = ruleset.lifepaths.filter(v => v.stock[0] === chosenStockId && v.setting[0] === chosenSetting.id && v.flags.isBorn);
+    const chosenGender = gender === "Random" ? (RandomNumber(0, 1) === 0 ? "Male" : "Female") : gender;
+    setNewGender(chosenGender);
+
+    // The randomizer rolls a hypothetical character that doesn't exist in the real character-burner
+    // stores yet, so there's no live attribute state to check exponent-min/max attribute requirements
+    // against. Passing an empty `attributes` (rather than omitting it) makes FilterLifepaths evaluate
+    // those requirements as not-met instead of falling through to its "unidentified requirement" throw -
+    // this means attribute-gated lifepaths are always excluded from random rolls (see on-screen warning).
+    // Full attribute-exponent simulation would need the randomizer to simulate stat/attribute point
+    // allocation as it rolls, which is a larger follow-up.
+    const noAttributes = new UniqueArray<dat.AbilityId, CharacterAttribute>();
+    const bornLPs = FilterLifepaths({
+      rulesetLifepaths: ruleset.lifepaths,
+      stock: [chosenStockId, chosenStock.name ?? ""],
+      age: 0,
+      lifepaths: [],
+      gender: chosenGender,
+      attributes: noAttributes,
+      hasAttribute: () => false
+    }).filter(lp => lp.setting[0] === chosenSetting.id);
     tempChosenLifepaths.push(bornLPs[RandomNumber(0, bornLPs.length - 1)]);
 
     const maxTries = 50;
@@ -53,8 +92,11 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
       const possibilities = FilterLifepaths({
         rulesetLifepaths: ruleset.lifepaths,
         stock: [chosenStockId, chosenStock.name ?? ""],
-        age: tempChosenLifepaths.reduce((p, c) => (typeof c.years === "number") ? p + c.years : p + c.years[0], 0) + leadsCounter,
+        age: tempChosenLifepaths.reduce((p, c) => p + resolveYears(c), 0) + leadsCounter,
         lifepaths: tempChosenLifepaths,
+        gender: chosenGender,
+        attributes: noAttributes,
+        hasAttribute: () => false,
         noLeads: maxLeads <= leadsCounter ? [lastLifepath.setting[0] ?? -1 as dat.SettingId, lastLifepath.setting[1]] : undefined
       });
 
@@ -78,31 +120,54 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
     if (tempChosenLifepaths.length < minLifepaths) setTriedTooMuch(true);
 
     setChosen(tempChosenLifepaths);
-  }, [maxLeads, maxLifepaths, minLifepaths, noDuplicates, ruleset.lifepaths, ruleset.settings, ruleset.stocks, setting, stock]);
+    setResolvedVariableAges(tempResolvedAges);
+  }, [gender, maxLeads, maxLifepaths, minLifepaths, modifyVariableAge, noDuplicates, ruleset.lifepaths, ruleset.settings, ruleset.stocks, setting, stock]);
 
   const transferCharacter = useCallback(() => {
     if (newStock?.id) {
+      // setStockAndReset resets useCharacterBurnerMiscStore (including special.variableAge), wiping the
+      // values createRandom already applied for live preview purposes - so they're re-applied here,
+      // after the reset, using the same values that were rolled.
       setStockAndReset([newStock.id, newStock.name ?? ""]);
+      setGender(newGender);
       chosenLifepaths.forEach(addLifepath);
+
+      chosenLifepaths.forEach(lp => {
+        if (lp.id === null || typeof lp.years === "number") return;
+        const resolved = resolvedVariableAges[lp.id];
+        if (resolved !== undefined) modifyVariableAge(lp.id, resolved, lp.years);
+      });
+
       close();
     }
-  }, [addLifepath, chosenLifepaths, close, newStock, setStockAndReset]);
+  }, [addLifepath, chosenLifepaths, close, modifyVariableAge, newGender, newStock, resolvedVariableAges, setGender, setStockAndReset]);
 
   return (
     <Modal opened={isOpen} onClose={() => { close(); }} size="800px">
-      <Grid columns={7} align="center" justify="center">
-        <Grid.Col span={{ base: 7, sm: 3, md: 2 }}>
+      <Grid columns={8} align="center" justify="center">
+        <Grid.Col span={{ base: 8, sm: 3, md: 2 }}>
           <Select
             label="Stock"
             variant="filled"
             value={stock.toString()}
             onChange={v => { if (v) changeStock(v === "Random" ? "Random" : Number(v) as dat.StockId); }}
-            data={["Random", ...ruleset.stocks.map(v => v.id?.toString() ?? "")]}
+            data={["Random", ...ruleset.stocks.map(v => ({ value: v.id?.toString() ?? "", label: v.name ?? "" }))]}
             allowDeselect={false}
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 7, sm: 4, md: 1 }}>
+        <Grid.Col span={{ base: 8, sm: 3, md: 1 }}>
+          <Select
+            label="Gender"
+            variant="filled"
+            value={gender}
+            onChange={v => { if (v) changeGender(v); }}
+            data={["Random", "Male", "Female"]}
+            allowDeselect={false}
+          />
+        </Grid.Col>
+
+        <Grid.Col span={{ base: 8, sm: 4, md: 1 }}>
           <TextInput
             label="Max Leads"
             inputMode="numeric"
@@ -113,7 +178,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 7, sm: 2, md: 1 }}>
+        <Grid.Col span={{ base: 8, sm: 2, md: 1 }}>
           <TextInput
             label="Min Lifepaths"
             inputMode="numeric"
@@ -124,7 +189,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 7, sm: 2, md: 1 }}>
+        <Grid.Col span={{ base: 8, sm: 2, md: 1 }}>
           <TextInput
             label="Max Lifepaths"
             inputMode="numeric"
@@ -135,7 +200,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 7, sm: 3, md: 2 }}>
+        <Grid.Col span={{ base: 8, sm: 3, md: 2 }}>
           <Checkbox
             label="No Duplicates"
             checked={noDuplicates}
@@ -143,11 +208,11 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
           />
         </Grid.Col>
 
-        <Grid.Col span={7}>
-          <Alert color="blue">Random lifepath selection does not consider the gender, lifepaths with variable ages, and emotional attribute limits. Please make sure to check those requirements seperately.</Alert>
+        <Grid.Col span={8}>
+          <Alert color="blue">Random lifepath selection always excludes lifepaths gated by an attribute requirement (e.g. emotional attribute minimums/maximums), since it has no way to know what those attributes will end up being. Please make sure to check those requirements seperately.</Alert>
         </Grid.Col>
 
-        <Grid.Col span={7}>
+        <Grid.Col span={8}>
           <Button variant="outline" onClick={() => { createRandom(); }} fullWidth>Generate Random Character</Button>
         </Grid.Col>
       </Grid>
@@ -169,7 +234,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
                   {i + 1}
                   .
                   {" "}
-                  {`${v.setting[1]}➞${v.name ?? ""}`}
+                  {`${v.setting[1]} ➞ ${v.name ?? ""}`}
                 </Paper>
               )
               )}

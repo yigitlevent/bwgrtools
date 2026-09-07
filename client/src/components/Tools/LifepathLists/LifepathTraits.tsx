@@ -1,5 +1,5 @@
 import { Box, Text } from "@mantine/core";
-import { Fragment, memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { PopoverLink } from "../../Shared/PopoverLink";
@@ -20,12 +20,8 @@ export const LifepathTraits = memo(({ lifepath }: { lifepath: Lifepath; }): Reac
         {`${traitPool.toString()}${traitPool > 1 ? "pts: " : "pt: "}`}
       </Text>
 
-      {lifepathTraits ? lifepathTraits.map((trait, i) => (
-        <Fragment key={trait.id}>
-          <PopoverLink data={trait} />
-          {i < lifepathTraits.length - 1 ? <Box mr={4} style={{ display: "inline-block" }}>,</Box> : null}
-        </Fragment>
-      )
+      {lifepathTraits ? lifepathTraits.map((trait, i) =>
+        <PopoverLink key={trait.id} data={trait} hasComma={i < lifepathTraits.length - 1} />
       ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
     </Box>
   );
