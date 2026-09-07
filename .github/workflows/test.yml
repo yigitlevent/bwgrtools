@@ -1,0 +1,42 @@
+name: Test
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: |
+            .tests/package-lock.json
+            api/package-lock.json
+            client/package-lock.json
+            shared/package-lock.json
+
+      - name: Install test dependencies
+        run: npm ci
+        working-directory: .tests
+
+      - name: Install API dependencies
+        run: npm ci --ignore-scripts
+        working-directory: api
+
+      - name: Install client dependencies
+        run: npm ci --ignore-scripts
+        working-directory: client
+
+      - name: Install shared dependencies
+        run: npm ci --ignore-scripts
+        working-directory: shared
+
+      - name: Run tests
+        run: npm test
+        working-directory: .tests

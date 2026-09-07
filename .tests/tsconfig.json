@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "strict": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": [
+      "vitest/globals"
+    ]
+  },
+  "include": [
+    "../shared/db/utils/*",
+    "../shared/utils/*",
+    "../shared/@types/*",
+    "../api/src/references.d.ts",
+    "../api/src/configs/session.config.ts",
+    "references.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ]
+}
