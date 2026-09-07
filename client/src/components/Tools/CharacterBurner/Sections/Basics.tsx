@@ -34,7 +34,10 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
     lifepaths.some(lifepath => Array.isArray(lifepath.years) || (lifepath.companion?.givesSkills));
 
   const hasSpecialSkills =
-    skills.filter(charSkill => { return charSkill.name === "Any Skill" || charSkill.name === "Any Wise" || ruleset.getSkill(charSkill.id).subskillIds !== undefined; }).length > 0;
+    lifepaths.some(lifepath => (lifepath.skills ?? []).some(skillId => {
+      const rulesetSkill = ruleset.getSkill(skillId);
+      return rulesetSkill.name === "Any Skill" || rulesetSkill.name === "Any Wise" || rulesetSkill.subskillIds !== undefined;
+    }));
 
   const disableSpecialOptionsModal = !hasSpecialStock && !hasSpecialLifepath && !hasSpecialSkills;
 

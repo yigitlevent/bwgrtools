@@ -151,7 +151,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
             variant="filled"
             value={stock.toString()}
             onChange={v => { if (v) changeStock(v === "Random" ? "Random" : Number(v) as dat.StockId); }}
-            data={["Random", ...ruleset.stocks.map(v => v.id?.toString() ?? "")]}
+            data={["Random", ...ruleset.stocks.map(v => ({ value: v.id?.toString() ?? "", label: v.name ?? "" }))]}
             allowDeselect={false}
           />
         </Grid.Col>

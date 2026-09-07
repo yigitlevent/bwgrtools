@@ -4,6 +4,7 @@ import { Fragment, useCallback } from "react";
 import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerLifepathStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { RecordGet } from "../../../../../utils/RecordGet";
 import { AbilityButton } from "../../../../Shared/AbilityButton";
 
 
@@ -74,7 +75,7 @@ export function SpecialLifepaths(): React.JSX.Element {
                 <Grid.Col span={2}>
                   <Select
                     label={`${companionName}'s Lifepath`}
-                    value={special.companionLifepath[companionName]?.toString() ?? null}
+                    value={RecordGet(special.companionLifepath, companionName)?.toString() ?? null}
                     data={possibleLifepaths.map(lp => ({ value: lp.id.toString(), label: lp.name ?? "" }))}
                     onChange={v => {
                       const found = possibleLifepaths.find(lp => lp.id.toString() === v);

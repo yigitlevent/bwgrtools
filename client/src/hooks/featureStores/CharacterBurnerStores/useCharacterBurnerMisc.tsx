@@ -2,6 +2,7 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
@@ -120,6 +121,8 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         set(produce<CharacterBurnerMiscState>(state => {
           state.special.companionLifepath[companionName] = companionLifepathId;
         }));
+
+        RecomputeCharacter("skillTrait");
       },
 
       modifyVariableAge: (lifepathId: dat.LifepathId, age: number, minmax: number[]): void => {
@@ -133,6 +136,8 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
           set(produce<CharacterBurnerMiscState>(state => {
             state.special.companionSkills[companionLifepathId] = skills;
           }));
+
+          RecomputeCharacter("skillTrait");
         }
       },
 
@@ -151,10 +156,16 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
             else state.special.chosenSubskills[skillId] = [subskillIds[0]];
           }));
         }
+
+        RecomputeCharacter("skillTrait");
       },
 
       resetSkillSubskills: (skillIds: dat.SkillId[]): void => {
+        const { chosenSubskills } = get().special;
+
         skillIds.forEach(skillId => {
+          if (skillId in chosenSubskills) return;
+
           set(produce<CharacterBurnerMiscState>(state => {
             state.special.chosenSubskills[skillId] = [];
           }));

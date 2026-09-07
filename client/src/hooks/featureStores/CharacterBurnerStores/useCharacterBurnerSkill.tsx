@@ -4,8 +4,10 @@ import { devtools } from "zustand/middleware";
 
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
+import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { Average } from "../../../utils/Average";
+import { RecordGet } from "../../../utils/RecordGet";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
@@ -184,6 +186,7 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
       updateSkills: (): void => {
         const { getSkill } = useRulesetStore.getState();
         const { lifepaths } = useCharacterBurnerLifepathStore.getState();
+        const { special } = useCharacterBurnerMiscStore.getState();
         const state = get();
 
         const characterSkills = new UniqueArray<dat.SkillId, CharacterSkill>(lifepaths.map(lp => {
@@ -202,6 +205,49 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
             return entry;
           }) : [];
         }).flat());
+
+        // companion-granted skills (Special Options: companion lifepath selection)
+        lifepaths.forEach(lp => {
+          if (!lp.companion?.givesSkills) return;
+          const companionLifepathId = RecordGet(special.companionLifepath, lp.companion.name);
+          if (companionLifepathId === undefined) return;
+          const companionSkills = RecordGet(special.companionSkills, companionLifepathId);
+
+          companionSkills?.forEach(sk => {
+            if (characterSkills.existsAny("id", sk) > 0) return;
+            const skill = getSkill(sk);
+            const entry: CharacterSkill = {
+              id: skill.id ?? sk,
+              name: skill.name ?? "",
+              type: "Lifepath",
+              isSpecial: skill.subskillIds ? true : false,
+              isOpen: "no",
+              advancement: { general: 0, lifepath: 0 }
+            };
+            characterSkills.add(entry);
+          });
+        });
+
+        // chosen subskills (Special Options: "Any Skill" / "Any Wise" / weapon-group placeholders)
+        characterSkills.filter(skill => skill.id in special.chosenSubskills).forEach(placeholder => {
+          const chosen = RecordGet(special.chosenSubskills, placeholder.id) ?? [];
+          if (chosen.length === 0) return;
+
+          characterSkills.remove(placeholder.id);
+          chosen.forEach(sk => {
+            if (characterSkills.existsAny("id", sk) > 0) return;
+            const skill = getSkill(sk);
+            const entry: CharacterSkill = {
+              id: skill.id ?? sk,
+              name: skill.name ?? "",
+              type: placeholder.type,
+              isSpecial: false,
+              isOpen: placeholder.isOpen,
+              advancement: placeholder.advancement
+            };
+            characterSkills.add(entry);
+          });
+        });
 
         state.skills
           .filter(skill => skill.type === "General")
