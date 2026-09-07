@@ -1,5 +1,5 @@
-import { Button, Stepper, Text } from "@mantine/core";
-import { useCallback, useEffect, useState } from "react";
+import { Stepper, Text } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { useCharacterBurnerAttributeStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
@@ -10,7 +10,6 @@ import { useCharacterBurnerResourceStore } from "../../../hooks/featureStores/Ch
 import { useCharacterBurnerSkillStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
 import { useCharacterBurnerStatStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
-import { DownloadFile } from "../../../utils/DownloadFile";
 import { DrawerBox } from "../../Shared/DrawerBox";
 import { StepIcon } from "../../Shared/StepIcon";
 
@@ -82,37 +81,20 @@ const ChecklistSteps: { label: string; description: string[]; }[] = [
 ];
 
 export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Element {
-  const { stock, concept, gender, name, beliefs, instincts } = useCharacterBurnerBasicsStore();
+  const { stock, concept, name, beliefs, instincts } = useCharacterBurnerBasicsStore();
   const { lifepaths, getEitherPool, getMentalPool, getPhysicalPool } = useCharacterBurnerLifepathStore();
   const { stats } = useCharacterBurnerStatStore();
   const { attributes } = useCharacterBurnerAttributeStore();
   const { skills, getSkillPools } = useCharacterBurnerSkillStore();
   const { traits, getTraitPools } = useCharacterBurnerTraitStore();
   const { resources, getResourcePools } = useCharacterBurnerResourceStore();
-  const { special, questions, limits, traitEffects } = useCharacterBurnerMiscStore();
+  const { special, questions, limits } = useCharacterBurnerMiscStore();
 
   const location = useLocation();
 
   // TODO: also check special lifepath and skill stuff
 
   const [activeStep, setActiveStep] = useState(0);
-
-  const exportChar = useCallback(() => {
-    const json: CharacterBurnerExportSnapshot = {
-      basics: { name, concept, gender, stock, beliefs, instincts },
-      lifepaths: { lifepaths },
-      stats: { stats },
-      skills: { skills: skills.items },
-      traits: { traits: traits.items },
-      attributes: { attributes: attributes.items },
-      resources: { resources },
-      misc: { special, questions, limits, traitEffects }
-    };
-
-    const filename = `character-${json.basics.name.replaceAll(" ", "-")}.json`;
-    const content = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json));
-    DownloadFile(filename, content);
-  }, [attributes.items, beliefs, concept, gender, instincts, lifepaths, limits, name, questions, resources, skills.items, special, stats, stock, traitEffects, traits.items]);
 
   useEffect(() => {
     const remainingStatPoints = getEitherPool().remaining + getMentalPool().remaining + getPhysicalPool().remaining;
@@ -141,8 +123,6 @@ export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Eleme
 
   return (
     <DrawerBox title="Checklist" expanded={expanded}>
-      <Button variant="outline" size="md" fullWidth onClick={exportChar}>Export</Button>
-
       {location.pathname === "/characterburner" ? (
         <Stepper active={activeStep} orientation="vertical" mt="md">
           {ChecklistSteps.map((step, i) => (

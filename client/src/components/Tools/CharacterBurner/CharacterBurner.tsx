@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 
 import { GeneralSkillModal } from "./Modals/GeneralSkillModal";
 import { GeneralTraitModal } from "./Modals/GeneralTraitModal";
+import { ImportCharacterModal } from "./Modals/ImportCharacterModal";
 import { LifepathSelectionModal } from "./Modals/LifepathSelectionModal";
 import { QuestionsModal } from "./Modals/QuestionsModal";
 import { RandomLifepathsModal } from "./Modals/RandomLifepathsModal";
@@ -65,6 +66,7 @@ export function CharacterBurner(): React.JSX.Element {
       <GeneralTraitModal isOpen={currentModal === "geTr"} close={closeModals} />
       <QuestionsModal isOpen={currentModal === "qu"} close={closeModals} />
       <SpecialOptionsModal isOpen={currentModal === "so"} close={closeModals} />
+      <ImportCharacterModal isOpen={currentModal === "import"} close={closeModals} />
     </Fragment>
   );
 }

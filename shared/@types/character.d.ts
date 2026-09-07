@@ -1,4 +1,4 @@
-type CharacterBurnerModals = "lp" | "randLp" | "re" | "geSk" | "geTr" | "qu" | "so";
+type CharacterBurnerModals = "lp" | "randLp" | "re" | "geSk" | "geTr" | "qu" | "so" | "import";
 
 interface CharacterAttribute {
   id: dat.AbilityId;
