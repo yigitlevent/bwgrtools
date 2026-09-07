@@ -1,4 +1,5 @@
-import { Box, Grid, Paper, Text } from "@mantine/core";
+import { Divider, Grid, Paper, Text } from "@mantine/core";
+import { memo, useMemo } from "react";
 
 import { LifepathRequirements } from "./LifepathRequirements";
 import { LifepathSkills } from "./LifepathSkills";
@@ -6,7 +7,7 @@ import { LifepathTraits } from "./LifepathTraits";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 
 
-export function LifepathBox({ lifepath }: { lifepath: Lifepath; }): React.JSX.Element {
+export const LifepathBox = memo(({ lifepath }: { lifepath: Lifepath; }): React.JSX.Element => {
   const { getSetting } = useRulesetStore();
 
   const getYears = (l: Lifepath): string => {
@@ -35,63 +36,39 @@ export function LifepathBox({ lifepath }: { lifepath: Lifepath; }): React.JSX.El
     return statPoolsString.join(", ");
   };
 
-  const getLeads = (l: Lifepath): string => {
-    const leads = (l.leads && l.leads.length > 0) ? l.leads.map(settingId => getSetting(settingId).nameShort) : ["—"];
-
+  const leadsText = useMemo(() => {
+    const leads = (lifepath.leads && lifepath.leads.length > 0) ? lifepath.leads.map(settingId => getSetting(settingId).nameShort) : ["—"];
     return leads.join(", ");
-  };
+  }, [lifepath.leads, getSetting]);
 
   return (
-    <Grid gap={0} columns={18}>
-      <Grid.Col span={{ lg: 6, md: 12, sm: 18, base: 18 }}>
-        <Paper shadow="md" radius={0} style={{ padding: "2px 6px 4px" }}>
-          <Text>{lifepath.name}</Text>
-        </Paper>
-      </Grid.Col>
-
-      <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
-        <Paper shadow="md" radius={0} style={{ padding: "2px 6px 4px" }}>
-          <Text size="xs">{getYears(lifepath)}</Text>
-        </Paper>
-      </Grid.Col>
-
-      <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
-        <Paper shadow="md" radius={0} style={{ padding: "2px 6px 4px" }}>
-          <Text size="xs">{getResources(lifepath)}</Text>
-        </Paper>
-      </Grid.Col>
-
-      <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
-        <Paper shadow="md" radius={0} style={{ padding: "2px 6px 4px" }}>
-          <Text size="xs">{getStatPools(lifepath)}</Text>
-        </Paper>
-      </Grid.Col>
-
-      <Grid.Col span={{ lg: 9, md: 18, sm: 18, base: 18 }}>
-        <Paper shadow="md" radius={0} style={{ padding: "2px 6px 4px" }}>
-          <Text size="xs">{getLeads(lifepath)}</Text>
-        </Paper>
-      </Grid.Col>
-
-      <Grid.Col span={{ md: 16 }}>
-        <Box fz="xs">
-          <LifepathSkills lifepath={lifepath} />
-        </Box>
-      </Grid.Col>
-
-      <Grid.Col span={{ md: 16 }}>
-        <Box fz="xs">
-          <LifepathTraits lifepath={lifepath} />
-        </Box>
-      </Grid.Col>
-
-      {lifepath.requirements ? (
-        <Grid.Col span={{ md: 16 }}>
-          <Box fz="xs">
-            <LifepathRequirements lifepath={lifepath} />
-          </Box>
+    <Paper withBorder px={12} pt={8} pb={12} mr={8} radius={0}>
+      <Grid columns={18}>
+        <Grid.Col span={{ lg: 6, md: 12, sm: 18, base: 18 }}>
+          <Text size="lg">{lifepath.name}</Text>
         </Grid.Col>
-      ) : null}
-    </Grid>
+
+        <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
+          <Text mt={4} size="md">{getYears(lifepath)}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
+          <Text mt={4} size="md">{getResources(lifepath)}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
+          <Text mt={4} size="md">{getStatPools(lifepath)}</Text>
+        </Grid.Col>
+
+        <Grid.Col span={{ lg: 9, md: 18, sm: 18, base: 18 }}>
+          <Text mt={4} size="md">{leadsText}</Text>
+        </Grid.Col>
+      </Grid>
+
+      <Divider mb={4} />
+      <LifepathSkills lifepath={lifepath} />
+      <LifepathTraits lifepath={lifepath} />
+      {lifepath.requirements ? <LifepathRequirements lifepath={lifepath} /> : null}
+    </Paper>
   );
-}
+});

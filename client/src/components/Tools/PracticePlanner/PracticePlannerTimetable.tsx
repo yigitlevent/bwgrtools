@@ -1,7 +1,7 @@
 import { Button, Divider, Group, Stack, Text, TextInput } from "@mantine/core";
-import { Square } from "lucide-react";
 import { Fragment } from "react";
 
+import { PracticePlannerCellIcon } from "./PracticePlannerCellIcon";
 import { usePracticePlannerStore } from "../../../hooks/featureStores/usePracticePlannerStore";
 
 
@@ -31,12 +31,12 @@ export function PracticePlannerTimetable(): React.JSX.Element {
           variant="filled"
         />
 
-        <Button variant="outline" onClick={() => { addCells(days, hours); }}>Add Days</Button>
+        <Button variant="outline" onClick={() => { addCells(days, hours); }} style={{ alignSelf: "end" }}>Add Days</Button>
       </Group>
 
       <Group wrap="nowrap" justify="flex-start" align="flex-start" style={{ maxWidth: "100%", overflow: "auto", paddingBottom: "16px" }}>
         {cells.map((cell, cellIndex) => (
-          <Stack key={cellIndex} gap={0} style={{ paddingTop: "32px", marginRight: "-8px" }}>
+          <Stack key={cellIndex} gap={0} style={{ paddingTop: "32px", marginRight: "-16px" }}>
             <Text
               size="xs"
               style={{ display: "block", transform: "rotate(-90deg)", margin: "0 -48px -8px 8px", height: "20px", width: "60px", transformOrigin: "left center" }}
@@ -47,11 +47,10 @@ export function PracticePlannerTimetable(): React.JSX.Element {
             {[...Array<number>(cell.maxHours)].map((_, ii) => {
               const filled = (cell.placed.length > 0 ? cell.placed.map(v => v.hours).reduce((pv, cv) => pv + cv) : 0);
               return (
-                <Square
+                <PracticePlannerCellIcon
                   key={ii}
-                  size={16}
-                  color={filled >= cell.maxHours ? "var(--mantine-color-red-6)" : ii >= filled ? "var(--mantine-color-green-6)" : "var(--mantine-color-yellow-6)"}
-                  style={{ display: "block", marginBottom: -4 }}
+                  isDayFull={cell.maxHours === filled ? "full" : filled > 0 ? "partial" : "empty"}
+                  isCellFull={ii < filled}
                 />
               );
             })}

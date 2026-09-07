@@ -1,7 +1,8 @@
 import { ActionIcon, Box, Divider, Paper, Stack, Text } from "@mantine/core";
-import { CirclePlus, CircleMinus, Square, Trash2 } from "lucide-react";
+import { CirclePlus, CircleMinus, Trash2 } from "lucide-react";
 import { Fragment } from "react";
 
+import { PracticePlannerCellIcon } from "./PracticePlannerCellIcon";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { usePracticePlannerStore } from "../../../hooks/featureStores/usePracticePlannerStore";
 
@@ -44,11 +45,10 @@ function PracticePlannerCell({ cell, cellIndex, setNotification }: { cell: Pract
           {[...Array<number>(cell.maxHours)].map((_, ii) => {
             const filled = (cell.placed.length > 0 ? cell.placed.map(v => v.hours).reduce((pv, cv) => pv + cv) : 0);
             return (
-              <Square
+              <PracticePlannerCellIcon
                 key={ii}
-                size={16}
-                color={filled >= cell.maxHours ? "var(--mantine-color-red-6)" : ii >= filled ? "var(--mantine-color-green-6)" : "var(--mantine-color-yellow-6)"}
-                style={{ marginLeft: -8 }}
+                isDayFull={cell.maxHours === filled ? "full" : filled > 0 ? "partial" : "empty"}
+                isCellFull={ii < filled}
               />
             );
           })}
@@ -72,9 +72,7 @@ export function PracticePlannerCells({ setNotification }: { setNotification: (va
       {cells.length > 0 ? <Divider label="Timetable Details" mt="10px" /> : null}
 
       <Stack>
-        {cells.map((cell, cellIndex) => (
-          <PracticePlannerCell key={cellIndex} cell={cell} cellIndex={cellIndex} setNotification={setNotification} />
-        ))}
+        {cells.map((cell, cellIndex) => <PracticePlannerCell key={cellIndex} cell={cell} cellIndex={cellIndex} setNotification={setNotification} />)}
       </Stack>
     </Fragment>
   );

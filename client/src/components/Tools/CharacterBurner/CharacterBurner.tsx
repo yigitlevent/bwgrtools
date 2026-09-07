@@ -58,7 +58,6 @@ export function CharacterBurner(): React.JSX.Element {
         </Fragment>
       ) : null}
 
-
       <LifepathSelectionModal isOpen={currentModal === "lp"} close={closeModals} />
       <RandomLifepathsModal isOpen={currentModal === "randLp"} close={closeModals} />
       <ResourceSelectionModal isOpen={currentModal === "re"} close={closeModals} />

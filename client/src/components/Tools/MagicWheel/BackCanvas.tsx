@@ -14,14 +14,14 @@ export function BackCanvas({ constants }: { constants: MagicWheelConstants; }): 
 
       context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--mantine-color-dark-8");
 
-      for (let i = 6; i >= 1; i--) {
+      for (let i = constants.ringCount; i >= 1; i--) {
         context.beginPath();
         context.arc(constants.canvasSize / 2, constants.canvasSize / 2, constants.circleOffset + (constants.circleRadius * i), 0, 2 * Math.PI);
         context.stroke();
         context.fill();
       }
     }
-  }, [canvasRef, constants.canvasSize, constants.circleOffset, constants.circleRadius]);
+  }, [canvasRef, constants.canvasSize, constants.circleOffset, constants.circleRadius, constants.ringCount]);
 
   useEffect(() => {
     drawCircles();

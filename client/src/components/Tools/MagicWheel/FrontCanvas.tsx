@@ -17,7 +17,7 @@ export function FrontCanvas({ constants }: { constants: MagicWheelConstants; }):
 
       context.beginPath();
       context.moveTo(constants.canvasSize / 2, constants.canvasSize / 2);
-      context.arc(constants.canvasSize / 2, constants.canvasSize / 2, constants.circleOffset + (constants.circleRadius * 6), -Math.PI * 7 / 18, Math.PI * 25 / 18);
+      context.arc(constants.canvasSize / 2, constants.canvasSize / 2, constants.circleOffset + (constants.circleRadius * constants.ringCount), -Math.PI * 7 / 18, Math.PI * 25 / 18);
       context.closePath();
       context.fill();
 
@@ -37,7 +37,7 @@ export function FrontCanvas({ constants }: { constants: MagicWheelConstants; }):
       });
       img.src = burningwheel;
     }
-  }, [canvasRef, constants.canvasSize, constants.innerCircleRadius, constants.circleOffset, constants.circleRadius]);
+  }, [canvasRef, constants.canvasSize, constants.innerCircleRadius, constants.circleOffset, constants.circleRadius, constants.ringCount]);
 
   return (
     <canvas

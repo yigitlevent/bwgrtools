@@ -1,5 +1,5 @@
-import { Anchor, Grid, Popover, Text } from "@mantine/core";
-import { useState } from "react";
+import { Anchor, Box, Grid, Popover, Text } from "@mantine/core";
+import { memo } from "react";
 
 
 function GetSkillRestrictionString(skill: Skill): string {
@@ -105,23 +105,20 @@ function TraitPop({ trait }: { trait: Trait; }): React.JSX.Element {
   );
 }
 
-export function PopoverLink({ data, noColor }: { data: Skill | Trait; noColor?: boolean; }): React.JSX.Element {
-  const [opened, setOpened] = useState(false);
-
-  const closePopover = (): void => { setOpened(false); };
-  const togglePopover = (): void => { setOpened(v => !v); };
-
+export const PopoverLink = memo(({ data, noColor }: { data: Skill | Trait; noColor?: boolean; }): React.JSX.Element => {
   return (
-    <Popover opened={opened} onClose={closePopover} position="bottom-start">
-      <Popover.Target>
-        <Anchor underline="hover" onMouseDown={togglePopover} c={noColor ? "var(--mantine-color-text)" : undefined}>
-          {data.name}
-        </Anchor>
-      </Popover.Target>
+    <Box style={{ cursor: "var(--cursor-pointer)", width: "max-content", display: "inline-block" }}>
+      <Popover withArrow position="bottom-start">
+        <Popover.Target>
+          <Anchor underline="hover" c={noColor ? "var(--mantine-color-text)" : undefined} style={{ cursor: "var(--cursor-pointer)" }}>
+            {data.name}
+          </Anchor>
+        </Popover.Target>
 
-      <Popover.Dropdown style={{ maxWidth: "400px" }}>
-        {"flags" in data ? <SkillPop skill={data} /> : <TraitPop trait={data} />}
-      </Popover.Dropdown>
-    </Popover>
+        <Popover.Dropdown style={{ maxWidth: "400px" }}>
+          {"flags" in data ? <SkillPop skill={data} /> : <TraitPop trait={data} />}
+        </Popover.Dropdown>
+      </Popover>
+    </Box>
   );
-}
+});

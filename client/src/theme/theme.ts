@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, CloseButton, createTheme, Menu, NumberInput, Select, Tabs, Textarea, TextInput, UnstyledButton, Switch, Modal, Autocomplete, TreeSelect, ColorInput, SegmentedControl } from "@mantine/core";
+import { ActionIcon, Badge, Button, CloseButton, createTheme, Menu, NumberInput, Select, Tabs, Textarea, TextInput, UnstyledButton, Switch, Modal, Autocomplete, TreeSelect, ColorInput, SegmentedControl, MultiSelect } from "@mantine/core";
 
 import type { MantineColorsTuple } from "@mantine/core";
 
@@ -52,18 +52,28 @@ export const DarkTheme = createTheme({
     }),
     Select: Select.extend({
       styles: {
-        input: { cursor: "var(--cursor-text)" },
+        label: { cursor: "var(--cursor-default)" },
+        input: { cursor: "var(--cursor-pointer)" },
+        option: { cursor: "var(--cursor-pointer)" }
+      }
+    }),
+    MultiSelect: MultiSelect.extend({
+      styles: {
+        label: { cursor: "var(--cursor-default)" },
+        input: { cursor: "var(--cursor-pointer)" },
         option: { cursor: "var(--cursor-pointer)" }
       }
     }),
     TreeSelect: TreeSelect.extend({
       styles: {
+        label: { cursor: "var(--cursor-default)" },
         input: { cursor: "var(--cursor-text)" },
         option: { cursor: "var(--cursor-pointer)" }
       }
     }),
     Autocomplete: Autocomplete.extend({
       styles: {
+        label: { cursor: "var(--cursor-default)" },
         input: { cursor: "var(--cursor-text)" },
         option: { cursor: "var(--cursor-pointer)" }
       }
@@ -75,6 +85,7 @@ export const DarkTheme = createTheme({
     }),
     TextInput: TextInput.extend({
       styles: {
+        label: { cursor: "var(--cursor-default)" },
         input: { cursor: "var(--cursor-text)" }
       }
     }),

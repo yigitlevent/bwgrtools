@@ -1,4 +1,4 @@
-import { Button, Grid, Group, Title, Text } from "@mantine/core";
+import { Button, Grid, Group, Title, Text, Paper } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useCharacterBurnerSkillStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
@@ -14,14 +14,14 @@ function Skill({ skill, remove }: { skill: UniqueArrayItem<dat.SkillId, Characte
 
   return (
     <Grid.Col span={{ base: 6, sm: 3, md: 2 }}>
-      <Grid columns={5} justify="flex-start" align="center" style={{ background: "#353535", borderRadius: 1, marginTop: "8px" }}>
-        <BlockSkillPopover
-          skill={[skill.id, skill.name]}
-          checkbox={{ checked: skill.isOpen !== "no", disabled: skill.type === "Mandatory", onClick: () => { openSkill(skill.id); } }}
-          deleteCallback={remove ? () => { remove(skill.id); } : undefined}
-        />
+      <Paper shadow="xs" radius={0} p={8} withBorder>
+        <Group justify="space-between" gap={0}>
+          <BlockSkillPopover
+            skill={[skill.id, skill.name]}
+            checkbox={{ checked: skill.isOpen !== "no", disabled: skill.type === "Mandatory", onClick: () => { openSkill(skill.id); } }}
+            deleteCallback={remove ? () => { remove(skill.id); } : undefined}
+          />
 
-        <Grid.Col span="content">
           <Group gap={0}>
             <AbilityButton disabled>
               {skillPoints.shade}
@@ -31,8 +31,8 @@ function Skill({ skill, remove }: { skill: UniqueArrayItem<dat.SkillId, Characte
               {skillPoints.exponent}
             </AbilityButton>
           </Group>
-        </Grid.Col>
-      </Grid>
+        </Group>
+      </Paper>
     </Grid.Col>
   );
 }
@@ -43,14 +43,14 @@ function MandatorySkills(): React.JSX.Element {
   return (
     <Fragment>
       <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "12px 0 0 24px" }}>Mandatory</Title>
+        <Title order={5} style={{ margin: "0 0 0 24px" }}>Mandatory</Title>
       </Grid.Col>
 
       <Fragment>
         {skills
           .filter(s => s.type === "Mandatory")
-        // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
-          .map((skill, i) => <Skill key={i} skill={skill} />)}
+          // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
+          .map(skill => <Skill key={skill.id} skill={skill} />)}
       </Fragment>
     </Fragment>
   );
@@ -62,14 +62,14 @@ function LifepathSkills(): React.JSX.Element {
   return (
     <Fragment>
       <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "12px 0 0 24px" }}>Lifepath</Title>
+        <Title order={5} style={{ margin: "0 0 0 24px" }}>Lifepath</Title>
       </Grid.Col>
 
       <Fragment>
         {skills
           .filter(s => s.type === "Lifepath")
-        // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
-          .map((skill, i) => <Skill key={i} skill={skill} />)}
+          // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
+          .map(skill => <Skill key={skill.id} skill={skill} />)}
       </Fragment>
     </Fragment>
   );
@@ -81,14 +81,14 @@ function GeneralSkills({ openModal }: { openModal: (name: CharacterBurnerModals)
   return (
     <Fragment>
       <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "12px 0 0 24px" }}>General</Title>
+        <Title order={5} style={{ margin: "0 0 0 24px" }}>General</Title>
       </Grid.Col>
 
       <Fragment>
         {skills
           .filter(s => s.type === "General")
-        // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
-          .map((skill, i) => <Skill key={i} skill={skill} remove={removeGeneralSkill} />)}
+          // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
+          .map(skill => <Skill key={skill.id} skill={skill} remove={removeGeneralSkill} />)}
       </Fragment>
 
       <Button variant="outline" style={{ margin: "10px" }} onClick={() => { openModal("geSk"); }}>Add General Skill</Button>
@@ -105,7 +105,7 @@ export function Skills({ openModal }: { openModal: (name: CharacterBurnerModals)
   const lifepathText = `Lifepath Skill Points / Total: ${skillPools.lifepath.total.toString()}, Remaining: ${skillPools.lifepath.remaining.toString()}`;
 
   return (
-    <Grid columns={6} align="center" gap="xl" mb="xl">
+    <Grid columns={6} align="center" mb="xl">
       <Grid.Col span={6}>
         <Title order={4}>Skills</Title>
       </Grid.Col>

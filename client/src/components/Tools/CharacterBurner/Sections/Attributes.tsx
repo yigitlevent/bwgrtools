@@ -1,9 +1,8 @@
-import { Grid, Group, Title } from "@mantine/core";
+import { Grid, Group, Paper, Title, Text } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useCharacterBurnerAttributeStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { AbilityButton } from "../../../Shared/AbilityButton";
-import { BlockText } from "../BlockText";
 
 import type { UniqueArrayItem } from "../../../../utils/UniqueArray";
 
@@ -44,19 +43,18 @@ export function Attributes(): React.JSX.Element {
       <Fragment>
         {attributes
           .map((attribute, i) => (
-            <Grid.Col key={i} span={{ base: 6, sm: 3, md: 2 }}>
-              <Grid columns={5} justify="flex-start" align="center" style={{ background: "#353535", borderRadius: 1, marginTop: "8px" }}>
-                <BlockText text={attribute.name} hasLeftPadding />
+            <Grid.Col key={i} span={{ base: 3, sm: 2, md: 1 }}>
+              <Paper shadow="xs" radius={0} p={8} withBorder>
+                <Group justify="space-between" gap={0}>
+                  <Text>{attribute.name}</Text>
 
-                <Grid.Col span="content">
                   <Group gap={0}>
                     <Attribute attribute={attribute} />
                   </Group>
-                </Grid.Col>
-              </Grid>
+                </Group>
+              </Paper>
             </Grid.Col>
-          )
-          )}
+          ))}
       </Fragment>
     </Grid>
   );

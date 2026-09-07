@@ -15,11 +15,9 @@ import type { DrawerNames } from "../../hooks/useDrawerStore";
 
 function DrawerIconButton({ title, icon, onClick }: { title: string; icon: React.JSX.Element; onClick: () => void; }): React.JSX.Element {
   return (
-    <Paper withBorder p="4px" m="8px 0 8px 8px">
-      <Tooltip label={title}>
-        <ActionIcon variant="subtle" size="lg" onClick={() => { onClick(); }}>{icon}</ActionIcon>
-      </Tooltip>
-    </Paper>
+    <Tooltip label={title}>
+      <ActionIcon mt={16} p={4} variant="subtle" onClick={() => { onClick(); }}>{icon}</ActionIcon>
+    </Tooltip>
   );
 }
 
@@ -32,10 +30,10 @@ export function Menu({ bottom }: { bottom: boolean; }): React.JSX.Element {
   const [signupOpen, setSignupOpen] = useState(false);
 
   const buttons: { title: DrawerNames; icon: React.JSX.Element; authOnly: boolean; }[] = [
-    { title: "Tools", icon: <ClipboardList color="var(--mantine-primary-color-filled)" />, authOnly: false },
-    { title: "Datasets", icon: <Database color="var(--mantine-primary-color-filled)" />, authOnly: false },
-    { title: "Checklist", icon: <ClipboardCheck color="var(--mantine-primary-color-filled)" />, authOnly: false },
-    { title: "My Things", icon: <BookOpen color="var(--mantine-primary-color-filled)" />, authOnly: true }
+    { title: "Tools", icon: <ClipboardList />, authOnly: false },
+    { title: "Datasets", icon: <Database />, authOnly: false },
+    { title: "Checklist", icon: <ClipboardCheck />, authOnly: false },
+    { title: "My Things", icon: <BookOpen />, authOnly: true }
   ];
 
   return (
@@ -47,10 +45,10 @@ export function Menu({ bottom }: { bottom: boolean; }): React.JSX.Element {
         padding: 0, background: "var(--mantine-color-body)", zIndex: 123456789
       } : undefined}
     >
-      {user ? <DrawerIconButton title="Sign out" icon={<LogOut color="var(--mantine-primary-color-filled)" />} onClick={signout} /> : (
+      {user ? <DrawerIconButton title="Sign out" icon={<LogOut />} onClick={signout} /> : (
         <Fragment>
-          <DrawerIconButton title="Sign in" icon={<LogIn color="var(--mantine-primary-color-filled)" />} onClick={() => { setSigninOpen(true); }} />
-          <DrawerIconButton title="Sign up" icon={<BookOpenCheck color="var(--mantine-primary-color-filled)" />} onClick={() => { setSignupOpen(true); }} />
+          <DrawerIconButton title="Sign in" icon={<LogIn />} onClick={() => { setSigninOpen(true); }} />
+          <DrawerIconButton title="Sign up" icon={<BookOpenCheck />} onClick={() => { setSignupOpen(true); }} />
         </Fragment>
       )}
 

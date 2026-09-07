@@ -53,11 +53,11 @@ export function GeneralSkillModal({ isOpen, close }: { isOpen: boolean; close: (
 
   const groupedSkillData = useMemo(() => {
     const sorted = [...possibleSkills].sort((a, b) => a.category[1].localeCompare(b.category[1]) || (a.name ?? "").localeCompare(b.name ?? ""));
-    const groups = new Map<string, string[]>();
+    const groups = new Map<string, { value: string; label: string; }[]>();
     sorted.forEach(v => {
       const groupName = v.category[1];
       const items = groups.get(groupName) ?? [];
-      items.push(v.id?.toString() ?? "");
+      items.push({ value: v.id?.toString() ?? "", label: v.name ?? "" });
       groups.set(groupName, items);
     });
     return [...groups.entries()].map(([group, items]) => ({ group, items }));

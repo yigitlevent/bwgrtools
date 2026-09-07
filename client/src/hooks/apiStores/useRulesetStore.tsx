@@ -21,22 +21,29 @@ interface RulesetStore {
   readonly chosenRulesets: dat.RulesetId[];
 
   readonly abilities: Ability[];
+  readonly abilitiesById: Map<dat.AbilityId, Ability>;
   readonly abilityTypes: string[];
 
   readonly stocks: Stock[];
+  readonly stocksById: Map<dat.StockId, Stock>;
   readonly settings: Setting[];
+  readonly settingsById: Map<dat.SettingId, Setting>;
 
   readonly skills: Skill[];
+  readonly skillsById: Map<dat.SkillId, Skill>;
   readonly skillCategories: string[];
   readonly skillTypes: string[];
 
   readonly traits: Trait[];
+  readonly traitsById: Map<dat.TraitId, Trait>;
   readonly traitCategories: string[];
   readonly traitTypes: string[];
 
   readonly lifepaths: Lifepath[];
+  readonly lifepathsById: Map<dat.LifepathId, Lifepath>;
 
   readonly resources: Resource[];
+  readonly resourcesById: Map<dat.ResourceId, Resource>;
   readonly resourceTypes: string[];
 
   readonly spellFacets: SpellFacets;
@@ -53,8 +60,9 @@ interface RulesetStore {
   fetchList: () => void;
   fetchData: () => void;
 
-  // TODO: Might be useful to create a hash table of id-index pairs to quicken the search -- name/string search being slow is fine, it should be used veeery rarely
+  // name/string search remains a linear scan -- it should be used veeery rarely; id lookups use the *ById maps below
   serveResult: <T>(row: T[], error: [id: unknown, msg: string]) => T;
+  serveIndexedResult: <TId, TRow>(byId: Map<TId, TRow>, search: TId, msg: string) => TRow;
   getAbility: (search: dat.AbilityId | string) => Ability;
   getStock: (search: dat.StockId | string) => Stock;
   getSetting: (search: dat.SettingId | string) => Setting;
@@ -81,22 +89,29 @@ export const useRulesetStore = create<RulesetStore>()(
       chosenRulesets: [],
 
       abilities: [],
+      abilitiesById: new Map(),
       abilityTypes: [],
 
       stocks: [],
+      stocksById: new Map(),
       settings: [],
+      settingsById: new Map(),
 
       skills: [],
+      skillsById: new Map(),
       skillCategories: [],
       skillTypes: [],
 
       traits: [],
+      traitsById: new Map(),
       traitCategories: [],
       traitTypes: [],
 
       lifepaths: [],
+      lifepathsById: new Map(),
 
       resources: [],
+      resourcesById: new Map(),
       resourceTypes: [],
 
       dowActions: [],
@@ -170,18 +185,26 @@ export const useRulesetStore = create<RulesetStore>()(
               const traitCategories = [...response.ruleset.traits.reduce((a, v) => a.add(v.category[1]), new Set<string>())];
               const traitTypes = [...response.ruleset.traits.reduce((a, v) => a.add(v.type[1]), new Set<string>())];
 
+              const toIdMap = <TId, TRow extends { id: TId | null; }>(rows: TRow[]): Map<TId, TRow> =>
+                new Map(rows.filter((v): v is TRow & { id: TId; } => v.id !== null).map(v => [v.id, v]));
+
               set(produce<RulesetStore>(state => {
                 state.abilities = abilities;
+                state.abilitiesById = toIdMap(abilities);
                 state.abilityTypes = abilityTypes;
 
                 state.stocks = stocks;
+                state.stocksById = toIdMap(stocks);
                 state.settings = settings;
+                state.settingsById = toIdMap(settings);
 
                 state.skills = skills;
+                state.skillsById = toIdMap(skills);
                 state.skillCategories = skillCategories;
                 state.skillTypes = skillTypes;
 
                 state.traits = traits;
+                state.traitsById = toIdMap(traits);
                 state.traitCategories = traitCategories;
                 state.traitTypes = traitTypes;
 
@@ -217,8 +240,10 @@ export const useRulesetStore = create<RulesetStore>()(
 
                       return lp;
                     });
+                state.lifepathsById = toIdMap(state.lifepaths);
 
                 state.resources = response.ruleset.resources;
+                state.resourcesById = toIdMap(response.ruleset.resources);
                 state.resourceTypes = [...response.ruleset.resources.reduce((a, v) => a.add(v.type[1]), new Set<string>())];
 
                 state.spellFacets = response.ruleset.spellFacets;
@@ -247,45 +272,51 @@ export const useRulesetStore = create<RulesetStore>()(
         else throw new Error(`Could not find any ${error[1]} with ${typeof error[0] === "string" ? "name" : "id"} '${error[0] as string}'`);
       },
 
+      serveIndexedResult<TId, TRow>(byId: Map<TId, TRow>, search: TId, msg: string): Readonly<TRow> {
+        const row = byId.get(search);
+        if (row === undefined) throw new Error(`Could not find any ${msg} with id '${search as string}'`);
+        return row;
+      },
+
       getAbility(search: dat.AbilityId | string) {
-        const abilities = get().abilities;
-        const rows = (typeof search === "string") ? abilities.filter(v => v.name === search) : abilities.filter(v => v.id === search);
+        if (typeof search !== "string") return get().serveIndexedResult(get().abilitiesById, search, "abilities");
+        const rows = get().abilities.filter(v => v.name === search);
         return get().serveResult(rows, [search, "abilities"]);
       },
 
       getStock(search: dat.StockId | string) {
-        const stocks = get().stocks;
-        const rows = (typeof search === "string") ? stocks.filter(v => v.name === search) : stocks.filter(v => v.id === search);
+        if (typeof search !== "string") return get().serveIndexedResult(get().stocksById, search, "stocks");
+        const rows = get().stocks.filter(v => v.name === search);
         return get().serveResult(rows, [search, "stocks"]);
       },
 
       getSetting(search: dat.SettingId | string) {
-        const settings = get().settings;
-        const rows = (typeof search === "string") ? settings.filter(v => v.name === search) : settings.filter(v => v.id === search);
+        if (typeof search !== "string") return get().serveIndexedResult(get().settingsById, search, "settings");
+        const rows = get().settings.filter(v => v.name === search);
         return get().serveResult(rows, [search, "settings"]);
       },
 
       getSkill(search: dat.SkillId | string) {
-        const skills = get().skills;
-        const rows = (typeof search === "string") ? skills.filter(v => v.name === search) : skills.filter(v => v.id === search);
+        if (typeof search !== "string") return get().serveIndexedResult(get().skillsById, search, "skills");
+        const rows = get().skills.filter(v => v.name === search);
         return get().serveResult(rows, [search, "skills"]);
       },
 
       getTrait(search: dat.TraitId | string) {
-        const traits = get().traits;
-        const rows = (typeof search === "string") ? traits.filter(v => v.name === search) : traits.filter(v => v.id === search);
+        if (typeof search !== "string") return get().serveIndexedResult(get().traitsById, search, "traits");
+        const rows = get().traits.filter(v => v.name === search);
         return get().serveResult(rows, [search, "traits"]);
       },
 
       getLifepath(search: dat.LifepathId | string) {
-        const lifepaths = get().lifepaths;
-        const rows = (typeof search === "string") ? lifepaths.filter(v => v.name === search) : lifepaths.filter(v => v.id === search);
+        if (typeof search !== "string") return get().serveIndexedResult(get().lifepathsById, search, "lifepaths");
+        const rows = get().lifepaths.filter(v => v.name === search);
         return get().serveResult(rows, [search, "lifepaths"]);
       },
 
       getResource(search: dat.ResourceId | string) {
-        const resources = get().resources;
-        const rows = (typeof search === "string") ? resources.filter(v => v.name === search) : resources.filter(v => v.id === search);
+        if (typeof search !== "string") return get().serveIndexedResult(get().resourcesById, search, "resources");
+        const rows = get().resources.filter(v => v.name === search);
         return get().serveResult(rows, [search, "resources"]);
       },
 

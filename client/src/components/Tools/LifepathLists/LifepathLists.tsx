@@ -1,5 +1,6 @@
-import { Alert, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
-import { Fragment, useCallback, useState } from "react";
+import { Alert, Box, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { Fragment, useCallback, useRef, useState } from "react";
 
 import { LifepathBox } from "./LifepathBox";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
@@ -18,11 +19,21 @@ export function LifepathLists(): React.JSX.Element {
     setFilter([{ key: "stock", value: val }, { key: "setting", value: newAllowed[0] }]);
   }, [setFilter, settings]);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredList.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 90,
+    overscan: 8,
+    getItemKey: index => filteredList[index].id ?? index
+  });
+
   return (
     <Fragment>
       <Title order={3}>Lifepath Explorer</Title>
 
-      <Grid columns={4} align="center" justify="center" mt="md">
+      <Grid columns={8} align="center" justify="center" mt="md">
         <Grid.Col span={{ base: 4, sm: 2, md: 1 }}>
           <Select
             label="Stock"
@@ -45,7 +56,7 @@ export function LifepathLists(): React.JSX.Element {
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 4, sm: 2, md: 2 }}>
+        <Grid.Col span={{ base: 4, sm: 2, md: 4 }}>
           <TextInput
             label="Search"
             variant="filled"
@@ -54,7 +65,7 @@ export function LifepathLists(): React.JSX.Element {
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 4, sm: 2, md: 1 }}>
+        <Grid.Col span={{ base: 4, sm: 2, md: 2 }}>
           <MultiSelect
             label="Search Fields"
             variant="filled"
@@ -65,14 +76,22 @@ export function LifepathLists(): React.JSX.Element {
         </Grid.Col>
       </Grid>
 
-      <Grid columns={1} gap="xs" align="center" mt="md">
-        {filteredList.length > 0 ? filteredList.map((v, i) => (
-          <Grid.Col span={1} key={i}>
-            <LifepathBox lifepath={v} />
-          </Grid.Col>
-        )
-        ) : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
-      </Grid>
+      {filteredList.length > 0 ? (
+        <Box ref={scrollRef} mt="md" style={{ height: "70vh", overflowY: "auto" }}>
+          <Box style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
+            {rowVirtualizer.getVirtualItems().map(virtualRow => (
+              <Box
+                key={virtualRow.key}
+                ref={rowVirtualizer.measureElement}
+                data-index={virtualRow.index}
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${virtualRow.start.toString()}px)`, paddingBottom: "var(--mantine-spacing-xs)" }}
+              >
+                <LifepathBox lifepath={filteredList[virtualRow.index]} />
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      ) : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
     </Fragment>
   );
 }

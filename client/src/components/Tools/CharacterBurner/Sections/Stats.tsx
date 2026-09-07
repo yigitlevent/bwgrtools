@@ -1,11 +1,10 @@
-import { Grid, Group, Title, Text } from "@mantine/core";
+import { Grid, Group, Title, Text, Paper } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
 import { useCharacterBurnerStatStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
 import { AbilityButton } from "../../../Shared/AbilityButton";
-import { BlockText } from "../BlockText";
 
 
 export function Stats(): React.JSX.Element {
@@ -22,7 +21,7 @@ export function Stats(): React.JSX.Element {
   const eitherText = `Either Pool / Total: ${either.total.toString()}, Remaining: ${either.remaining.toString()}`;
 
   return (
-    <Grid columns={6} align="center" gap="xl" mt="lg" mb="xl">
+    <Grid columns={6} align="center" mt="lg" mb="xl">
       <Grid.Col span={6}>
         <Title order={4}>Stats</Title>
       </Grid.Col>
@@ -40,17 +39,17 @@ export function Stats(): React.JSX.Element {
           .map((v, i) => {
             const stat = getStat(v.name ?? "");
             return (
-              <Grid.Col key={i} span={{ base: 6, sm: 3, md: 2 }}>
-                <Grid columns={5} justify="flex-start" align="center" style={{ background: "#353535", borderRadius: 1, marginTop: "8px" }}>
-                  <BlockText text={v.name ?? ""} hasLeftPadding />
+              <Grid.Col key={i} span={{ base: 3, sm: 2, md: 1 }}>
+                <Paper shadow="xs" radius={0} p={8} withBorder>
+                  <Group justify="space-between" gap={0}>
+                    <Text>{v.name ?? ""}</Text>
 
-                  <Grid.Col span="content">
                     <Group gap={0}>
                       <AbilityButton onClick={() => { shiftStatShade(v.name ?? ""); }}>{stat.shade}</AbilityButton>
                       <AbilityButton onClick={() => { modifyStatExponent(v.name ?? ""); }} onContextMenu={() => { modifyStatExponent(v.name ?? "", true); }}>{stat.exponent}</AbilityButton>
                     </Group>
-                  </Grid.Col>
-                </Grid>
+                  </Group>
+                </Paper>
               </Grid.Col>
             );
           })}

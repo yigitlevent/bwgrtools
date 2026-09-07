@@ -104,7 +104,7 @@ export function PracticePlanner(): React.JSX.Element {
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 10, sm: 4, md: 2 }}>
+        <Grid.Col span={{ base: 10, sm: 4, md: 2 }} style={{ alignSelf: "end" }}>
           <Button
             type="submit"
             variant="outline"
@@ -125,6 +125,7 @@ export function PracticePlanner(): React.JSX.Element {
           onChange={v => { setCellStartEndIndex(v); }}
           min={1}
           max={cells.length}
+          minRange={1}
           disabled={cells.length < 1}
           marks={marks}
         />

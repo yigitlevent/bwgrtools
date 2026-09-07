@@ -1,5 +1,5 @@
-import { Alert, Grid, MultiSelect, Paper, Select, TextInput, Title } from "@mantine/core";
-import { Fragment } from "react";
+import { Alert, Box, Divider, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
+import { Fragment, useMemo } from "react";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useSearch } from "../../../hooks/useSearch";
@@ -9,6 +9,18 @@ import { PopoverLink } from "../../Shared/PopoverLink";
 export function TraitLists(): React.JSX.Element {
   const { stocks, traits, traitCategories, traitTypes } = useRulesetStore();
   const { searchValues, setFilter, filteredList } = useSearch<Trait>(traits, ["stock", "category", "type"]);
+
+  const groupedList = useMemo(() => {
+    const sorted = [...filteredList].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+    const groups = new Map<string, Trait[]>();
+    sorted.forEach(v => {
+      const letter = (v.name ?? "").charAt(0).toUpperCase() || "#";
+      const items = groups.get(letter) ?? [];
+      items.push(v);
+      groups.set(letter, items);
+    });
+    return [...groups.entries()];
+  }, [filteredList]);
 
   return (
     <Fragment>
@@ -68,20 +80,27 @@ export function TraitLists(): React.JSX.Element {
         </Grid.Col>
       </Grid>
 
-      <Grid mt="md">
-        {filteredList.length > 0 ? [...filteredList].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "")).map((trait, i) => (
-          <Grid.Col span="content" key={i}>
-            <Paper shadow="sm" style={{ cursor: "pointer", padding: "2px 6px" }}>
-              <PopoverLink data={trait} />
-            </Paper>
-          </Grid.Col>
-        )
-        ) : (
-          <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>
-            Could not find any matches. Try adding more fields or changing search text or filters.
-          </Alert>
-        )}
-      </Grid>
+      {filteredList.length > 0 ? (
+        <Box mt="md" style={{ maxHeight: "70vh", overflowY: "auto" }}>
+          {groupedList.map(([letter, items]) => (
+            <Fragment key={letter}>
+              <Divider label={letter} labelPosition="left" mt="sm" mb="xs" />
+
+              <Grid>
+                {items.map(trait => (
+                  <Grid.Col span="content" key={trait.id}>
+                    <PopoverLink data={trait} />
+                  </Grid.Col>
+                ))}
+              </Grid>
+            </Fragment>
+          ))}
+        </Box>
+      ) : (
+        <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>
+          Could not find any matches. Try adding more fields or changing search text or filters.
+        </Alert>
+      )}
     </Fragment>
   );
 }

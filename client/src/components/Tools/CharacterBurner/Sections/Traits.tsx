@@ -1,4 +1,4 @@
-import { Button, Grid, Title, Text } from "@mantine/core";
+import { Button, Grid, Title, Text, Paper, Group } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useCharacterBurnerTraitStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
@@ -12,13 +12,15 @@ function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, Characte
 
   return (
     <Grid.Col span={{ base: 6, sm: 3, md: 2 }}>
-      <Grid columns={5} justify="flex-start" align="center" style={{ background: "#353535", borderRadius: 1, marginTop: "8px" }}>
-        <BlockTraitPopover
-          trait={[trait.id, trait.name]}
-          checkbox={{ checked: trait.isOpen, disabled: trait.type === "Mandatory" || trait.type === "Common", onClick: () => { openTrait(trait.id); } }}
-          deleteCallback={remove ? () => { remove(trait.id); } : undefined}
-        />
-      </Grid>
+      <Paper shadow="xs" radius={0} p={8} withBorder>
+        <Group justify="space-between" gap={0}>
+          <BlockTraitPopover
+            trait={[trait.id, trait.name]}
+            checkbox={{ checked: trait.isOpen, disabled: trait.type === "Mandatory" || trait.type === "Common", onClick: () => { openTrait(trait.id); } }}
+            deleteCallback={remove ? () => { remove(trait.id); } : undefined}
+          />
+        </Group>
+      </Paper>
     </Grid.Col>
   );
 }
@@ -29,13 +31,13 @@ function CommonTraitsBlock(): React.JSX.Element {
   return (
     <Fragment>
       <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "12px 0 0 24px" }}>Common</Title>
+        <Title order={5} style={{ margin: "0 0 0 24px" }}>Common</Title>
       </Grid.Col>
 
       <Fragment>
         {traits
           .filter(t => t.type === "Common")
-          .map((trait, i) => <Trait key={i} trait={trait} />)}
+          .map(trait => <Trait key={trait.id} trait={trait} />)}
       </Fragment>
     </Fragment>
   );
@@ -47,13 +49,13 @@ function MandatoryTraitsBlock(): React.JSX.Element {
   return (
     <Fragment>
       <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "12px 0 0 24px" }}>Mandatory</Title>
+        <Title order={5} style={{ margin: "0 0 0 24px" }}>Mandatory</Title>
       </Grid.Col>
 
       <Fragment>
         {traits
           .filter(t => t.type === "Mandatory")
-          .map((trait, i) => <Trait key={i} trait={trait} />)}
+          .map(trait => <Trait key={trait.id} trait={trait} />)}
       </Fragment>
     </Fragment>
   );
@@ -65,12 +67,12 @@ function LifepathTraitsBlock(): React.JSX.Element {
   return (
     <Fragment>
       <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "12px 0 0 24px" }}>Lifepath</Title>
+        <Title order={5} style={{ margin: "0 0 0 24px" }}>Lifepath</Title>
       </Grid.Col>
 
       {traits
         .filter(t => t.type === "Lifepath")
-        .map((trait, i) => <Trait key={i} trait={trait} />)}
+        .map(trait => <Trait key={trait.id} trait={trait} />)}
     </Fragment>
   );
 }
@@ -81,13 +83,13 @@ function GeneralTraitsBlock({ openModal }: { openModal: (name: CharacterBurnerMo
   return (
     <Fragment>
       <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "12px 0 0 24px" }}>General</Title>
+        <Title order={5} style={{ margin: "0 0 0 24px" }}>General</Title>
       </Grid.Col>
 
       <Fragment>
         {traits
           .filter(t => t.type === "General")
-          .map((trait, i) => <Trait key={i} trait={trait} remove={removeGeneralTrait} />)}
+          .map(trait => <Trait key={trait.id} trait={trait} remove={removeGeneralTrait} />)}
       </Fragment>
 
       <Button variant="outline" style={{ margin: "10px" }} onClick={() => { openModal("geTr"); }}>Add General Trait</Button>
@@ -102,7 +104,7 @@ export function Traits({ openModal }: { openModal: (name: CharacterBurnerModals)
   const text = `Trait Points: ${traitPools.total.toString()}, Remaining: ${traitPools.remaining.toString()}`;
 
   return (
-    <Grid columns={6} align="center" gap="xl" mb="xl">
+    <Grid columns={6} align="center" mb="xl">
       <Grid.Col span={6}>
         <Title order={4}>Traits</Title>
       </Grid.Col>

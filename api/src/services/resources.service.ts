@@ -55,10 +55,10 @@ export async function GetResources(rulesets: dat.RulesetId[]): Promise<Resource[
             if (mo.obstacle) obsDet.obstacle = mo.obstacle;
             else if (mo.obstacleAbility1Id !== null || mo.obstacleAbility1 !== null || mo.obstacleAbility2Id !== null || mo.obstacleAbility2 !== null) {
               obsDet.abilities = [];
-              if (obsDet.abilities.length > 0 && mo.obstacleAbility1Id !== null && mo.obstacleAbility1 !== null) {
+              if (mo.obstacleAbility1Id !== null && mo.obstacleAbility1 !== null) {
                 obsDet.abilities.push([mo.obstacleAbility1Id, mo.obstacleAbility1]);
               }
-              if (obsDet.abilities.length > 0 && mo.obstacleAbility2Id !== null && mo.obstacleAbility2 !== null) {
+              if (mo.obstacleAbility2Id !== null && mo.obstacleAbility2 !== null) {
                 obsDet.abilities.push([mo.obstacleAbility2Id, mo.obstacleAbility2]);
               }
             }

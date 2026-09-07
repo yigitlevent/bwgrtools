@@ -1,5 +1,5 @@
 import { Box, Text } from "@mantine/core";
-import { Fragment } from "react";
+import { Fragment, memo } from "react";
 
 import { GetOrdinalSuffix } from "../../../utils/GetOrdinalSuffix";
 
@@ -49,7 +49,7 @@ function ResolveRequirementBlocks(requirementBlocks: LifepathRequirementBlock[])
 
   return (
     <Fragment>
-      {!hasOneBlock ? <Box>{BlockTitle(parentLogic, 1)}</Box> : null}
+      {!hasOneBlock ? <Box key="parent-logic">{BlockTitle(parentLogic, 1)}</Box> : null}
 
       {requirementBlocks.map((block, i) => (
         <Fragment key={i}>
@@ -59,24 +59,17 @@ function ResolveRequirementBlocks(requirementBlocks: LifepathRequirementBlock[])
             {block.items.map((item, ii) => <Box key={ii} ml="xs">{ResolveRequirementBlockItem(item)}</Box>)}
           </Box>
         </Fragment>
-      )
-      )}
+      ))}
     </Fragment>
   );
 }
 
-export function LifepathRequirements({ lifepath }: { lifepath: Lifepath; }): React.JSX.Element {
+export const LifepathRequirements = memo(({ lifepath }: { lifepath: Lifepath; }): React.JSX.Element => {
   return (
-    <Fragment>
-      <b>Requirements:</b>
-
-      {lifepath.requirements ? (
-        <Box>
-          <Text size="xs">{ResolveRequirementBlocks(lifepath.requirements)}</Text>
-        </Box>
-      ) : null}
-
+    <Box>
+      <Text fw={700}>Requirements:</Text>
+      {lifepath.requirements ? <Text component="div" size="xs">{ResolveRequirementBlocks(lifepath.requirements)}</Text> : null}
       {lifepath.requirementsText ? lifepath.requirementsText.split("<br>").map((text, textIndex) => <Text key={textIndex} size="sm">{text}</Text>) : null}
-    </Fragment>
+    </Box>
   );
-}
+});

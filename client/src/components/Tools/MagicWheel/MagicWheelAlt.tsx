@@ -1,25 +1,12 @@
-import { Button, Grid, Loader, Title } from "@mantine/core";
-import { createRef, Fragment, useEffect, useState } from "react";
+import { useState } from "react";
 
-import { BackCanvas } from "./BackCanvas";
-import { FacetControls } from "./FacetControls";
-import { FrontCanvas } from "./FrontCanvas";
-import codeFont from "../../../assets/fonts/SourceCodePro-SemiBold.woff";
+import { MagicWheelShell } from "./MagicWheelShell";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
-import { useFontLoading } from "../../../hooks/useFontLoading";
-import { useMagicWheel } from "../../../hooks/useMagicWheel";
 
 import type { BandBlock, ElementCategories } from "../../../hooks/useMagicWheel";
 
 
 export function MagicWheelAlt(): React.JSX.Element {
-  const { isFontLoaded } = useFontLoading(codeFont);
-
-  const wrapperRef = createRef<HTMLDivElement>();
-  const canvasRef = createRef<HTMLCanvasElement>();
-  const [size, setSize] = useState("0px");
-  const [context, setContext] = useState<CanvasRenderingContext2D>();
-
   const [selectedElementCategory, setSelectedElementCategory] = useState<ElementCategories>("primeElements");
 
   const { spellAltFacets } = useRulesetStore();
@@ -58,74 +45,14 @@ export function MagicWheelAlt(): React.JSX.Element {
       areaOfEffects: { index: 4, angle: 2 * Math.PI / spellFacets.areaOfEffects.length, currentAmount: 0, targetAmount: 0, items: spellFacets.areaOfEffects.map(v => v.name) }
     });
 
-  const magicWheel = useMagicWheel<AltSpellFacets, keyof AltSpellFacets>({ spellFacets, bands, context, selectedElementCategory, setBands, isAvailable: key => !key.toLowerCase().includes("element") || selectedElementCategory === key });
-
-  useEffect(() => {
-    if (wrapperRef.current) setSize(window.getComputedStyle(wrapperRef.current).width);
-  }, [wrapperRef]);
-
-  useEffect(() => {
-    const context = canvasRef.current?.getContext("2d");
-    if (context) setContext(context);
-  }, [canvasRef]);
-
   return (
-    <Fragment>
-      <Title order={3}>Magic Wheel</Title>
-
-      {!magicWheel.facetsSet ? (
-        <FacetControls
-          magicWheel={magicWheel}
-          spellFacets={spellFacets}
-          setFacetsSet={magicWheel.setFacetsSet}
-          selectedElementCategory={selectedElementCategory}
-          setSelectedElementCategory={setSelectedElementCategory}
-        />
-      ) : isFontLoaded ? (
-        <Grid columns={1} align="center" justify="center" mt="md">
-          {magicWheel.prayed ? (
-            <Button
-              variant="outline"
-              disabled={magicWheel.isRotating}
-              onClick={() => { magicWheel.reset(); }}
-              fullWidth
-            >
-              Try again
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              disabled={magicWheel.isRotating}
-              onClick={() => { magicWheel.setTargetAmounts(); }}
-              fullWidth
-            >
-              Pray to the Lady Luck
-            </Button>
-          )}
-
-          <Grid.Col span={1}>
-            <div
-              ref={wrapperRef}
-              style={{
-                maxWidth: "100%",
-                width: (size === "0px") ? "580px" : size,
-                height: (size === "0px") ? "580px" : size,
-                position: "relative",
-                margin: "0 auto",
-                zIndex: 100
-              }}
-            >
-              <BackCanvas constants={magicWheel.constants} />
-
-              <canvas ref={canvasRef} height={magicWheel.constants.canvasSize} width={magicWheel.constants.canvasSize} style={{ position: "absolute", left: 0, top: 0, zIndex: 102, width: "100%" }}>
-                Your browser does not support canvas.
-              </canvas>
-
-              <FrontCanvas constants={magicWheel.constants} />
-            </div>
-          </Grid.Col>
-        </Grid>
-      ) : <Loader />}
-    </Fragment>
+    <MagicWheelShell<AltSpellFacets>
+      spellFacets={spellFacets}
+      bands={bands}
+      setBands={setBands}
+      isAvailable={key => !key.toLowerCase().includes("element") || selectedElementCategory === key}
+      selectedElementCategory={selectedElementCategory}
+      setSelectedElementCategory={setSelectedElementCategory}
+    />
   );
 }

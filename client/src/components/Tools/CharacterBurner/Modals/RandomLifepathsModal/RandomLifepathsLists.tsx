@@ -19,7 +19,7 @@ export function RandomLifepathsLists({ chosenLifepaths }: { chosenLifepaths: Lif
       <Grid.Col span={1}>
         Mandatory Skills:
         {mandatorySkills.length > 0 ? mandatorySkills.map((skill, i) => (
-          <Paper key={i} shadow="sm" style={{ cursor: "pointer", padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
+          <Paper key={i} shadow="sm" style={{ padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
             <PopoverLink data={skill} />
           </Paper>
         )
@@ -29,7 +29,7 @@ export function RandomLifepathsLists({ chosenLifepaths }: { chosenLifepaths: Lif
       <Grid.Col span={1}>
         Skills:
         {lifepathSkills.length > 0 ? lifepathSkills.map((skill, i) => (
-          <Paper key={i} shadow="sm" style={{ cursor: "pointer", padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
+          <Paper key={i} shadow="sm" style={{ padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
             <PopoverLink data={skill} />
           </Paper>
         )
@@ -39,7 +39,7 @@ export function RandomLifepathsLists({ chosenLifepaths }: { chosenLifepaths: Lif
       <Grid.Col span={1}>
         Mandatory Traits:
         {mandatoryTraits.length > 0 ? mandatoryTraits.map((trait, i) => (
-          <Paper key={i} shadow="sm" style={{ cursor: "pointer", padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
+          <Paper key={i} shadow="sm" style={{ padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
             <PopoverLink data={trait} />
           </Paper>
         )
@@ -49,7 +49,7 @@ export function RandomLifepathsLists({ chosenLifepaths }: { chosenLifepaths: Lif
       <Grid.Col span={1}>
         Traits:
         {lifepathTraits.length > 0 ? lifepathTraits.map((trait, i) => (
-          <Paper key={i} shadow="sm" style={{ cursor: "pointer", padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
+          <Paper key={i} shadow="sm" style={{ padding: "0 4px", margin: "3px 3px 0", width: "max-content", display: "inline-block" }}>
             <PopoverLink data={trait} />
           </Paper>
         )

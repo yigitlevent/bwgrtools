@@ -1,56 +1,50 @@
-import { Box, Paper } from "@mantine/core";
-import { Fragment } from "react";
+import { Box, Text } from "@mantine/core";
+import { Fragment, memo, useMemo } from "react";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { PopoverLink } from "../../Shared/PopoverLink";
 
 
-export function LifepathSkills({ lifepath }: { lifepath: Lifepath; }): React.JSX.Element {
+export const LifepathSkills = memo(({ lifepath }: { lifepath: Lifepath; }): React.JSX.Element => {
   const { getSkill } = useRulesetStore();
 
   const hasGeneralSkill = lifepath.pools.generalSkillPool !== 0;
   const hasLifepathSkill = lifepath.pools.lifepathSkillPool !== 0;
 
-  const generalSkill = getSkill("General");
+  const generalSkill = useMemo(() => getSkill("General"), [getSkill]);
 
-  const lifepathSkills =
-    lifepath.skills ? lifepath.skills.map(skillId => getSkill(skillId)) : undefined;
+  const lifepathSkills = useMemo(() => lifepath.skills ? lifepath.skills.map(skillId => getSkill(skillId)) : undefined, [lifepath.skills, getSkill]);
 
   return (
-    <Fragment>
-      <b>Skills: </b>
+    <Box>
+      <Text mr={4} fw={700} style={{ display: "inline-block" }}>Skills:</Text>
 
       {hasGeneralSkill ? (
-        <span>
+        <Text mr={4} style={{ display: "inline-block" }}>
           {lifepath.pools.generalSkillPool}
-          {(lifepath.pools.generalSkillPool ?? 0) > 1 ? "pts: " : "pt: "}
-        </span>
+          {(lifepath.pools.generalSkillPool ?? 0) > 1 ? "pts:" : "pt:"}
+        </Text>
       ) : null}
 
-      {hasGeneralSkill ? (
-        <Paper shadow="sm" style={{ cursor: "pointer", padding: "0 4px", margin: "0 0 0 2px", width: "max-content", display: "inline-block" }}>
-          <PopoverLink data={generalSkill} />
-        </Paper>
-      ) : null}
+      {hasGeneralSkill ? <PopoverLink data={generalSkill} /> : null}
 
-      <Box style={{ display: "inline-block", marginRight: 6 }}>
-        {(hasGeneralSkill && hasLifepathSkill) ? "; " : null}
+      <Box mr={4} style={{ display: "inline-block" }}>
+        {(hasGeneralSkill && hasLifepathSkill) ? ";" : null}
       </Box>
 
       {hasLifepathSkill ? (
-        <span>
+        <Text mr={4} style={{ display: "inline-block" }}>
           {lifepath.pools.lifepathSkillPool}
-          {(lifepath.pools.lifepathSkillPool ?? 0) > 1 ? "pts: " : "pt: "}
-        </span>
+          {(lifepath.pools.lifepathSkillPool ?? 0) > 1 ? "pts:" : "pt:"}
+        </Text>
       ) : null}
 
-      {hasLifepathSkill && lifepathSkills ? lifepathSkills.map((skill, i) => {
-        return (
-          <Paper key={i} shadow="sm" style={{ cursor: "pointer", padding: "0 4px", margin: "0 0 0 2px", width: "max-content", display: "inline-block" }}>
-            <PopoverLink data={skill} />
-          </Paper>
-        );
-      }) : null}
-    </Fragment>
+      {hasLifepathSkill && lifepathSkills ? lifepathSkills.map((skill, i) => (
+        <Fragment key={skill.id}>
+          <PopoverLink data={skill} />
+          {i < lifepathSkills.length - 1 ? <Box mr={4} style={{ display: "inline-block" }}>,</Box> : null}
+        </Fragment>
+      )) : null}
+    </Box>
   );
-}
+});

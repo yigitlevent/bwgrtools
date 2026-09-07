@@ -89,24 +89,23 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
     }
   }, [costs, numberOfWeapons]);
 
-  const createResource = useCallback(() => {
-    if (costs) {
-      const modifiers = getModifiers(costs);
-      const totalCost = getTotalCost(modifiers);
+  const totalCost = useMemo(() => costs ? getTotalCost(getModifiers(costs)) : undefined, [costs, getModifiers, getTotalCost]);
+  const canAffordResource = totalCost !== undefined && totalCost <= resourcePool.remaining;
 
-      if (totalCost !== undefined && totalCost <= resourcePool.remaining && resource.type[0]) {
-        addResource({
-          id: resource.id,
-          name: resource.name,
-          type: [resource.type[0], resource.type[1]],
-          modifiers: modifiers.map(v => v[0]),
-          cost: totalCost,
-          description: resourceDesc
-        });
-        close();
-      }
+  const createResource = useCallback(() => {
+    if (costs && totalCost !== undefined && canAffordResource && resource.type[0]) {
+      const modifiers = getModifiers(costs);
+      addResource({
+        id: resource.id,
+        name: resource.name,
+        type: [resource.type[0], resource.type[1]],
+        modifiers: modifiers.map(v => v[0]),
+        cost: totalCost,
+        description: resourceDesc
+      });
+      close();
     }
-  }, [addResource, close, costs, getModifiers, getTotalCost, resource.id, resource.name, resource.type, resourceDesc, resourcePool.remaining]);
+  }, [addResource, canAffordResource, close, costs, getModifiers, resource.id, resource.name, resource.type, resourceDesc, totalCost]);
 
   useEffect(() => {
     resetCosts();
@@ -115,11 +114,11 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
   const sortedStockResources = useMemo(() => getStockResources().sort((a, b) => a.type[1].localeCompare(b.type[1]) || (a.name).localeCompare(b.name)), [getStockResources]);
 
   const groupedResourceData = useMemo(() => {
-    const groups = new Map<string, string[]>();
+    const groups = new Map<string, { value: string; label: string; }[]>();
     sortedStockResources.forEach(v => {
       const groupName = v.type[1];
       const items = groups.get(groupName) ?? [];
-      items.push(v.id.toString());
+      items.push({ value: v.id.toString(), label: v.name });
       groups.set(groupName, items);
     });
     return [...groups.entries()].map(([group, items]) => ({ group, items }));
@@ -293,15 +292,20 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
 
         {costs ? (
           <Grid.Col span="content">
-            <Text my="sm">
+            <Text my="sm" c={totalCost !== undefined && totalCost > resourcePool.remaining ? "red" : undefined}>
               Total Cost:
-              {getTotalCost(getModifiers(costs))}
+              {totalCost}
+              {" "}
+              (Remaining:
+              {" "}
+              {resourcePool.remaining}
+              )
             </Text>
           </Grid.Col>
         ) : null}
 
         <Grid.Col span="content">
-          <Button variant="outline" size="md" onClick={() => { createResource(); }}>Add Resource</Button>
+          <Button variant="outline" size="md" onClick={() => { createResource(); }} disabled={!canAffordResource}>Add Resource</Button>
         </Grid.Col>
       </Grid>
     </Modal>

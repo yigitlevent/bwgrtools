@@ -1,5 +1,5 @@
 import "@mantine/charts/styles.css";
-import { Box, Container, Paper, Title, Text } from "@mantine/core";
+import { Box, Container, Paper, Title, Text, useMantineTheme, Group } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import { useMediaQuery } from "@mantine/hooks";
@@ -24,6 +24,7 @@ import { SkillLists } from "./components/Tools/SkillLists/SkillLists";
 import { TraitLists } from "./components/Tools/TraitLists/TraitLists";
 import { useRulesetStore } from "./hooks/apiStores/useRulesetStore";
 import { useUserStore } from "./hooks/apiStores/useUserStore";
+import { useCursorStore } from "./hooks/useCursorStore";
 
 import "./theme/overwrite.css";
 
@@ -31,7 +32,9 @@ import "./theme/overwrite.css";
 export function App(): React.JSX.Element {
   const { triedAuth, auth, user } = useUserStore();
   const { fetchState, fetchList, fetchData } = useRulesetStore();
+  const cursorType = useCursorStore(s => s.cursorType);
   const matches = useMediaQuery("(max-width: 48em)");
+  const theme = useMantineTheme();
 
   useEffect(() => {
     if (!triedAuth) { auth(); }
@@ -45,11 +48,18 @@ export function App(): React.JSX.Element {
     if (fetchState === "fetch-data") fetchData();
   }, [fetchData, fetchState]);
 
+  useEffect(() => {
+    document.body.style.cursor = theme.other.cursors[cursorType];
+    return () => { document.body.style.cursor = ""; };
+  }, [cursorType, theme]);
+
   return (
-    <Container size="lg" my="10px" style={{ height: "100svh", width: "100svw" }}>
-      <Title order={1}>BWGR Tools</Title>
-      <Box ta="right">{user ? `welcome, ${user.email}` : null}</Box>
-      <Menu bottom={matches} />
+    <Container size="lg" style={{ height: "100svh", width: "100svw" }}>
+      <Group justify="space-between" mx={20}>
+        <Title order={1} mt={8}>BWGR Tools</Title>
+        <Box ta="right">{user ? `welcome, ${user.email}` : null}</Box>
+        <Menu bottom={matches} />
+      </Group>
 
       <Paper px="20px" py="10px">
         {fetchState === "failed" ? <Text>Data fetching failed.</Text> : null}

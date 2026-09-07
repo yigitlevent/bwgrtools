@@ -14,7 +14,7 @@ export function DiceRollerProbabilities({ probabilities, isDoubleObstacle, obsta
           return (
             <Grid.Col
               key={obIndex}
-              span={{ base: 5, sm: 4, md: 2, lg: 1 }}
+              span={{ base: 3, sm: 2, md: 1, lg: 1 }}
               style={{ padding: "4px", margin: "8px 0" }}
             >
               <Card

@@ -19,7 +19,8 @@ export function AbilityButton(props: AbilityButtonProps): React.JSX.Element {
       {...rest}
       size="xs"
       variant="outline"
-      style={{ minWidth: "30px", width: "30px", display: "inline-block", marginRight: "8px", padding: 0 }}
+      fz={14}
+      style={{ minWidth: "30px", width: "30px", display: "inline-block", margin: "1px", padding: 0 }}
       onClick={e => { handle(e, onClick); }}
       onContextMenu={e => { handle(e, onContextMenu); }}
     />

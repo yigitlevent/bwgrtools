@@ -15,7 +15,7 @@ export function PracticePlannerTimetableSummary(): React.JSX.Element {
     <Fragment>
       {cells.length > 0 && cells.some(v => v.placed.length > 0) ? <Divider label="Timetable Summary" mt="10px" /> : null}
 
-      <Grid columns={3}>
+      <Grid columns={3} my={16}>
         {Object.entries(grouped)
           .map(([k, v]) => {
             return { name: k, days: v.length, testType: v[0].testType };
@@ -23,13 +23,14 @@ export function PracticePlannerTimetableSummary(): React.JSX.Element {
           .sort((a, b) => a.days - b.days)
           .map((v, i) => (
             <Grid.Col span={{ base: 3, sm: 2, md: 1 }} key={i} style={{ flexGrow: 1 }}>
-              <Paper shadow="md" m="8px" style={{ padding: "8px 16px" }}>
+              <Paper style={{ padding: "0px 8px" }}>
                 <Text>
                   {v.name}
                   {" "}
                   (
                   {v.testType}
-                  ):
+                  )
+                  :
                   {" "}
                   {v.days}
                   {" "}

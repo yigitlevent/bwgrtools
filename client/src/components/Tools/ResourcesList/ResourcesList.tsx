@@ -1,5 +1,6 @@
-import { Alert, Grid, MultiSelect, Paper, Select, TextInput, Title } from "@mantine/core";
-import { Fragment } from "react";
+import { Alert, Box, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { Fragment, useRef } from "react";
 
 import { ResourceItem } from "./ResourceItem";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
@@ -10,11 +11,21 @@ export function ResourcesList(): React.JSX.Element {
   const { stocks, resources, resourceTypes } = useRulesetStore();
   const { searchValues, setFilter, filteredList } = useSearch<Resource>(resources, ["stock", "type"]);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const rowVirtualizer = useVirtualizer({
+    count: filteredList.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 120,
+    overscan: 8,
+    getItemKey: index => filteredList[index].id
+  });
+
   return (
     <Fragment>
       <Title order={3}>Resources List</Title>
 
-      <Grid columns={4} align="center" justify="center" mt="md">
+      <Grid columns={8} align="center" justify="center" mt="md">
         <Grid.Col span={{ base: 3, sm: 3, md: 1 }}>
           <Select
             label="Stock"
@@ -37,7 +48,7 @@ export function ResourcesList(): React.JSX.Element {
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 3, sm: 3, md: 1 }}>
+        <Grid.Col span={{ base: 3, sm: 3, md: 4 }}>
           <TextInput
             label="Search"
             variant="filled"
@@ -46,7 +57,7 @@ export function ResourcesList(): React.JSX.Element {
           />
         </Grid.Col>
 
-        <Grid.Col span={{ base: 3, sm: 3, md: 1 }}>
+        <Grid.Col span={{ base: 3, sm: 3, md: 2 }}>
           <MultiSelect
             label="Search Fields"
             variant="filled"
@@ -57,16 +68,22 @@ export function ResourcesList(): React.JSX.Element {
         </Grid.Col>
       </Grid>
 
-      <Grid columns={1} mt="md">
-        {filteredList.length > 0 ? filteredList.map((resource, i) => (
-          <Grid.Col span={1} key={i}>
-            <Paper shadow="sm" style={{ padding: "0 12px 16px" }}>
-              <ResourceItem resource={resource} />
-            </Paper>
-          </Grid.Col>
-        )
-        ) : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
-      </Grid>
+      {filteredList.length > 0 ? (
+        <Box ref={scrollRef} mt="md" style={{ height: "70vh", overflowY: "auto" }}>
+          <Box style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
+            {rowVirtualizer.getVirtualItems().map(virtualRow => (
+              <Box
+                key={virtualRow.key}
+                ref={rowVirtualizer.measureElement}
+                data-index={virtualRow.index}
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${virtualRow.start.toString()}px)`, paddingBottom: "var(--mantine-spacing-xs)" }}
+              >
+                <ResourceItem resource={filteredList[virtualRow.index]} />
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      ) : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
     </Fragment>
   );
 }
