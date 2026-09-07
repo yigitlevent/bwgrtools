@@ -6,6 +6,7 @@ import { RandomLifepathsLists } from "./RandomLifepathsModal/RandomLifepathsList
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerBasicsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
+import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
 import { useLifepathRandomizerStore } from "../../../../hooks/featureStores/useLifepathRandomizerStore";
 import { FilterLifepaths } from "../../../../utils/FilterLifepaths";
 import { RandomNumber } from "../../../../utils/RandomNumber";
@@ -21,14 +22,31 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
 
   const { setStockAndReset, setGender } = useCharacterBurnerBasicsStore();
   const { addLifepath } = useCharacterBurnerLifepathStore();
+  const { modifyVariableAge } = useCharacterBurnerMiscStore();
 
   const [newStock, setNewStock] = useState<Stock>();
   const [newGender, setNewGender] = useState<"Male" | "Female">("Male");
   const [chosenLifepaths, setChosen] = useState<Lifepath[]>([]);
+  const [resolvedVariableAges, setResolvedVariableAges] = useState<Partial<Record<dat.LifepathId, number>>>({});
   const [triedTooMuch, setTriedTooMuch] = useState(false);
 
   const createRandom = useCallback((): void => {
     const tempChosenLifepaths: Lifepath[] = [];
+    const tempResolvedAges: Partial<Record<dat.LifepathId, number>> = {};
+
+    const resolveYears = (lp: Lifepath): number => {
+      if (typeof lp.years === "number") return lp.years;
+      const existing = lp.id !== null ? tempResolvedAges[lp.id] : undefined;
+      if (existing !== undefined) return existing;
+      const resolved = RandomNumber(lp.years[0], lp.years[1]);
+      if (lp.id !== null) {
+        tempResolvedAges[lp.id] = resolved;
+        // Applied immediately (not just at transfer) so getAge()'s preview in
+        // RandomLifepathsBasics reflects the resolved value while still rolling.
+        modifyVariableAge(lp.id, resolved, lp.years);
+      }
+      return resolved;
+    };
 
     let leadsCounter = 0;
     let chosenAmount = 0;
@@ -50,10 +68,9 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
     // stores yet, so there's no live attribute state to check exponent-min/max attribute requirements
     // against. Passing an empty `attributes` (rather than omitting it) makes FilterLifepaths evaluate
     // those requirements as not-met instead of falling through to its "unidentified requirement" throw -
-    // this means attribute-gated lifepaths are always excluded from random rolls. Variable-age and full
-    // attribute-exponent simulation are still not modeled here (see on-screen warning) - closing those
-    // gaps needs the randomizer to simulate stat/attribute point allocation as it rolls, which is a
-    // larger follow-up.
+    // this means attribute-gated lifepaths are always excluded from random rolls (see on-screen warning).
+    // Full attribute-exponent simulation would need the randomizer to simulate stat/attribute point
+    // allocation as it rolls, which is a larger follow-up.
     const noAttributes = new UniqueArray<dat.AbilityId, CharacterAttribute>();
     const bornLPs = FilterLifepaths({
       rulesetLifepaths: ruleset.lifepaths,
@@ -75,7 +92,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
       const possibilities = FilterLifepaths({
         rulesetLifepaths: ruleset.lifepaths,
         stock: [chosenStockId, chosenStock.name ?? ""],
-        age: tempChosenLifepaths.reduce((p, c) => (typeof c.years === "number") ? p + c.years : p + c.years[0], 0) + leadsCounter,
+        age: tempChosenLifepaths.reduce((p, c) => p + resolveYears(c), 0) + leadsCounter,
         lifepaths: tempChosenLifepaths,
         gender: chosenGender,
         attributes: noAttributes,
@@ -103,16 +120,27 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
     if (tempChosenLifepaths.length < minLifepaths) setTriedTooMuch(true);
 
     setChosen(tempChosenLifepaths);
-  }, [gender, maxLeads, maxLifepaths, minLifepaths, noDuplicates, ruleset.lifepaths, ruleset.settings, ruleset.stocks, setting, stock]);
+    setResolvedVariableAges(tempResolvedAges);
+  }, [gender, maxLeads, maxLifepaths, minLifepaths, modifyVariableAge, noDuplicates, ruleset.lifepaths, ruleset.settings, ruleset.stocks, setting, stock]);
 
   const transferCharacter = useCallback(() => {
     if (newStock?.id) {
+      // setStockAndReset resets useCharacterBurnerMiscStore (including special.variableAge), wiping the
+      // values createRandom already applied for live preview purposes - so they're re-applied here,
+      // after the reset, using the same values that were rolled.
       setStockAndReset([newStock.id, newStock.name ?? ""]);
       setGender(newGender);
       chosenLifepaths.forEach(addLifepath);
+
+      chosenLifepaths.forEach(lp => {
+        if (lp.id === null || typeof lp.years === "number") return;
+        const resolved = resolvedVariableAges[lp.id];
+        if (resolved !== undefined) modifyVariableAge(lp.id, resolved, lp.years);
+      });
+
       close();
     }
-  }, [addLifepath, chosenLifepaths, close, newGender, newStock, setGender, setStockAndReset]);
+  }, [addLifepath, chosenLifepaths, close, modifyVariableAge, newGender, newStock, resolvedVariableAges, setGender, setStockAndReset]);
 
   return (
     <Modal opened={isOpen} onClose={() => { close(); }} size="800px">
@@ -181,7 +209,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
         </Grid.Col>
 
         <Grid.Col span={8}>
-          <Alert color="blue">Random lifepath selection does not consider lifepaths with variable ages, and always excludes lifepaths gated by an attribute requirement (e.g. emotional attribute minimums/maximums), since it has no way to know what those attributes will end up being. Please make sure to check those requirements seperately.</Alert>
+          <Alert color="blue">Random lifepath selection always excludes lifepaths gated by an attribute requirement (e.g. emotional attribute minimums/maximums), since it has no way to know what those attributes will end up being. Please make sure to check those requirements seperately.</Alert>
         </Grid.Col>
 
         <Grid.Col span={8}>
