@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, CloseButton, createTheme, Menu, NumberInput, Select, Tabs, Textarea, TextInput, UnstyledButton, Switch, Modal, Autocomplete, TreeSelect, ColorInput, SegmentedControl, MultiSelect } from "@mantine/core";
+import { ActionIcon, Badge, Button, CloseButton, createTheme, Menu, NumberInput, Select, Tabs, Textarea, TextInput, UnstyledButton, Switch, Modal, Autocomplete, TreeSelect, ColorInput, SegmentedControl, MultiSelect, Checkbox } from "@mantine/core";
 
 import type { MantineColorsTuple } from "@mantine/core";
 
@@ -93,6 +93,13 @@ export const DarkTheme = createTheme({
       styles: {
         input: { cursor: "var(--cursor-text)" }
       }
+    }),
+    Checkbox: Checkbox.extend({
+      styles: (_theme, props) => ({
+        input: {
+          cursor: props.disabled ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
+        }
+      })
     }),
     Switch: Switch.extend({
       styles: {

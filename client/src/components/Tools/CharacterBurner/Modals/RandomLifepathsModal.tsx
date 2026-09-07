@@ -169,7 +169,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
                   {i + 1}
                   .
                   {" "}
-                  {`${v.setting[1]}➞${v.name ?? ""}`}
+                  {`${v.setting[1]} ➞ ${v.name ?? ""}`}
                 </Paper>
               )
               )}
