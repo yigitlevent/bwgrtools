@@ -237,9 +237,6 @@ Populate it (replace all `CHANGE_ME_*` values):
 VITE_ENV=prod
 
 # API
-# Port 3001, not 3000 — this server also runs blacktower-project's API on 3000; reusing
-# it causes both PM2 apps to race for the same listening socket and intermittently answer
-# each other's requests instead of erroring outright.
 API_PORT=3001
 API_INTERNAL_URL=http://127.0.0.1:3001
 API_SECRET=CHANGE_ME_LONG_RANDOM_SECRET_MIN_32_CHARS
@@ -330,8 +327,6 @@ export default defineConfig(({ mode }) => {
 ```tsx
 <BrowserRouter basename={import.meta.env.BASE_URL}>
 ```
-
-> Note: at the time of writing, `client/vite.config.ts` still has `base` hardcoded to `/blacktower/` (a leftover from this repo's origin as a fork of blacktower-project). Update it to `/bwgrtools/` before relying on this section.
 
 ### 4.2 Nginx Location Blocks
 

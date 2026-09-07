@@ -2,9 +2,9 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
-import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
 import { Clamp } from "../../../utils/Clamp";
 
 
@@ -76,7 +76,7 @@ export const useCharacterBurnerStatStore = create<CharacterBurnerStatState>()(
           }
         }));
 
-        useCharacterBurnerSkillStore.getState().updateSkills();
+        RecomputeCharacter("skillTrait");
       },
 
       modifyStatExponent: (statName: string, decrease?: boolean): void => {
@@ -105,7 +105,7 @@ export const useCharacterBurnerStatStore = create<CharacterBurnerStatState>()(
           }
         }));
 
-        useCharacterBurnerSkillStore.getState().updateSkills();
+        RecomputeCharacter("skillTrait");
       }
     }),
     { name: "useCharacterBurnerStatStore" }

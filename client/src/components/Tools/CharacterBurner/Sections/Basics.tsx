@@ -73,19 +73,19 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
         <Textarea label="Lifepaths" value={lifepathsText} variant="filled" disabled autosize minRows={1} />
       </Grid.Col>
 
-      <Grid.Col span={{ base: 12, sm: 6 }}>
+      <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={() => { openModal("lp"); }} fullWidth>Select</Button>
       </Grid.Col>
 
-      <Grid.Col span={{ base: 12, sm: 6 }}>
+      <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={() => { openModal("randLp"); }} fullWidth>Random</Button>
       </Grid.Col>
 
-      <Grid.Col span={{ base: 12, sm: 6 }}>
+      <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={() => { openModal("qu"); }} disabled={lifepaths.length === 0} fullWidth>Questions</Button>
       </Grid.Col>
 
-      <Grid.Col span={{ base: 12, sm: 6 }}>
+      <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={() => { openModal("so"); }} disabled={disableSpecialOptionsModal} fullWidth>Special</Button>
       </Grid.Col>
     </Grid>

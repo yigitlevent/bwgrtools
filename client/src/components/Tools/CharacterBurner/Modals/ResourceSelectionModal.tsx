@@ -4,17 +4,10 @@ import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerBasicsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerResourceStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerResource";
+import { GetSelectedModifiers, GetTotalCost, ResetCosts, type SelectedCost } from "../../../../logic/resourceCost";
 import { GetObstacleString } from "../../../../utils/GetMagicalObstacleString";
 import { AbilityButton } from "../../../Shared/AbilityButton";
 
-
-interface SelectedCost {
-  baseCost: number;
-  modifiers: Record<string, {
-    cost: number | `${string}/per`;
-    selected: boolean;
-  }>;
-}
 
 export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; close: () => void; }): React.JSX.Element {
   const { stock } = useCharacterBurnerBasicsStore();
@@ -36,16 +29,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
   }, [ruleset.resources, stock]);
 
   const resetCosts = useCallback(() => {
-    const newCosts: SelectedCost = { baseCost: 0, modifiers: {} };
-
-    if (resource.variableCost) newCosts.baseCost = 0;
-    else newCosts.baseCost = resource.costs[0][0];
-
-    resource.modifiers.forEach(modifiers => {
-      newCosts.modifiers[modifiers[2]] = { cost: modifiers[1] ? `${modifiers[0].toString()}/per` : modifiers[0], selected: false };
-    });
-
-    setCosts({ ...newCosts });
+    setCosts(ResetCosts(resource));
   }, [resource]);
 
   const modifyResource = useCallback((resource: Resource) => {
@@ -58,43 +42,25 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
   }, [getStockResources, resetCosts]);
 
   const changeCost = useCallback((cost: number) => {
-    const newCosts = JSON.parse(JSON.stringify(costs)) as SelectedCost;
+    if (!costs) return;
+    const newCosts = structuredClone(costs);
     newCosts.baseCost = cost > 0 ? cost : 0;
-    setCosts({ ...newCosts });
+    setCosts(newCosts);
   }, [costs]);
 
   const changeModifier = useCallback((name: string) => {
-    const newCosts = JSON.parse(JSON.stringify(costs)) as SelectedCost;
+    if (!costs) return;
+    const newCosts = structuredClone(costs);
     newCosts.modifiers[name] = { ...newCosts.modifiers[name], selected: !newCosts.modifiers[name].selected };
-    setCosts({ ...newCosts });
+    setCosts(newCosts);
   }, [costs]);
 
-  const getModifiers = useCallback((costs: SelectedCost) => {
-    const modifiers: [string, number | `${string}/per`][] = Object.keys(costs.modifiers).filter(v => costs.modifiers[v].selected).map(v => [v, costs.modifiers[v].cost]);
-    return modifiers;
-  }, []);
-
-  const getTotalCost = useCallback((modifiers: [string, number | `${string}/per`][]) => {
-    if (costs) {
-      let totalCost = costs.baseCost;
-      const modifierCosts = modifiers.map(v => v[1]);
-      if (modifierCosts.length > 0) {
-        for (const modifier of modifiers) {
-          const modCost = modifier[1];
-          if (typeof modCost === "number") totalCost += modCost;
-          else if (typeof modCost === "string") totalCost += numberOfWeapons * parseInt(modCost.split("/")[0]);
-        }
-      }
-      return totalCost < 1 ? 1 : totalCost;
-    }
-  }, [costs, numberOfWeapons]);
-
-  const totalCost = useMemo(() => costs ? getTotalCost(getModifiers(costs)) : undefined, [costs, getModifiers, getTotalCost]);
+  const totalCost = useMemo(() => costs ? GetTotalCost(costs, GetSelectedModifiers(costs), numberOfWeapons) : undefined, [costs, numberOfWeapons]);
   const canAffordResource = totalCost !== undefined && totalCost <= resourcePool.remaining;
 
   const createResource = useCallback(() => {
     if (costs && totalCost !== undefined && canAffordResource && resource.type[0]) {
-      const modifiers = getModifiers(costs);
+      const modifiers = GetSelectedModifiers(costs);
       addResource({
         id: resource.id,
         name: resource.name,
@@ -105,7 +71,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
       });
       close();
     }
-  }, [addResource, canAffordResource, close, costs, getModifiers, resource.id, resource.name, resource.type, resourceDesc, totalCost]);
+  }, [addResource, canAffordResource, close, costs, resource.id, resource.name, resource.type, resourceDesc, totalCost]);
 
   useEffect(() => {
     resetCosts();

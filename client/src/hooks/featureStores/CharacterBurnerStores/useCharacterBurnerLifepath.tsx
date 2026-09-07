@@ -2,6 +2,7 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
@@ -53,11 +54,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
       addLifepath: (lifepath: Lifepath): void => {
         set(produce<CharacterBurnerLifepathState>(state => { state.lifepaths.push(lifepath); }));
         get().updateAvailableLifepaths();
-        useCharacterBurnerStatStore.getState().reset();
-        useCharacterBurnerSkillStore.getState().updateSkills();
-        useCharacterBurnerTraitStore.getState().updateTraits();
-        useCharacterBurnerAttributeStore.getState().updateAttributes();
-        useCharacterBurnerMiscStore.getState().refreshQuestions();
+        RecomputeCharacter("stat");
       },
 
       removeLastLifepath: (): void => {
@@ -65,11 +62,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
           state.lifepaths = state.lifepaths.slice(0, state.lifepaths.length - 1);
         }));
         get().updateAvailableLifepaths();
-        useCharacterBurnerStatStore.getState().reset();
-        useCharacterBurnerSkillStore.getState().updateSkills();
-        useCharacterBurnerTraitStore.getState().updateTraits();
-        useCharacterBurnerAttributeStore.getState().updateAttributes();
-        useCharacterBurnerMiscStore.getState().refreshQuestions();
+        RecomputeCharacter("stat");
       },
 
       hasLifepath: (id: dat.LifepathId): number => {

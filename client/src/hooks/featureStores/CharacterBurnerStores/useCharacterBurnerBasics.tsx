@@ -2,12 +2,8 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
+import { ResetCharacterBurner } from "./recomputeCharacter";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
-import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
-import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
-import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
 
@@ -75,12 +71,7 @@ export const useCharacterBurnerBasicsStore = create<CharacterBurnerBasicsState>(
         });
 
         if (stock) set({ stock });
-        useCharacterBurnerLifepathStore.getState().reset();
-        useCharacterBurnerStatStore.getState().reset();
-        useCharacterBurnerSkillStore.getState().reset();
-        useCharacterBurnerTraitStore.getState().reset();
-        useCharacterBurnerMiscStore.getState().reset();
-        useCharacterBurnerAttributeStore.getState().reset();
+        ResetCharacterBurner();
       },
 
       setName: (name: string): void => {

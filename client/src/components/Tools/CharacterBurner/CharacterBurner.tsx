@@ -11,7 +11,7 @@ import { SpecialOptionsModal } from "./Modals/SpecialOptionsModal";
 import { Attributes } from "./Sections/Attributes";
 import { Basics } from "./Sections/Basics";
 import { Beliefs } from "./Sections/Beliefs";
-import { Instincts } from "./Sections/InstinctsBlock";
+import { Instincts } from "./Sections/Instincts";
 import { Resources } from "./Sections/Resources";
 import { Skills } from "./Sections/Skills";
 import { Stats } from "./Sections/Stats";

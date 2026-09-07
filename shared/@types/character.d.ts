@@ -94,7 +94,11 @@ interface AbilityPoints {
   exponent: number;
 }
 
-interface BurningCharacter {
+/**
+ * Shape of a character as downloaded via "export" (see Checklist.tsx's exportChar).
+ * Export-only: there is currently no matching import/hydrate path anywhere in the client.
+ */
+interface CharacterBurnerExportSnapshot {
   basics: {
     name: string;
     concept: string;

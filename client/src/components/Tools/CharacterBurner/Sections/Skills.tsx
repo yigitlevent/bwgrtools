@@ -18,7 +18,7 @@ function Skill({ skill, remove }: { skill: UniqueArrayItem<dat.SkillId, Characte
         <Group justify="space-between" gap={0}>
           <BlockSkillPopover
             skill={[skill.id, skill.name]}
-            checkbox={{ checked: skill.isOpen !== "no", disabled: skill.type === "Mandatory", onClick: () => { openSkill(skill.id); } }}
+            checkbox={{ checked: skill.isOpen !== "no", disabled: skill.type === "Mandatory", onToggle: () => { openSkill(skill.id); } }}
             deleteCallback={remove ? () => { remove(skill.id); } : undefined}
           />
 
@@ -37,67 +37,31 @@ function Skill({ skill, remove }: { skill: UniqueArrayItem<dat.SkillId, Characte
   );
 }
 
-function MandatorySkills(): React.JSX.Element {
-  const { skills } = useCharacterBurnerSkillStore();
-
+function SkillBlock({ title, skills, remove, addButton }: {
+  title: string;
+  skills: UniqueArrayItem<dat.SkillId, CharacterSkill>[];
+  remove?: (skillId: dat.SkillId) => void;
+  addButton?: { label: string; onClick: () => void; };
+}): React.JSX.Element {
   return (
     <Fragment>
       <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "0 0 0 24px" }}>Mandatory</Title>
+        <Title order={5} style={{ margin: "0 0 0 24px" }}>{title}</Title>
       </Grid.Col>
 
       <Fragment>
         {skills
-          .filter(s => s.type === "Mandatory")
           // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
-          .map(skill => <Skill key={skill.id} skill={skill} />)}
-      </Fragment>
-    </Fragment>
-  );
-}
-
-function LifepathSkills(): React.JSX.Element {
-  const { skills } = useCharacterBurnerSkillStore();
-
-  return (
-    <Fragment>
-      <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "0 0 0 24px" }}>Lifepath</Title>
-      </Grid.Col>
-
-      <Fragment>
-        {skills
-          .filter(s => s.type === "Lifepath")
-          // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
-          .map(skill => <Skill key={skill.id} skill={skill} />)}
-      </Fragment>
-    </Fragment>
-  );
-}
-
-function GeneralSkills({ openModal }: { openModal: (name: CharacterBurnerModals) => void; }): React.JSX.Element {
-  const { skills, removeGeneralSkill } = useCharacterBurnerSkillStore();
-
-  return (
-    <Fragment>
-      <Grid.Col span={6}>
-        <Title order={5} style={{ margin: "0 0 0 24px" }}>General</Title>
-      </Grid.Col>
-
-      <Fragment>
-        {skills
-          .filter(s => s.type === "General")
-          // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
-          .map(skill => <Skill key={skill.id} skill={skill} remove={removeGeneralSkill} />)}
+          .map(skill => <Skill key={skill.id} skill={skill} remove={remove} />)}
       </Fragment>
 
-      <Button variant="outline" style={{ margin: "10px" }} onClick={() => { openModal("geSk"); }}>Add General Skill</Button>
+      {addButton ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
     </Fragment>
   );
 }
 
 export function Skills({ openModal }: { openModal: (name: CharacterBurnerModals) => void; }): React.JSX.Element {
-  const { skills, getSkillPools } = useCharacterBurnerSkillStore();
+  const { skills, removeGeneralSkill, getSkillPools } = useCharacterBurnerSkillStore();
 
   const skillPools = getSkillPools();
 
@@ -115,9 +79,15 @@ export function Skills({ openModal }: { openModal: (name: CharacterBurnerModals)
         <Text>{lifepathText}</Text>
       </Grid.Col>
 
-      {skills.existsAny("type", "Mandatory") > 0 ? <MandatorySkills /> : null}
-      {skills.existsAny("type", "Lifepath") > 0 ? <LifepathSkills /> : null}
-      <GeneralSkills openModal={openModal} />
+      {skills.existsAny("type", "Mandatory") > 0 ? <SkillBlock title="Mandatory" skills={skills.filter(s => s.type === "Mandatory")} /> : null}
+      {skills.existsAny("type", "Lifepath") > 0 ? <SkillBlock title="Lifepath" skills={skills.filter(s => s.type === "Lifepath")} /> : null}
+
+      <SkillBlock
+        title="General"
+        skills={skills.filter(s => s.type === "General")}
+        remove={removeGeneralSkill}
+        addButton={{ label: "Add General Skill", onClick: () => { openModal("geSk"); } }}
+      />
     </Grid>
   );
 }

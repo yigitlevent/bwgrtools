@@ -98,7 +98,7 @@ export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Eleme
   const [activeStep, setActiveStep] = useState(0);
 
   const exportChar = useCallback(() => {
-    const json: BurningCharacter = {
+    const json: CharacterBurnerExportSnapshot = {
       basics: { name, concept, gender, stock, beliefs, instincts },
       lifepaths: { lifepaths },
       stats: { stats },
