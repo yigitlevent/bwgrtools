@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Paper, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, Tooltip } from "@mantine/core";
 import { BookOpen, ClipboardCheck, ClipboardList, Database, LogIn, LogOut, BookOpenCheck } from "lucide-react";
 import { Fragment, useState } from "react";
 
