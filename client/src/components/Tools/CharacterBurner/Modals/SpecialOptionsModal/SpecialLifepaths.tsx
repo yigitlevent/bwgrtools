@@ -11,7 +11,7 @@ export function SpecialLifepaths(): React.JSX.Element {
   const ruleset = useRulesetStore();
   const { lifepaths } = useCharacterBurnerLifepathStore();
 
-  const { special, modifyVariableAge, modifyCompanionSkills } = useCharacterBurnerMiscStore();
+  const { special, modifyVariableAge, modifyCompanionLifepath, modifyCompanionSkills } = useCharacterBurnerMiscStore();
 
   const getPossibleLifepaths = useCallback(() => {
     return ruleset.lifepaths
@@ -74,11 +74,14 @@ export function SpecialLifepaths(): React.JSX.Element {
                 <Grid.Col span={2}>
                   <Select
                     label={`${companionName}'s Lifepath`}
-                    value={special.companionLifepath[companionName].toString()}
+                    value={special.companionLifepath[companionName]?.toString() ?? null}
                     data={possibleLifepaths.map(lp => ({ value: lp.id.toString(), label: lp.name ?? "" }))}
                     onChange={v => {
                       const found = possibleLifepaths.find(lp => lp.id.toString() === v);
-                      if (found) modifyCompanionSkills(found.id, ruleset.getLifepath(found.id).skills);
+                      if (found) {
+                        modifyCompanionLifepath(companionName, found.id);
+                        modifyCompanionSkills(found.id, ruleset.getLifepath(found.id).skills);
+                      }
                     }}
                     allowDeselect={false}
                     size="sm"
