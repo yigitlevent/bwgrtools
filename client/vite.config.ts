@@ -8,10 +8,7 @@ export default defineConfig(({ mode }) => {
   const apiUrl = env.VITE_API_URL ?? "http://localhost:3000";
 
   return {
-    // "tauri" is a separate production mode from "production": the desktop build is served from
-    // its own local proxy root (client-tauri/src/proxy.rs), not nested under yigitlevent.com's
-    // /blacktower/ path the way the browser deployment is.
-    base: mode === "production" ? "/blacktower/" : "/",
+    base: mode === "production" ? "/bwgrtools/" : "/",
     envDir,
     plugins: [react()],
     server: {
@@ -19,11 +16,6 @@ export default defineConfig(({ mode }) => {
         "/api": {
           target: apiUrl,
           changeOrigin: true
-        },
-        "/ws": {
-          target: apiUrl,
-          changeOrigin: true,
-          ws: true
         }
       }
     },
