@@ -6,7 +6,7 @@
 
 | Component | Technology | Managed By | Accessible Via |
 | --------- | ---------- | ---------- | -------------- |
-| API | Node.js 22 (Fastify) | PM2 (`bwgrtools-api`) | Nginx reverse proxy → `:3000` |
+| API | Node.js 22 (Fastify) | PM2 (`bwgrtools-api`) | Nginx reverse proxy → `:3001` |
 | Client | React SPA (Vite static build) | Nginx | Nginx static files |
 | Database | PostgreSQL 18 | systemd | localhost only |
 | pgAdmin | Docker (dpage/pgadmin4) | Docker | Nginx reverse proxy → `:5050` |
@@ -15,7 +15,7 @@ The project is served under the `/bwgrtools` subpath on the existing `yigitleven
 
 ```text
 Browser → Nginx (yigitlevent.com :443)
-  ├── /bwgrtools/api/*  →  reverse proxy   →  PM2 bwgrtools-api (:3000)
+  ├── /bwgrtools/api/*  →  reverse proxy   →  PM2 bwgrtools-api (:3001)
   ├── /bwgrtools/*      →  static files     →  TARGETDIR/bwgrtools/client/
   └── /pgadmin/*         →  reverse proxy   →  Docker pgadmin (:5050)
 ```
@@ -237,8 +237,11 @@ Populate it (replace all `CHANGE_ME_*` values):
 VITE_ENV=prod
 
 # API
-API_PORT=3000
-API_INTERNAL_URL=http://127.0.0.1:3000
+# Port 3001, not 3000 — this server also runs blacktower-project's API on 3000; reusing
+# it causes both PM2 apps to race for the same listening socket and intermittently answer
+# each other's requests instead of erroring outright.
+API_PORT=3001
+API_INTERNAL_URL=http://127.0.0.1:3001
 API_SECRET=CHANGE_ME_LONG_RANDOM_SECRET_MIN_32_CHARS
 CLIENT_URL=https://yigitlevent.com/bwgrtools
 SIGNIN_LOCKOUT_THRESHOLD=5
@@ -337,7 +340,7 @@ Add the following inside the existing `server` block for port 443 in `/etc/nginx
 ```nginx
 # bwgrtools — API reverse proxy
 location /bwgrtools/api/ {
-    proxy_pass http://127.0.0.1:3000/api/;
+    proxy_pass http://127.0.0.1:3001/api/;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;

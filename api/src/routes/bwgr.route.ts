@@ -4,6 +4,6 @@ import type { FastifyInstance } from "fastify";
 
 
 export default function BwgrRoutes(fastify: FastifyInstance): void {
-  fastify.get("/bwgr/ruleset/list", GetRulesetsList);
-  fastify.post("/bwgr/ruleset/data", GetRulesetsData);
+  fastify.get("/ruleset/list", GetRulesetsList);
+  fastify.post("/ruleset/data", GetRulesetsData);
 }

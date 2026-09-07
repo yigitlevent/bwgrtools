@@ -39,9 +39,9 @@ export async function RequestAuth(): Promise<{ user: UserSession; }> {
 }
 
 export async function RequestRulesetsList(): Promise<RulesetsResponse> {
-  return Fetch("GET", "/bwgr/ruleset/list", null);
+  return Fetch("GET", "/ruleset/list", null);
 }
 
 export async function RequestRulesetsData(rulesets: dat.RulesetId[]): Promise<RulesetResponse> {
-  return Fetch("POST", "/bwgr/ruleset/data", { rulesets });
+  return Fetch("POST", "/ruleset/data", { rulesets });
 }

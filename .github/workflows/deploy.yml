@@ -123,11 +123,21 @@ jobs:
             "cd /opt/bwgrtools/shared && npx tsx db/migrate.ts"
 
       # ── Restart PM2 process ─────────────────────────────────────────────────
+      # PM2's restart/start/save subcommands print the FULL process table as a side effect,
+      # including every other app on this shared server (e.g. blacktower-project's) — not
+      # something to leak into a public/shared CI log. `pm2 id <name>` scopes status output
+      # to just this app; stdout is discarded on restart/start/save since none of them emit
+      # anything else worth keeping, while stderr still surfaces real failures.
       - name: Restart API
         run: |
           ssh -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
-            "pm2 restart bwgrtools-api --update-env || pm2 start /opt/bwgrtools/ecosystem.config.cjs --only bwgrtools-api"
+            "(pm2 restart bwgrtools-api --update-env || pm2 start /opt/bwgrtools/ecosystem.config.cjs --only bwgrtools-api) >/dev/null"
+
+      - name: Verify API is online
+        run: |
+          ssh -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} \
+            "pm2 jlist | node -e \"const apps=JSON.parse(require('fs').readFileSync(0,'utf8')); const app=apps.find(a=>a.name==='bwgrtools-api'); if (!app || app.pm2_env.status!=='online') { console.error('bwgrtools-api is not online'); process.exit(1); } console.log('bwgrtools-api online');\""
 
       - name: Save PM2 process list
         run: |
-          ssh -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "pm2 save"
+          ssh -p ${{ secrets.PORT }} ${{ secrets.USERNAME }}@${{ secrets.HOST }} "pm2 save >/dev/null"

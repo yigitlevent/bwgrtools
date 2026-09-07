@@ -233,8 +233,11 @@ cat > "$ENV_FILE" <<EOF
 VITE_ENV=prod
 
 # API
-API_PORT=3000
-API_INTERNAL_URL=http://127.0.0.1:3000
+# Port 3001, not 3000 — this server also runs blacktower-project's API on 3000; reusing
+# it causes both PM2 apps to race for the same listening socket and intermittently answer
+# each other's requests instead of erroring outright.
+API_PORT=3001
+API_INTERNAL_URL=http://127.0.0.1:3001
 API_SECRET=$API_SECRET
 CLIENT_URL=https://$DOMAIN/bwgrtools
 SIGNIN_LOCKOUT_THRESHOLD=5
@@ -292,7 +295,7 @@ else
 
     # bwgrtools — API reverse proxy
     location /bwgrtools/api/ {
-        proxy_pass http://127.0.0.1:3000/api/;
+        proxy_pass http://127.0.0.1:3001/api/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
