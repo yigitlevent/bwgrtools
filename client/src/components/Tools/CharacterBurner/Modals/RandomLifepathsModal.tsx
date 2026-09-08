@@ -97,6 +97,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
         gender: chosenGender,
         attributes: noAttributes,
         hasAttribute: () => false,
+        hasSetting: id => tempChosenLifepaths.filter(v => v.setting[0] === id).length,
         noLeads: maxLeads <= leadsCounter ? [lastLifepath.setting[0] ?? -1 as dat.SettingId, lastLifepath.setting[1]] : undefined
       });
 
