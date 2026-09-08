@@ -13,6 +13,10 @@ export function ResourcesList(): React.JSX.Element {
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // react-virtual's useVirtualizer() returns methods (getTotalSize, getVirtualItems, measureElement)
+  // the React Compiler can't statically prove are stable, so it skips memoizing this component. None
+  // of those values are passed to other memoized components/hooks here, so that's safe to accept.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
     count: filteredList.length,
     getScrollElement: () => scrollRef.current,
