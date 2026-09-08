@@ -21,7 +21,7 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
               leftSection={checkRulesets([rulesetId]) ? <Check size={18} color="var(--mantine-color-green-6)" /> : <X size={18} color="var(--mantine-color-red-6)" />}
               label={ruleset.name}
               rightSection={ruleset.isOfficial ? (
-                <Tooltip label="Official"><CircleCheck size={16} /></Tooltip>
+                <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
               ) : null}
             />
 
@@ -40,7 +40,7 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
                         leftSection={checkExactRulesets([rulesetId, expansionId2]) ? <Check size={18} color="var(--mantine-color-green-6)" /> : <X size={18} color="var(--mantine-color-red-6)" />}
                         label={expansion.name}
                         rightSection={ruleset.isOfficial ? (
-                          <Tooltip label="Official"><CircleCheck size={16} /></Tooltip>
+                          <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
                         ) : null}
                       />
                     ) : null

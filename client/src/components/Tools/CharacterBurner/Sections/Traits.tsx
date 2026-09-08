@@ -36,7 +36,7 @@ function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, Characte
           />
 
           {showCallOnWarning ? (
-            <Tooltip label="Character doesn't have any of this trait's call-on skills/attributes.">
+            <Tooltip color="gray" label="Character doesn't have any of this trait's call-on skills/attributes.">
               <TriangleAlert size={16} color="var(--mantine-color-yellow-6)" />
             </Tooltip>
           ) : null}

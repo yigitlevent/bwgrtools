@@ -43,7 +43,7 @@ export function Resources({ openModal }: { openModal: (name: CharacterBurnerModa
                 <Accordion.Item value={resourceKey}>
                   <Accordion.Control
                     icon={isLocked ? (
-                      <Tooltip label="Granted by a trait, cannot be removed while the trait is open.">
+                      <Tooltip color="gray" label="Granted by a trait, cannot be removed while the trait is open.">
                         <Lock size={18} />
                       </Tooltip>
                     ) : (

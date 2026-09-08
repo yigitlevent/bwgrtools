@@ -59,6 +59,7 @@ export function Attributes(): React.JSX.Element {
                       <Tooltip
                         multiline
                         w={320}
+                        color="gray"
                         label={hesitationNotes.map(v => `${v.name}: ${v.note}`).join("\n\n")}
                       >
                         <Info size={14} />

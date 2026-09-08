@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 
-export type DrawerNames = "Tools" | "Datasets" | "Checklist" | "My Things";
+export type DrawerNames = "Tools" | "Datasets";
 
 interface DrawerState {
   drawer: undefined | DrawerNames;

@@ -1,6 +1,7 @@
 import { Title } from "@mantine/core";
 import { Fragment, useEffect, useState } from "react";
 
+import { Checklist } from "./Checklist";
 import { GeneralSkillModal } from "./Modals/GeneralSkillModal";
 import { GeneralTraitModal } from "./Modals/GeneralTraitModal";
 import { ImportCharacterModal } from "./Modals/ImportCharacterModal";
@@ -59,6 +60,7 @@ export function CharacterBurner(): React.JSX.Element {
         </Fragment>
       ) : null}
 
+      <Checklist />
       <LifepathSelectionModal isOpen={currentModal === "lp"} close={closeModals} />
       <RandomLifepathsModal isOpen={currentModal === "randLp"} close={closeModals} />
       <ResourceSelectionModal isOpen={currentModal === "re"} close={closeModals} />

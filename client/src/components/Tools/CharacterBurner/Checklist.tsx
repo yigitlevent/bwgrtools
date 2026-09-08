@@ -1,6 +1,6 @@
-import { Stepper, Text } from "@mantine/core";
+import { Container, Scroller, Stepper, Text, Tooltip } from "@mantine/core";
+import { Circle, CircleAlert, CircleCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerAttributeStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
@@ -13,8 +13,6 @@ import { useCharacterBurnerSpecialStore } from "../../../hooks/featureStores/Cha
 import { useCharacterBurnerStatStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 import { RecordGet } from "../../../utils/RecordGet";
-import { DrawerBox } from "../../Shared/DrawerBox";
-import { StepIcon } from "../../Shared/StepIcon";
 
 
 const ChecklistSteps: { label: string; description: string[]; }[] = [
@@ -83,7 +81,7 @@ const ChecklistSteps: { label: string; description: string[]; }[] = [
   }
 ];
 
-export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Element {
+export function Checklist(): React.JSX.Element {
   const ruleset = useRulesetStore();
   const { stock, concept, name, beliefs, instincts } = useCharacterBurnerBasicsStore();
   const { lifepaths, getEitherPool, getMentalPool, getPhysicalPool } = useCharacterBurnerLifepathStore();
@@ -94,8 +92,6 @@ export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Eleme
   const { resources, getResourcePools } = useCharacterBurnerResourceStore();
   const { special, questions } = useCharacterBurnerSpecialStore();
   const { limits } = useCharacterBurnerLimitsStore();
-
-  const location = useLocation();
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -137,29 +133,46 @@ export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Eleme
   }, [beliefs, concept, instincts, lifepaths, limits, name, questions, special, stock, stats, attributes, skills, traits, resources, ruleset,
     getEitherPool, getMentalPool, getPhysicalPool, getResourcePools, getSkillPools, getTraitPools]);
 
+  const getIcon = (index: number): React.JSX.Element => {
+    if (activeStep === index) return <CircleAlert color="var(--mantine-color-yellow-6)" />;
+    else return <Circle color="var(--mantine-color-gray-6)" />;
+  };
+
   return (
-    <DrawerBox title="Checklist" expanded={expanded}>
-      {location.pathname === "/characterburner" ? (
-        <Stepper active={activeStep} orientation="vertical" mt="md">
+    <Container
+      size="lg"
+      m={0}
+      px={0}
+      bg="var(--mantine-color-gray-9)"
+      style={{
+        position: "sticky",
+        bottom: 0,
+        borderTop: "1px solid var(--mantine-color-gray-6)"
+      }}
+    >
+      <Scroller
+        py={16}
+      >
+        <Stepper
+          active={activeStep}
+          size="xs"
+          color="gray"
+          completedIcon={<CircleCheck color="var(--mantine-color-green-6)" />}
+          styles={{ steps: { flexWrap: "nowrap" }, stepBody: { width: "max-content" } }}
+        >
           {ChecklistSteps.map((step, i) => (
             <Stepper.Step
               key={i}
-              icon={<StepIcon active={activeStep === i} completed={activeStep > i} />}
-              label={<Text size="sm" mb="4px" c={activeStep !== i ? "gray" : undefined}>{step.label}</Text>}
-            >
-              {step.description.map((desc, ii) => (
-                <Text key={ii} size="xs" c={activeStep !== i ? "gray" : undefined}>
-                  {activeStep === i ? desc : ""}
-                </Text>
-              ))}
-            </Stepper.Step>
+              icon={getIcon(i)}
+              label={(
+                <Tooltip color="gray" label={step.description.map((desc, ii) => <Text key={ii}>{desc}</Text>)}>
+                  <Text mb="4px" c={activeStep !== i ? "gray" : undefined}>{step.label}</Text>
+                </Tooltip>
+              )}
+            />
           ))}
         </Stepper>
-      ) : (
-        <Text>
-          Checklist is only available when using the Character Burner tool.
-        </Text>
-      )}
-    </DrawerBox>
+      </Scroller>
+    </Container>
   );
 }
