@@ -31,6 +31,8 @@ interface CharacterResource {
   modifiers: string[];
   cost: number;
   description: string;
+  sourceTraitId?: dat.TraitId;
+  minCost?: number;
 }
 
 interface CharacterSpecialStock {
@@ -44,6 +46,7 @@ interface CharacterSpecial {
   variableAge: Record<dat.LifepathId, number>;
   companionSkills: Record<string, dat.SkillId[]>;
   chosenSubskills: Record<dat.SkillId, dat.SkillId[]>;
+  chosenResourceType: Record<dat.TraitId, dat.ResourceTypeId>;
 }
 
 interface CharacterStockLimits {

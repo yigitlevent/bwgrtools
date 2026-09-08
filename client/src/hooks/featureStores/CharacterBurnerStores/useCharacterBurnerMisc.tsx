@@ -5,6 +5,7 @@ import { devtools } from "zustand/middleware";
 import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
+import { useCharacterBurnerResourceStore } from "./useCharacterBurnerResource";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { Average } from "../../../utils/Average";
@@ -25,6 +26,7 @@ export interface CharacterBurnerMiscState {
   modifyCompanionSkills: (companionLifepathId: dat.LifepathId, skills: dat.SkillId[] | undefined) => void;
   modifySkillSubskills: (skillId: dat.SkillId, subskillIds: dat.SkillId[] | null, canSelectMultiple: boolean) => void;
   resetSkillSubskills: (skillIds: dat.SkillId[]) => void;
+  modifyChosenResourceType: (traitId: dat.TraitId, resourceTypeId: dat.ResourceTypeId) => void;
 
   addBrutalLifeTrait: (traitId: [id: dat.TraitId, name: string] | "No Trait") => void;
   setHuntingGround: (huntingGround: HuntingGroundsList) => void;
@@ -46,7 +48,8 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         companionLifepath: {},
         variableAge: {},
         companionSkills: {},
-        chosenSubskills: {}
+        chosenSubskills: {},
+        chosenResourceType: {}
       },
 
       questions: [],
@@ -110,7 +113,8 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
             companionLifepath: {},
             variableAge: {},
             companionSkills: {},
-            chosenSubskills: {}
+            chosenSubskills: {},
+            chosenResourceType: {}
           };
           state.questions = [];
           state.traitEffects = [];
@@ -174,6 +178,14 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
           }));
         }
         );
+      },
+
+      modifyChosenResourceType: (traitId: dat.TraitId, resourceTypeId: dat.ResourceTypeId): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.chosenResourceType[traitId] = resourceTypeId;
+        }));
+
+        useCharacterBurnerResourceStore.getState().updateResources();
       },
 
       addBrutalLifeTrait: (traitId: [id: dat.TraitId, name: string] | "No Trait") => {

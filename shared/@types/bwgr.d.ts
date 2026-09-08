@@ -285,6 +285,7 @@ interface Trait {
   description?: string;
   callOnSkills?: dat.SkillId[];
   callOnAbilities?: dat.AbilityId[];
+  grantsResources?: { resource: dat.ResourceId; minCost: number; }[];
 }
 
 interface RulesetResponse {

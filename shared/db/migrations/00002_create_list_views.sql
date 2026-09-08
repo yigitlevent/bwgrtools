@@ -172,7 +172,27 @@ SELECT
       dat."TraitCallOnAbility" tcoa
     WHERE
       tcoa."traitId" = t."id"
-  ) AS "callOnAbilityIds"
+  ) AS "callOnAbilityIds",
+  ARRAY (
+    SELECT
+      tgr."resourceId"
+    FROM
+      dat."TraitGrantsResource" tgr
+    WHERE
+      tgr."traitId" = t."id"
+    ORDER BY
+      tgr."resourceId"
+  ) AS "grantsResourceIds",
+  ARRAY (
+    SELECT
+      tgr."minCost"
+    FROM
+      dat."TraitGrantsResource" tgr
+    WHERE
+      tgr."traitId" = t."id"
+    ORDER BY
+      tgr."resourceId"
+  ) AS "grantsResourceMinCosts"
 FROM
   dat."Trait" t
   LEFT JOIN dat."Stock" sto ON sto."id" = t."stockId"

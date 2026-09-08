@@ -5,6 +5,7 @@ import { devtools } from "zustand/middleware";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { useCharacterBurnerResourceStore } from "./useCharacterBurnerResource";
 import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
@@ -58,6 +59,8 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
               state.traits = new UniqueArray(state.traits.add(stateTrait).items);
             }
           }));
+
+          useCharacterBurnerResourceStore.getState().updateResources();
         }
       },
 
@@ -164,6 +167,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         }));
 
         useCharacterBurnerMiscStore.getState().refreshTraitEffects();
+        useCharacterBurnerResourceStore.getState().updateResources();
       }
     }),
     { name: "useCharacterBurnerTraitStore" }

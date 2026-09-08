@@ -39,7 +39,10 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
       return rulesetSkill.name === "Any Skill" || rulesetSkill.name === "Any Wise" || rulesetSkill.subskillIds !== undefined;
     }));
 
-  const disableSpecialOptionsModal = !hasSpecialStock && !hasSpecialLifepath && !hasSpecialSkills;
+  const hasSpecialResourceGrant =
+    traits.filter(trait => trait.isOpen).some(trait => (ruleset.getTrait(trait.id).grantsResources ?? []).length >= 2);
+
+  const disableSpecialOptionsModal = !hasSpecialStock && !hasSpecialLifepath && !hasSpecialSkills && !hasSpecialResourceGrant;
 
   const exportChar = useCallback(() => {
     const json: CharacterBurnerExportSnapshot = {

@@ -687,6 +687,16 @@ CREATE TABLE
   );
 
 CREATE TABLE
+  dat."TraitGrantsResource" (
+    "traitId" INTEGER NOT NULL,
+    "resourceId" INTEGER NOT NULL,
+    "minCost" INTEGER NOT NULL,
+    PRIMARY KEY ("traitId", "resourceId"),
+    FOREIGN KEY ("traitId") REFERENCES dat."Trait" ("id") MATCH SIMPLE ON UPDATE RESTRICT ON DELETE RESTRICT NOT VALID,
+    FOREIGN KEY ("resourceId") REFERENCES dat."Resource" ("id") MATCH SIMPLE ON UPDATE RESTRICT ON DELETE RESTRICT NOT VALID
+  );
+
+CREATE TABLE
   dat."Question" (
     "id" serial NOT NULL,
     "name" CHARACTER VARYING(255) NOT NULL,

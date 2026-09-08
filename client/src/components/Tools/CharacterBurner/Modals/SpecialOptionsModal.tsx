@@ -3,6 +3,7 @@ import { Grid, Modal } from "@mantine/core";
 import { BrutalLife } from "./SpecialOptionsModal/BrutalLife";
 import { HuntingGround } from "./SpecialOptionsModal/HuntingGround";
 import { SpecialLifepaths } from "./SpecialOptionsModal/SpecialLifepaths";
+import { SpecialResourceGrants } from "./SpecialOptionsModal/SpecialResourceGrants";
 import { SpecialSkills } from "./SpecialOptionsModal/SpecialSkills";
 
 
@@ -14,6 +15,7 @@ export function SpecialOptionsModal({ isOpen, close }: { isOpen: boolean; close:
         <HuntingGround />
         <SpecialLifepaths />
         <SpecialSkills />
+        <SpecialResourceGrants />
       </Grid>
     </Modal>
   );

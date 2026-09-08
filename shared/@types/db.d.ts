@@ -760,6 +760,11 @@ declare namespace dat {
     id: dat.TraitCategoryId;
     name: string;
   }
+  interface TraitGrantsResource {
+    minCost: number;
+    resourceId: dat.ResourceId;
+    traitId: dat.TraitId;
+  }
   interface TraitsList {
     callOnAbilityIds: dat.AbilityId[] | null;
     callOnSkillIds: dat.SkillId[] | null;
@@ -767,6 +772,8 @@ declare namespace dat {
     categoryId: dat.TraitCategoryId | null;
     cost: number | null;
     description: string | null;
+    grantsResourceIds: dat.ResourceId[] | null;
+    grantsResourceMinCosts: number[] | null;
     id: dat.TraitId | null;
     name: string | null;
     rulesets: string[] | null;
