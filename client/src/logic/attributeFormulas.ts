@@ -66,13 +66,39 @@ export function GetSteel(will: AbilityPoints, forte: AbilityPoints, hasQuestionT
   return { shade: "B", exponent: 3 + bonus };
 }
 
-// TODO: sum up trait-based Hesitation modifiers here, the same way GetHealth/GetSteel above
-// accumulate a `bonus` from questions. Needs a breakdown of which traits modify Hesitation and by
-// how much, then surfacing that per-category (stock traits, general traits, etc.) somewhere in the
-// UI rather than just folding it into a single number, per the request.
-export function GetHesitation(will: AbilityPoints): AbilityPoints {
-  return { shade: "B", exponent: 10 - will.exponent };
+// Only traits that modify hesitation overall/by default are folded into the exponent here.
+// Traits that only reduce/increase hesitation for specific situations (pain, fear, surprise,
+// wonderment, etc.) are not counted -- those are surfaced as informational text instead, see
+// HesitationSituationalTraits below.
+export function GetHesitation(will: AbilityPoints, hasTraitOpenByName: (name: string) => boolean): AbilityPoints {
+  let bonus = 0;
+  if (hasTraitOpenByName("Cowardly")) bonus += 1;
+  if (hasTraitOpenByName("Slow")) bonus += 1;
+  if (hasTraitOpenByName("Hideous!")) bonus += 1;
+  if (hasTraitOpenByName("Stoic")) bonus -= 1;
+  if (hasTraitOpenByName("Feral")) bonus -= 1;
+  if (hasTraitOpenByName("World Weary")) bonus -= 1;
+  if (hasTraitOpenByName("Preternaturally Calm") || hasTraitOpenByName("Prenaturally Calm")) bonus -= 2;
+
+  return { shade: "B", exponent: 10 - will.exponent + bonus };
 }
+
+// Traits that modify hesitation only in specific situations rather than overall -- not folded into
+// GetHesitation's exponent, but worth surfacing to the player as "hesitation is X for purposes of Y".
+export const HesitationSituationalTraits: { name: string; note: string; }[] = [
+  { name: "Cold Blooded", note: "Reduce hesitation for death, violence, and pain by one. Not reduced for surprise or wonderment." },
+  { name: "Cool Headed", note: "Reduce hesitation for surprise and fear (not pain) by one." },
+  { name: "Fearless", note: "Reduce hesitation for pain, fear, and the shock of gore or death by three. Not reduced for wonderment or surprise." },
+  { name: "Jaded", note: "Reduce hesitation for surprise or shock by three." },
+  { name: "Thousand-Yard Stare", note: "Reduce hesitation by three against pain, violence, and intimidation; increase by two against surprise and Wonderment-type spell effects." },
+  { name: "Heartless", note: "Reduce hesitation by three for pain, murder, fear, or violence." },
+  { name: "Unflinching", note: "Reduce hesitation by four for fear and pain." },
+  { name: "Cold Hearted", note: "Reduce hesitation for surprise and fear (including Intimidation) by one. Pain hesitation is not reduced." },
+  { name: "Cold Black Blood", note: "Reduce hesitation for pain by two. Not reduced for fear or wonderment." },
+  { name: "Life is Death", note: "Reduce hesitation for injury and pain by two." },
+  { name: "Pain Life", note: "Reduce hesitation for pain by one." },
+  { name: "Skittish", note: "Increase hesitation by one for Steel tests caused by fear and surprise." }
+];
 
 export function GetGreed(
   will: AbilityPoints,

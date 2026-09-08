@@ -94,7 +94,8 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
 
       getHesitation: (): AbilityPoints => {
         const { getStat } = useCharacterBurnerStatStore.getState();
-        return GetHesitation(getStat("Will"));
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
+        return GetHesitation(getStat("Will"), hasTraitOpenByName);
       },
 
       getGreed: (): AbilityPoints => {
