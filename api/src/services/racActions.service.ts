@@ -9,8 +9,7 @@ export async function GetRaCActions(): Promise<RaCAction[]> {
         id: v.id,
         name: v.name,
         group: [v.groupId!, v.group!],
-        flags: {},
-        effect: v.effect
+        flags: {}
       };
 
       if (v.effect) act.effect = v.effect;
