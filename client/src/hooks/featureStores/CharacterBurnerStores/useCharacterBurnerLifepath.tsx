@@ -11,6 +11,7 @@ import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { FilterLifepaths } from "../../../utils/FilterLifepaths";
 import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
+import { GetLifepathYears } from "../../../utils/GetLifepathYears";
 import { Pairwise } from "../../../utils/Pairwise";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
@@ -96,10 +97,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
 
         const { special } = useCharacterBurnerMiscStore.getState();
 
-        const yrs = lps.map(v => {
-          if (typeof v.years === "number") return v.years;
-          return (v.id !== null ? special.variableAge[v.id] : undefined) ?? v.years[0];
-        });
+        const yrs = lps.map(v => GetLifepathYears(v, special.variableAge));
         const sum = yrs.reduce((prev, curr) => prev + curr, 0);
         return sum + get().getLeadCount();
       },

@@ -8,6 +8,7 @@ import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { Average } from "../../../utils/Average";
 import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
+import { GetLifepathYears } from "../../../utils/GetLifepathYears";
 import { RecordGet } from "../../../utils/RecordGet";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
@@ -115,14 +116,31 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
       getSkillPools: (lifepaths?: Lifepath[]): { general: Points; lifepath: Points; } => {
         const state = get();
         const lps = lifepaths ?? useCharacterBurnerLifepathStore.getState().lifepaths;
+        const { special } = useCharacterBurnerMiscStore.getState();
+
+        // isGSPMultipliedByYear/isLSPMultipliedByYear: the pool value is a per-year rate, not a flat
+        // amount -- e.g. Advisor to the Court grants 1 GSP per year actually spent in the lifepath.
+        // getHalfGSPFromPrevLP/getHalfLSPFromPrevLP: this lifepath grants (in addition to its own
+        // points) half of the immediately preceding lifepath's own points in that same pool, rounded
+        // down.
+        const resolvePool = (
+          lp: Lifepath, prevLp: Lifepath | undefined,
+          pool: "generalSkillPool" | "lifepathSkillPool", isMultiplied: boolean, halfFromPrev: boolean
+        ): number => {
+          const base = isMultiplied ? (lp.pools[pool] ?? 0) * GetLifepathYears(lp, special.variableAge) : (lp.pools[pool] ?? 0);
+          const fromPrev = halfFromPrev && prevLp ? Math.floor((prevLp.pools[pool] ?? 0) / 2) : 0;
+          return base + fromPrev;
+        };
 
         // Law of Diminishing Returns: a lifepath's skill point contribution is halved (rounded down)
         // on its 3rd occurrence, and lost entirely on its 4th+ occurrence.
         const occurrences = GetLifepathOccurrences(lps);
         const occurrenceScale = (occurrence: number): number => occurrence >= 4 ? 0 : occurrence === 3 ? 0.5 : 1;
 
-        const gpTotal = lps.reduce((pv, cv, i) => pv + Math.floor((cv.pools.generalSkillPool ?? 0) * occurrenceScale(occurrences[i])), 0);
-        const lpTotal = lps.reduce((pv, cv, i) => pv + Math.floor((cv.pools.lifepathSkillPool ?? 0) * occurrenceScale(occurrences[i])), 0);
+        const gpTotal = lps.reduce((pv, cv, i) =>
+          pv + Math.floor(resolvePool(cv, lps[i - 1], "generalSkillPool", !!cv.flags.isGSPMultipliedByYear, !!cv.flags.getHalfGSPFromPrevLP) * occurrenceScale(occurrences[i])), 0);
+        const lpTotal = lps.reduce((pv, cv, i) =>
+          pv + Math.floor(resolvePool(cv, lps[i - 1], "lifepathSkillPool", !!cv.flags.isLSPMultipliedByYear, !!cv.flags.getHalfLSPFromPrevLP) * occurrenceScale(occurrences[i])), 0);
 
         let gpRemaining = gpTotal;
         let lpRemaining = lpTotal;

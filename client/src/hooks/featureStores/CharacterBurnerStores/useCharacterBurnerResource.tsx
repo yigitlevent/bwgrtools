@@ -3,7 +3,9 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
+import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
+import { GetLifepathYears } from "../../../utils/GetLifepathYears";
 
 
 export interface CharacterBurnerResourceState {
@@ -34,15 +36,22 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
 
         const state = useCharacterBurnerLifepathStore.getState();
         const lps = lifepaths ?? state.lifepaths;
-        // TODO: Lifepath.flags.isRPMultipliedByYear and .getHalfRPFromPrevLP are not applied here:
-        // this is a systemic gap, not specific to resources -- the equivalent GSP/LSP flags on skill
-        // pools (useCharacterBurnerSkill.tsx's getSkillPools) are unimplemented too, and there's no
-        // existing formula anywhere in the codebase to derive the intended calculation from.
+        const { special } = useCharacterBurnerMiscStore.getState();
+
+        // isRPMultipliedByYear: pools.resourcePoints is a per-year rate, not a flat amount --
+        // e.g. Advisor to the Court grants 10 RP per year actually spent in the lifepath.
+        // getHalfRPFromPrevLP: this lifepath grants (in addition to its own RP) half of the
+        // immediately preceding lifepath's own RP, rounded down -- e.g. Hostage.
+        const resolveRps = (lp: Lifepath, prevLp: Lifepath | undefined): number => {
+          const base = lp.flags.isRPMultipliedByYear ? (lp.pools.resourcePoints ?? 0) * GetLifepathYears(lp, special.variableAge) : (lp.pools.resourcePoints ?? 0);
+          const fromPrev = lp.flags.getHalfRPFromPrevLP && prevLp ? Math.floor((prevLp.pools.resourcePoints ?? 0) / 2) : 0;
+          return base + fromPrev;
+        };
 
         // Law of Diminishing Returns: a lifepath's resource point contribution is halved (rounded
         // down) on its 3rd occurrence, and stays halved (not reduced further) on its 4th+ occurrence.
         const occurrences = GetLifepathOccurrences(lps);
-        const totalRps = lps.reduce((pv, cv, i) => pv + Math.floor((cv.pools.resourcePoints ?? 0) * (occurrences[i] >= 3 ? 0.5 : 1)), 0);
+        const totalRps = lps.reduce((pv, cv, i) => pv + Math.floor(resolveRps(cv, lps[i - 1]) * (occurrences[i] >= 3 ? 0.5 : 1)), 0);
 
         return { total: totalRps, spent: spending, remaining: totalRps - spending };
       },
