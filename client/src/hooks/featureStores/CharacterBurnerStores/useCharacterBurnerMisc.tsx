@@ -54,74 +54,60 @@ export interface CharacterBurnerMiscState {
   refreshLimits: () => void;
 }
 
+function CreateInitialSpecial(): CharacterSpecial {
+  return {
+    stock: { brutalLifeTraits: [], huntingGround: undefined },
+    companionLifepath: {},
+    variableAge: {},
+    companionSkills: {},
+    chosenSubskills: {},
+    chosenResourceType: {},
+    avariceGreed: undefined,
+    crippledStat: undefined,
+    frailStat: undefined,
+    missingLimb: undefined,
+    childProdigyStat: undefined,
+    childProdigyShiftedSkill: undefined,
+    darlingOfCourtResource: undefined,
+    earToGroundResource: undefined,
+    feyBloodTrait: undefined,
+    lessonOfOneRelationship: undefined,
+    lordOfAgesResource: undefined,
+    mournerGrief: undefined,
+    servantOfCitadelQualifies: false,
+    swornToProtectQualifies: false,
+    taintedLegacyTrait: undefined
+  };
+}
+
+function CreateDefaultLimits(): CharacterStockLimits {
+  return {
+    beliefs: 3,
+    instincts: 3,
+    stats: {
+      Will: { min: 1, max: 8 },
+      Perception: { min: 1, max: 8 },
+      Power: { min: 1, max: 8 },
+      Agility: { min: 1, max: 8 },
+      Forte: { min: 1, max: 8 },
+      Speed: { min: 1, max: 8 }
+    },
+    attributes: 9
+  };
+}
+
 export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
   devtools(
     (set, get) => ({
-      special: {
-        stock: { brutalLifeTraits: [], huntingGround: undefined },
-        companionLifepath: {},
-        variableAge: {},
-        companionSkills: {},
-        chosenSubskills: {},
-        chosenResourceType: {},
-        avariceGreed: undefined,
-        crippledStat: undefined,
-        frailStat: undefined,
-        missingLimb: undefined,
-        childProdigyStat: undefined,
-        childProdigyShiftedSkill: undefined,
-        darlingOfCourtResource: undefined,
-        earToGroundResource: undefined,
-        feyBloodTrait: undefined,
-        lessonOfOneRelationship: undefined,
-        lordOfAgesResource: undefined,
-        mournerGrief: undefined,
-        servantOfCitadelQualifies: false,
-        swornToProtectQualifies: false,
-        taintedLegacyTrait: undefined
-      },
+      special: CreateInitialSpecial(),
 
       questions: [],
 
-      limits: {
-        beliefs: 3,
-        instincts: 3,
-        stats: {
-          Will: { min: 1, max: 8 },
-          Perception: { min: 1, max: 8 },
-          Power: { min: 1, max: 8 },
-          Agility: { min: 1, max: 8 },
-          Forte: { min: 1, max: 8 },
-          Speed: { min: 1, max: 8 }
-        },
-        attributes: 9
-      },
+      limits: CreateDefaultLimits(),
 
       reset: (): void => {
         set(produce<CharacterBurnerMiscState>(state => {
-          state.special = {
-            stock: { brutalLifeTraits: [], huntingGround: undefined },
-            companionLifepath: {},
-            variableAge: {},
-            companionSkills: {},
-            chosenSubskills: {},
-            chosenResourceType: {},
-            avariceGreed: undefined,
-            crippledStat: undefined,
-            frailStat: undefined,
-            missingLimb: undefined,
-            childProdigyStat: undefined,
-            childProdigyShiftedSkill: undefined,
-            darlingOfCourtResource: undefined,
-            earToGroundResource: undefined,
-            feyBloodTrait: undefined,
-            lessonOfOneRelationship: undefined,
-            lordOfAgesResource: undefined,
-            mournerGrief: undefined,
-            servantOfCitadelQualifies: false,
-            swornToProtectQualifies: false,
-            taintedLegacyTrait: undefined
-          };
+          state.special = CreateInitialSpecial();
           state.questions = [];
         }));
 
@@ -194,7 +180,14 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
 
       modifyAvariceGreed: (greed: number | undefined): void => {
         set(produce<CharacterBurnerMiscState>(state => {
-          state.special.avariceGreed = greed;
+          if (greed === undefined) {
+            state.special.avariceGreed = undefined;
+            return;
+          }
+
+          const { getNaturalGreed } = useCharacterBurnerAttributeStore.getState();
+          const minGreed = getNaturalGreed() + 1;
+          state.special.avariceGreed = Math.max(greed, minGreed);
         }));
       },
 
@@ -276,7 +269,13 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
 
       modifyMournerGrief: (grief: number | undefined): void => {
         set(produce<CharacterBurnerMiscState>(state => {
-          state.special.mournerGrief = grief;
+          if (grief === undefined) {
+            state.special.mournerGrief = undefined;
+            return;
+          }
+
+          const { getNaturalGrief } = useCharacterBurnerAttributeStore.getState();
+          state.special.mournerGrief = Clamp(grief, getNaturalGrief(), 9);
         }));
       },
 
@@ -374,19 +373,7 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         const { stock } = useCharacterBurnerBasicsStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
 
-        const limits: CharacterStockLimits = {
-          beliefs: 3,
-          instincts: 3,
-          stats: {
-            Will: { min: 1, max: 8 },
-            Perception: { min: 1, max: 8 },
-            Power: { min: 1, max: 8 },
-            Agility: { min: 1, max: 8 },
-            Forte: { min: 1, max: 8 },
-            Speed: { min: 1, max: 8 }
-          },
-          attributes: 9
-        };
+        const limits: CharacterStockLimits = CreateDefaultLimits();
 
         if (stock[1] === "Dwarf") {
           if (hasTraitOpenByName("Stout")) {

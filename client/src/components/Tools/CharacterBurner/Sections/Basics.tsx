@@ -1,28 +1,20 @@
 import { Button, Grid, Select, Textarea, TextInput } from "@mantine/core";
-import { useCallback } from "react";
 
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
+import { BuildCharacterBurnerSnapshot } from "../../../../hooks/featureStores/CharacterBurnerStores/characterBurnerSnapshot";
 import { useCharacterBurnerAttributeStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
-import { useCharacterBurnerResourceStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerResource";
-import { useCharacterBurnerSkillStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
-import { useCharacterBurnerStatStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 import { DownloadFile } from "../../../../utils/DownloadFile";
 
 
 export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals) => void; }): React.JSX.Element {
   const ruleset = useRulesetStore();
-  const { name, stock, gender, concept, beliefs, instincts, setName, setGender, setConcept, setStockAndReset } = useCharacterBurnerBasicsStore();
+  const { name, stock, gender, concept, setName, setGender, setConcept, setStockAndReset } = useCharacterBurnerBasicsStore();
   const { getAge, lifepaths } = useCharacterBurnerLifepathStore();
-  const { stats } = useCharacterBurnerStatStore();
-  const { attributes, getStride } = useCharacterBurnerAttributeStore();
-  const { skills } = useCharacterBurnerSkillStore();
+  const { getStride } = useCharacterBurnerAttributeStore();
   const { traits } = useCharacterBurnerTraitStore();
-  const { resources } = useCharacterBurnerResourceStore();
-  const { special, questions, limits } = useCharacterBurnerMiscStore();
 
   const lifepathsText = lifepaths.map(v => v.name).join(", ");
 
@@ -72,22 +64,13 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
     && !hasSpecialEarToGround && !hasSpecialFamilyHeirloom && !hasSpecialFeyBlood && !hasSpecialLessonOfOne
     && !hasSpecialLordOfAges && !hasSpecialMourner && !hasSpecialCitadelVows && !hasSpecialTaintedLegacy;
 
-  const exportChar = useCallback(() => {
-    const json: CharacterBurnerExportSnapshot = {
-      basics: { name, concept, gender, stock, beliefs, instincts },
-      lifepaths: { lifepaths },
-      stats: { stats },
-      skills: { skills: skills.items },
-      traits: { traits: traits.items },
-      attributes: { attributes: attributes.items },
-      resources: { resources },
-      misc: { special, questions, limits }
-    };
+  const exportChar = (): void => {
+    const json = BuildCharacterBurnerSnapshot();
 
     const filename = `character-${json.basics.name.replaceAll(" ", "-")}.json`;
     const content = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json));
     DownloadFile(filename, content);
-  }, [attributes.items, beliefs, concept, gender, instincts, lifepaths, limits, name, questions, resources, skills.items, special, stats, stock, traits.items]);
+  };
 
   return (
     <Grid columns={12} align="center" justify="center" mb="xl">

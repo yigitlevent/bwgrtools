@@ -2,6 +2,7 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { ResolveGriefOrSpite } from "./resolveGriefOrSpite";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
@@ -9,7 +10,7 @@ import { useCharacterBurnerResourceStore } from "./useCharacterBurnerResource";
 import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
-import { GetAncestralTaint, GetCircles, GetCorruption, GetFaith, GetFaithInDeadGods, GetGreed, GetGriefOrSpite, GetHatred, GetHealth, GetHesitation, GetMortalWound, GetNaturalGreed, GetReflexes, GetResources, GetSteel, GetStride, GetVoidEmbrace } from "../../../logic/attributeFormulas";
+import { GetAncestralTaint, GetCircles, GetCorruption, GetFaith, GetFaithInDeadGods, GetGreed, GetHatred, GetHealth, GetHesitation, GetMortalWound, GetNaturalGreed, GetReflexes, GetResources, GetSteel, GetStride, GetVoidEmbrace } from "../../../logic/attributeFormulas";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
@@ -122,31 +123,12 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
       },
 
       getGriefOrSpite: (isSpite: boolean): AbilityPoints => {
-        const { resources } = useCharacterBurnerResourceStore.getState();
-        const { hasQuestionTrueByName, special } = useCharacterBurnerMiscStore.getState();
-        const { getStat } = useCharacterBurnerStatStore.getState();
-        const { getAge, hasLifepathByName } = useCharacterBurnerLifepathStore.getState();
-        const { skills } = useCharacterBurnerSkillStore.getState();
-        const { traits, hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-        const steel = get().getSteel();
-        return GetGriefOrSpite(
-          isSpite, getStat("Perception"), steel, getAge(), resources, skills.items, traits.items,
-          hasLifepathByName, hasQuestionTrueByName, hasTraitOpenByName, special.mournerGrief
-        );
+        const { special } = useCharacterBurnerMiscStore.getState();
+        return ResolveGriefOrSpite(get().getSteel, isSpite, special.mournerGrief);
       },
 
       getNaturalGrief: (): number => {
-        const { resources } = useCharacterBurnerResourceStore.getState();
-        const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
-        const { getStat } = useCharacterBurnerStatStore.getState();
-        const { getAge, hasLifepathByName } = useCharacterBurnerLifepathStore.getState();
-        const { skills } = useCharacterBurnerSkillStore.getState();
-        const { traits, hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-        const steel = get().getSteel();
-        return GetGriefOrSpite(
-          false, getStat("Perception"), steel, getAge(), resources, skills.items, traits.items,
-          hasLifepathByName, hasQuestionTrueByName, hasTraitOpenByName, undefined
-        ).exponent;
+        return ResolveGriefOrSpite(get().getSteel, false, undefined).exponent;
       },
 
       getFaith: (): AbilityPoints => {

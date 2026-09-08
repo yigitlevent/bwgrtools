@@ -60,22 +60,22 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
 
         if (skill) {
           const rulesetSkill = getSkill(skill.id);
+          const openState = rulesetSkill.flags.isMagical || rulesetSkill.flags.isTraining ? "double" : "yes";
+
+          let newIsOpen = skill.isOpen;
+          let newAdvancement = skill.advancement;
 
           if (skill.isOpen === "no") {
-            if (skill.type === "General" && general.remaining > 0) {
-              skill.isOpen = rulesetSkill.flags.isMagical || rulesetSkill.flags.isTraining ? "double" : "yes";
-            }
-            else if (skill.type !== "General" && (general.remaining > 0 || lifepath.remaining > 0)) {
-              skill.isOpen = rulesetSkill.flags.isMagical || rulesetSkill.flags.isTraining ? "double" : "yes";
-            }
+            if (skill.type === "General" && general.remaining > 0) newIsOpen = openState;
+            else if (skill.type !== "General" && (general.remaining > 0 || lifepath.remaining > 0)) newIsOpen = openState;
           }
           else {
-            skill.isOpen = "no";
-            skill.advancement = { general: 0, lifepath: 0 };
+            newIsOpen = "no";
+            newAdvancement = { general: 0, lifepath: 0 };
           }
 
           set(produce<CharacterBurnerSkillState>(state => {
-            state.skills = new UniqueArray(state.skills.add(skill).items);
+            state.skills = new UniqueArray(state.skills.add({ ...skill, isOpen: newIsOpen, advancement: newAdvancement }).items);
           }));
         }
       },

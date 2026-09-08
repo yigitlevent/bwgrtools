@@ -3,17 +3,21 @@ import { useEffect, useState } from "react";
 
 import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
 import { useCharacterBurnerStatStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
+import { useCharacterBurnerTraitStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
 export function Tolerances(): React.JSX.Element {
   const { stats } = useCharacterBurnerStatStore();
+  const { traits } = useCharacterBurnerTraitStore();
   const { getTolerances } = useCharacterBurnerMiscStore();
 
   const [tolerances, setTolerances] = useState<string[]>(Array(16).fill("—"));
 
   useEffect(() => {
     setTolerances(getTolerances());
-  }, [getTolerances, stats]);
+    // getTolerances() also depends on hasTraitOpenByName("Tough") (mortal-wound rounding), so traits
+    // must be a dependency here too, not just stats.
+  }, [getTolerances, stats, traits]);
 
   return (
     <Grid columns={16} gap="xs" align="center" justify="center" mb="xl">

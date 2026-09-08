@@ -56,7 +56,11 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
       addLifepath: (lifepath: Lifepath): void => {
         set(produce<CharacterBurnerLifepathState>(state => { state.lifepaths.push(lifepath); }));
         get().updateAvailableLifepaths();
-        RecomputeCharacter("stat");
+        // Deliberately not "stat": a lifepath add/remove can shift stat pool totals (LoDR occurrence
+        // changes, Mind over Matter/Robust trait shifts) but must not wipe the player's existing stat
+        // spend - if a pool shrinks below what's already spent, that's surfaced in the UI (Stats.tsx)
+        // as a negative remaining, not silently corrected here.
+        RecomputeCharacter("skillTrait");
       },
 
       removeLastLifepath: (): void => {
@@ -64,7 +68,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
           state.lifepaths = state.lifepaths.slice(0, state.lifepaths.length - 1);
         }));
         get().updateAvailableLifepaths();
-        RecomputeCharacter("stat");
+        RecomputeCharacter("skillTrait");
       },
 
       hasLifepath: (id: dat.LifepathId): number => {
@@ -166,7 +170,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         return { total, spent, remaining: total - spent };
       },
 
-      updateAvailableLifepaths: (onlyReturn?: boolean): Lifepath[] => {
+      updateAvailableLifepaths: (): Lifepath[] => {
         const { lifepaths, hasSetting, getAge } = get();
 
         const ruleset = useRulesetStore.getState();
@@ -190,8 +194,6 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
           hasSetting: hasSetting,
           hasQuestionTrue: hasQuestionTrue
         });
-
-        if (onlyReturn) return possibleLifepaths;
 
         set(produce<CharacterBurnerLifepathState>(state => { state.availableLifepaths = possibleLifepaths; }));
         return possibleLifepaths;

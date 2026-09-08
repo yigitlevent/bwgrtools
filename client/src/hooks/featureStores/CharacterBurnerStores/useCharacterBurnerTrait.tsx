@@ -2,6 +2,7 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { RefreshCharacterLimits } from "./refreshCharacterLimits";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
@@ -62,7 +63,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
 
           useCharacterBurnerResourceStore.getState().updateResources();
           useCharacterBurnerResourceStore.getState().updateLessonOfOne();
-          useCharacterBurnerMiscStore.getState().refreshLimits();
+          RefreshCharacterLimits();
         }
       },
 
@@ -71,7 +72,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         const charTrait: CharacterTrait = { id: trait.id, name: trait.name ?? "", isOpen: false, type: "General" };
         set(produce<CharacterBurnerTraitState>(state => { state.traits = new UniqueArray(state.traits.add(charTrait).items); }));
 
-        useCharacterBurnerMiscStore.getState().refreshLimits();
+        RefreshCharacterLimits();
       },
 
       removeGeneralTrait: (traitId: dat.TraitId): void => {
@@ -79,7 +80,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
           state.traits = new UniqueArray(state.traits.remove(traitId).items);
         }));
 
-        useCharacterBurnerMiscStore.getState().refreshLimits();
+        RefreshCharacterLimits();
       },
 
       getTraitPools: (lifepaths?: Lifepath[]): Points => {
@@ -177,7 +178,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
 
         useCharacterBurnerResourceStore.getState().updateResources();
         useCharacterBurnerResourceStore.getState().updateLessonOfOne();
-        useCharacterBurnerMiscStore.getState().refreshLimits();
+        RefreshCharacterLimits();
       }
     }),
     { name: "useCharacterBurnerTraitStore" }

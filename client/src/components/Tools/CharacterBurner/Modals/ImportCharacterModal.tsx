@@ -1,7 +1,7 @@
 import { Alert, Button, FileInput, Grid, Modal, Text } from "@mantine/core";
 import { useState } from "react";
 
-import { HydrateCharacterBurner } from "../../../../hooks/featureStores/CharacterBurnerStores/hydrateCharacterBurner";
+import { HydrateCharacterBurner } from "../../../../hooks/featureStores/CharacterBurnerStores/characterBurnerSnapshot";
 
 
 const RequiredSnapshotKeys: (keyof CharacterBurnerExportSnapshot)[] = ["basics", "lifepaths", "stats", "skills", "traits", "attributes", "resources", "misc"];
