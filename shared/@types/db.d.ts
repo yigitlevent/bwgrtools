@@ -748,11 +748,21 @@ declare namespace dat {
     stockId: dat.StockId | null;
     typeId: dat.TraitTypeId;
   }
+  interface TraitCallOnAbility {
+    abilityId: dat.AbilityId;
+    traitId: dat.TraitId;
+  }
+  interface TraitCallOnSkill {
+    skillId: dat.SkillId;
+    traitId: dat.TraitId;
+  }
   interface TraitCategory {
     id: dat.TraitCategoryId;
     name: string;
   }
   interface TraitsList {
+    callOnAbilityIds: dat.AbilityId[] | null;
+    callOnSkillIds: dat.SkillId[] | null;
     category: string | null;
     categoryId: dat.TraitCategoryId | null;
     cost: number | null;

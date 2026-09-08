@@ -246,6 +246,24 @@ CREATE TABLE
   );
 
 CREATE TABLE
+  dat."TraitCallOnSkill" (
+    "traitId" INTEGER NOT NULL,
+    "skillId" INTEGER NOT NULL,
+    PRIMARY KEY ("traitId", "skillId"),
+    FOREIGN KEY ("traitId") REFERENCES dat."Trait" ("id") MATCH SIMPLE ON UPDATE RESTRICT ON DELETE RESTRICT NOT VALID,
+    FOREIGN KEY ("skillId") REFERENCES dat."Skill" ("id") MATCH SIMPLE ON UPDATE RESTRICT ON DELETE RESTRICT NOT VALID
+  );
+
+CREATE TABLE
+  dat."TraitCallOnAbility" (
+    "traitId" INTEGER NOT NULL,
+    "abilityId" INTEGER NOT NULL,
+    PRIMARY KEY ("traitId", "abilityId"),
+    FOREIGN KEY ("traitId") REFERENCES dat."Trait" ("id") MATCH SIMPLE ON UPDATE RESTRICT ON DELETE RESTRICT NOT VALID,
+    FOREIGN KEY ("abilityId") REFERENCES dat."Ability" ("id") MATCH SIMPLE ON UPDATE RESTRICT ON DELETE RESTRICT NOT VALID
+  );
+
+CREATE TABLE
   dat."Lifepath" (
     "id" serial NOT NULL,
     "name" CHARACTER VARYING(255) NOT NULL,

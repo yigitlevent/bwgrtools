@@ -156,7 +156,23 @@ SELECT
   t."typeId",
   tty."name" AS "type",
   t."cost",
-  t."description"
+  t."description",
+  ARRAY (
+    SELECT
+      tcos."skillId"
+    FROM
+      dat."TraitCallOnSkill" tcos
+    WHERE
+      tcos."traitId" = t."id"
+  ) AS "callOnSkillIds",
+  ARRAY (
+    SELECT
+      tcoa."abilityId"
+    FROM
+      dat."TraitCallOnAbility" tcoa
+    WHERE
+      tcoa."traitId" = t."id"
+  ) AS "callOnAbilityIds"
 FROM
   dat."Trait" t
   LEFT JOIN dat."Stock" sto ON sto."id" = t."stockId"

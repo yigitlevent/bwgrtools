@@ -1,19 +1,29 @@
-import { Button, Grid, Title, Text, Paper, Group } from "@mantine/core";
+import { Button, Grid, Title, Text, Paper, Group, Tooltip } from "@mantine/core";
+import { TriangleAlert } from "lucide-react";
 import { Fragment } from "react";
 
+import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
+import { useCharacterBurnerAttributeStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
+import { useCharacterBurnerSkillStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
 import { useCharacterBurnerTraitStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 import { BlockTraitPopover } from "../BlockText";
 
 import type { UniqueArrayItem } from "../../../../utils/UniqueArray";
 
 
-// TODO: show a warning on call-on traits (ruleset Trait.type "Call-on" / "Call-on and Die") when the
-// character doesn't have the skill/ability the trait calls on. Needs the same per-trait "what does
-// this call on" data as the call-on trait effects TODO in useCharacterBurnerMisc.tsx's
-// refreshTraitEffects -- there's no ruleset field linking a Trait to the skill/ability it calls on,
-// so this is blocked on the same missing data, not just missing UI.
 function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, CharacterTrait>; remove?: (traitId: dat.TraitId) => void; }): React.JSX.Element {
   const { openTrait } = useCharacterBurnerTraitStore();
+  const { getTrait } = useRulesetStore();
+  const { hasSkillOpen } = useCharacterBurnerSkillStore();
+  const { hasAttribute } = useCharacterBurnerAttributeStore();
+
+  const rulesetTrait = getTrait(trait.id);
+  const callOnTargets = [...(rulesetTrait.callOnSkills ?? []), ...(rulesetTrait.callOnAbilities ?? [])];
+  const showCallOnWarning =
+    trait.isOpen
+    && callOnTargets.length > 0
+    && !(rulesetTrait.callOnSkills ?? []).some(hasSkillOpen)
+    && !(rulesetTrait.callOnAbilities ?? []).some(hasAttribute);
 
   return (
     <Grid.Col span={{ base: 6, sm: 3, md: 2 }}>
@@ -24,6 +34,12 @@ function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, Characte
             checkbox={{ checked: trait.isOpen, disabled: trait.type === "Mandatory" || trait.type === "Common", onToggle: () => { openTrait(trait.id); } }}
             deleteCallback={remove ? () => { remove(trait.id); } : undefined}
           />
+
+          {showCallOnWarning ? (
+            <Tooltip label="Character doesn't have any of this trait's call-on skills/attributes.">
+              <TriangleAlert size={16} color="var(--mantine-color-yellow-6)" />
+            </Tooltip>
+          ) : null}
         </Group>
       </Paper>
     </Grid.Col>

@@ -283,6 +283,8 @@ interface Trait {
   cost: number | null;
   stock?: NamedTuple<dat.StockId>;
   description?: string;
+  callOnSkills?: dat.SkillId[];
+  callOnAbilities?: dat.AbilityId[];
 }
 
 interface RulesetResponse {
