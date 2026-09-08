@@ -71,7 +71,7 @@ export function ResourcesList({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
       </Grid>
 
       {filteredList.length > 0 ? (
-        <Box style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
+        <Box mt={16} style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
           {rowVirtualizer.getVirtualItems().map(virtualRow => (
             <Box
               key={virtualRow.key}
