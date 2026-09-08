@@ -1,7 +1,7 @@
 import { Grid, Table, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 
-import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerLimitsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLimits";
 import { useCharacterBurnerStatStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
@@ -9,7 +9,7 @@ import { useCharacterBurnerTraitStore } from "../../../../hooks/featureStores/Ch
 export function Tolerances(): React.JSX.Element {
   const { stats } = useCharacterBurnerStatStore();
   const { traits } = useCharacterBurnerTraitStore();
-  const { getTolerances } = useCharacterBurnerMiscStore();
+  const { getTolerances } = useCharacterBurnerLimitsStore();
 
   const [tolerances, setTolerances] = useState<string[]>(Array(16).fill("—"));
 

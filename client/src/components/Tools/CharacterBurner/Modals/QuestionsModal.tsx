@@ -1,10 +1,10 @@
 import { Checkbox, Grid, Modal, Text } from "@mantine/core";
 
-import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 
 
 export function QuestionsModal({ isOpen, close }: { isOpen: boolean; close: () => void; }): React.JSX.Element {
-  const { questions, switchQuestion, hasQuestionTrue } = useCharacterBurnerMiscStore();
+  const { questions, switchQuestion, hasQuestionTrue } = useCharacterBurnerSpecialStore();
 
   return (
     <Modal opened={isOpen} onClose={() => { close(); }} size="800px">

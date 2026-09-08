@@ -1,15 +1,15 @@
 import { Grid, Select, Title } from "@mantine/core";
 import { Fragment } from "react";
 
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
 import { useCharacterBurnerResourceStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerResource";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
 export function SpecialLordOfAges(): React.JSX.Element {
   const { hasTraitOpenByName } = useCharacterBurnerTraitStore();
   const { resources } = useCharacterBurnerResourceStore();
-  const { special, modifyLordOfAgesResource } = useCharacterBurnerMiscStore();
+  const { special, modifyLordOfAgesResource } = useCharacterBurnerSpecialStore();
 
   if (!hasTraitOpenByName("Lord of Ages")) return <Fragment />;
 

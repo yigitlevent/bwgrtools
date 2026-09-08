@@ -4,7 +4,7 @@ import { Fragment, useCallback } from "react";
 import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerBasicsStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { GetOrdinalSuffix } from "../../../../../utils/GetOrdinalSuffix";
 import { RandomNumber } from "../../../../../utils/RandomNumber";
 import { BlockTraitPopover } from "../../BlockText";
@@ -14,7 +14,7 @@ export function BrutalLife(): React.JSX.Element {
   const ruleset = useRulesetStore();
   const { stock } = useCharacterBurnerBasicsStore();
   const { lifepaths } = useCharacterBurnerLifepathStore();
-  const { special, addBrutalLifeTrait } = useCharacterBurnerMiscStore();
+  const { special, addBrutalLifeTrait } = useCharacterBurnerSpecialStore();
 
   const rollBrutalLife = useCallback((lifepathNumber: number) => {
     const isBrutal =

@@ -2,8 +2,8 @@ import { Grid, Select, Title } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
 import { useCharacterBurnerSkillStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
@@ -11,7 +11,7 @@ export function SpecialChildProdigy(): React.JSX.Element {
   const ruleset = useRulesetStore();
   const { hasTraitOpenByName } = useCharacterBurnerTraitStore();
   const { skills, hasSkillOpen } = useCharacterBurnerSkillStore();
-  const { special, modifyChildProdigyStat, modifyChildProdigyShiftedSkill } = useCharacterBurnerMiscStore();
+  const { special, modifyChildProdigyStat, modifyChildProdigyShiftedSkill } = useCharacterBurnerSpecialStore();
 
   if (!hasTraitOpenByName("Child Prodigy")) return <Fragment />;
 

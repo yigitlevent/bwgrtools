@@ -4,7 +4,7 @@ import { devtools } from "zustand/middleware";
 
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { Average } from "../../../utils/Average";
@@ -117,7 +117,7 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
       getSkillPools: (lifepaths?: Lifepath[]): { general: Points; lifepath: Points; } => {
         const state = get();
         const lps = lifepaths ?? useCharacterBurnerLifepathStore.getState().lifepaths;
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
 
         // isGSPMultipliedByYear/isLSPMultipliedByYear: the pool value is a per-year rate, not a flat
         // amount -- e.g. Advisor to the Court grants 1 GSP per year actually spent in the lifepath.
@@ -172,7 +172,7 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         const { getStat } = useCharacterBurnerStatStore.getState();
         const { getAttribute, hasAttribute } = useCharacterBurnerAttributeStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
 
         const charSkill = skills.find(skillId);
 
@@ -227,7 +227,7 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
       updateSkills: (): void => {
         const { getSkill } = useRulesetStore.getState();
         const { lifepaths } = useCharacterBurnerLifepathStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         const state = get();
 
         // Law of Diminishing Returns: 1st occurrence -> 1st skill mandatory, 2nd occurrence -> 2nd

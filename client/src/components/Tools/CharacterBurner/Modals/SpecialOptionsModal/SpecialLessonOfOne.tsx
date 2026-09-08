@@ -1,15 +1,15 @@
 import { Grid, Select, Title } from "@mantine/core";
 import { Fragment } from "react";
 
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
 import { useCharacterBurnerResourceStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerResource";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
 export function SpecialLessonOfOne(): React.JSX.Element {
   const { hasTraitOpenByName } = useCharacterBurnerTraitStore();
   const { resources } = useCharacterBurnerResourceStore();
-  const { special, modifyLessonOfOneRelationship } = useCharacterBurnerMiscStore();
+  const { special, modifyLessonOfOneRelationship } = useCharacterBurnerSpecialStore();
 
   if (!hasTraitOpenByName("Lesson of One")) return <Fragment />;
 

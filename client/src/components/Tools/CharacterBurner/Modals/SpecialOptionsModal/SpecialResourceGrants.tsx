@@ -2,7 +2,7 @@ import { Grid, Select, Text } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 import { RecordGet } from "../../../../../utils/RecordGet";
 
@@ -10,7 +10,7 @@ import { RecordGet } from "../../../../../utils/RecordGet";
 export function SpecialResourceGrants(): React.JSX.Element {
   const ruleset = useRulesetStore();
   const { traits } = useCharacterBurnerTraitStore();
-  const { special, modifyChosenResourceType } = useCharacterBurnerMiscStore();
+  const { special, modifyChosenResourceType } = useCharacterBurnerSpecialStore();
 
   return (
     <Fragment>

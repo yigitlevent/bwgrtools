@@ -4,7 +4,7 @@ import { devtools } from "zustand/middleware";
 
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 import { GetLifepathYears } from "../../../utils/GetLifepathYears";
@@ -47,7 +47,7 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
 
         const state = useCharacterBurnerLifepathStore.getState();
         const lps = lifepaths ?? state.lifepaths;
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
 
         // isRPMultipliedByYear: pools.resourcePoints is a per-year rate, not a flat amount --
         // e.g. Advisor to the Court grants 10 RP per year actually spent in the lifepath.
@@ -127,7 +127,7 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
 
       updateLessonOfOne: (): void => {
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         const { stock } = useCharacterBurnerBasicsStore.getState();
         const ruleset = useRulesetStore.getState();
         const state = get();
@@ -172,7 +172,7 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
 
         const ruleset = useRulesetStore.getState();
         const { traits, hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         const state = get();
 
         const expectedKeys = new Set<string>();

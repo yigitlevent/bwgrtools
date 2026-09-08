@@ -5,8 +5,8 @@ import { devtools } from "zustand/middleware";
 import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { FilterLifepaths } from "../../../utils/FilterLifepaths";
@@ -99,7 +99,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
 
         if (lps.length === 0) return 0;
 
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
 
         const yrs = lps.map(v => GetLifepathYears(v, special.variableAge));
         const sum = yrs.reduce((prev, curr) => prev + curr, 0);
@@ -175,7 +175,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
 
         const ruleset = useRulesetStore.getState();
         const { gender, stock } = useCharacterBurnerBasicsStore.getState();
-        const { hasQuestionTrue } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrue } = useCharacterBurnerSpecialStore.getState();
         const { hasSkillOpen } = useCharacterBurnerSkillStore.getState();
         const { hasTraitOpen } = useCharacterBurnerTraitStore.getState();
         const { attributes, hasAttribute } = useCharacterBurnerAttributeStore.getState();

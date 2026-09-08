@@ -2,13 +2,13 @@ import { Grid, NumberInput, Title } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useCharacterBurnerAttributeStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
 export function SpecialAvarice(): React.JSX.Element {
   const { hasTraitOpenByName } = useCharacterBurnerTraitStore();
-  const { special, modifyAvariceGreed } = useCharacterBurnerMiscStore();
+  const { special, modifyAvariceGreed } = useCharacterBurnerSpecialStore();
   const { getNaturalGreed } = useCharacterBurnerAttributeStore();
 
   if (!hasTraitOpenByName("Avarice")) return <Fragment />;

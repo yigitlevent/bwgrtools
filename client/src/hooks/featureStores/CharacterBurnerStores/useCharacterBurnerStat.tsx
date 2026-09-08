@@ -7,7 +7,8 @@ import { RecomputeCharacter } from "./recomputeCharacter";
 import { RefreshCharacterLimits } from "./refreshCharacterLimits";
 import { ResolvePoolForStat } from "./resolvePoolForStat";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { useCharacterBurnerLimitsStore } from "./useCharacterBurnerLimits";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { Clamp } from "../../../utils/Clamp";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
@@ -39,7 +40,7 @@ export const useCharacterBurnerStatStore = create<CharacterBurnerStatState>()(
         const exponent = state.stats[statName].eitherPoolSpent.exponent + state.stats[statName].mainPoolSpent.exponent;
 
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         const ruleset = useRulesetStore.getState();
 
         let penalty = 0;
@@ -81,7 +82,7 @@ export const useCharacterBurnerStatStore = create<CharacterBurnerStatState>()(
       },
 
       modifyStatExponent: (statName: string, decrease?: boolean): void => {
-        const { limits } = useCharacterBurnerMiscStore.getState();
+        const { limits } = useCharacterBurnerLimitsStore.getState();
         const { getMentalPool, getEitherPool, getPhysicalPool } = useCharacterBurnerLifepathStore.getState();
 
         set(produce<CharacterBurnerStatState>(state => {

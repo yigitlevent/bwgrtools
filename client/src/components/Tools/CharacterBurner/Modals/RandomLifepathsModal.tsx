@@ -6,7 +6,7 @@ import { RandomLifepathsLists } from "./RandomLifepathsModal/RandomLifepathsList
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerBasicsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useLifepathRandomizerStore } from "../../../../hooks/featureStores/useLifepathRandomizerStore";
 import { FilterLifepaths } from "../../../../utils/FilterLifepaths";
 import { RandomNumber } from "../../../../utils/RandomNumber";
@@ -22,7 +22,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
 
   const { setStockAndReset, setGender } = useCharacterBurnerBasicsStore();
   const { addLifepath } = useCharacterBurnerLifepathStore();
-  const { modifyVariableAge } = useCharacterBurnerMiscStore();
+  const { modifyVariableAge } = useCharacterBurnerSpecialStore();
 
   const [newStock, setNewStock] = useState<Stock>();
   const [newGender, setNewGender] = useState<"Male" | "Female">("Male");
@@ -126,7 +126,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
 
   const transferCharacter = useCallback(() => {
     if (newStock?.id) {
-      // setStockAndReset resets useCharacterBurnerMiscStore (including special.variableAge), wiping the
+      // setStockAndReset resets useCharacterBurnerSpecialStore (including special.variableAge), wiping the
       // values createRandom already applied for live preview purposes - so they're re-applied here,
       // after the reset, using the same values that were rolled.
       setStockAndReset([newStock.id, newStock.name ?? ""]);

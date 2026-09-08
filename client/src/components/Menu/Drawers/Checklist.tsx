@@ -6,9 +6,10 @@ import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerAttributeStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerLimitsStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLimits";
 import { useCharacterBurnerResourceStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerResource";
 import { useCharacterBurnerSkillStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
+import { useCharacterBurnerSpecialStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerStatStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 import { RecordGet } from "../../../utils/RecordGet";
@@ -91,7 +92,8 @@ export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Eleme
   const { skills, getSkillPools } = useCharacterBurnerSkillStore();
   const { traits, getTraitPools } = useCharacterBurnerTraitStore();
   const { resources, getResourcePools } = useCharacterBurnerResourceStore();
-  const { special, questions, limits } = useCharacterBurnerMiscStore();
+  const { special, questions } = useCharacterBurnerSpecialStore();
+  const { limits } = useCharacterBurnerLimitsStore();
 
   const location = useLocation();
 

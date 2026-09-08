@@ -1,13 +1,13 @@
 import { Checkbox, Grid, Title } from "@mantine/core";
 import { Fragment } from "react";
 
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
 export function SpecialCitadelVows(): React.JSX.Element {
   const { hasTraitOpenByName } = useCharacterBurnerTraitStore();
-  const { special, modifyServantOfCitadelQualifies, modifySwornToProtectQualifies } = useCharacterBurnerMiscStore();
+  const { special, modifyServantOfCitadelQualifies, modifySwornToProtectQualifies } = useCharacterBurnerSpecialStore();
 
   return (
     <Fragment>

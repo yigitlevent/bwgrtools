@@ -3,7 +3,7 @@ import { Fragment, useCallback } from "react";
 
 import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerLifepathStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { RecordGet } from "../../../../../utils/RecordGet";
 import { AbilityButton } from "../../../../Shared/AbilityButton";
 
@@ -12,7 +12,7 @@ export function SpecialLifepaths(): React.JSX.Element {
   const ruleset = useRulesetStore();
   const { lifepaths } = useCharacterBurnerLifepathStore();
 
-  const { special, modifyVariableAge, modifyCompanionLifepath, modifyCompanionSkills } = useCharacterBurnerMiscStore();
+  const { special, modifyVariableAge, modifyCompanionLifepath, modifyCompanionSkills } = useCharacterBurnerSpecialStore();
 
   const getPossibleLifepaths = useCallback(() => {
     return ruleset.lifepaths

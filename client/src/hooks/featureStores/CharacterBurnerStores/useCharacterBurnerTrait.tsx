@@ -5,8 +5,8 @@ import { devtools } from "zustand/middleware";
 import { RefreshCharacterLimits } from "./refreshCharacterLimits";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerResourceStore } from "./useCharacterBurnerResource";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
@@ -86,7 +86,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
       getTraitPools: (lifepaths?: Lifepath[]): Points => {
         const { getTrait } = useRulesetStore.getState();
         const lps = lifepaths ?? useCharacterBurnerLifepathStore.getState().lifepaths;
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         const state = get();
 
         // Law of Diminishing Returns: a lifepath's trait pool contribution is lost entirely on its

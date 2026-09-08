@@ -1,7 +1,7 @@
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerResourceStore } from "./useCharacterBurnerResource";
 import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { GetGriefOrSpite } from "../../../logic/attributeFormulas";
@@ -14,7 +14,7 @@ import { GetGriefOrSpite } from "../../../logic/attributeFormulas";
  */
 export function ResolveGriefOrSpite(getSteel: () => AbilityPoints, isSpite: boolean, mournerGrief: number | undefined): AbilityPoints {
   const { resources } = useCharacterBurnerResourceStore.getState();
-  const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+  const { hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
   const { getStat } = useCharacterBurnerStatStore.getState();
   const { getAge, hasLifepathByName } = useCharacterBurnerLifepathStore.getState();
   const { skills } = useCharacterBurnerSkillStore.getState();

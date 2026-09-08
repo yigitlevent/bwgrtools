@@ -2,9 +2,10 @@ import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { useCharacterBurnerLimitsStore } from "./useCharacterBurnerLimits";
 import { useCharacterBurnerResourceStore } from "./useCharacterBurnerResource";
 import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { UniqueArray } from "../../../utils/UniqueArray";
@@ -23,7 +24,8 @@ export function BuildCharacterBurnerSnapshot(): CharacterBurnerExportSnapshot {
   const { traits } = useCharacterBurnerTraitStore.getState();
   const { attributes } = useCharacterBurnerAttributeStore.getState();
   const { resources } = useCharacterBurnerResourceStore.getState();
-  const { special, questions, limits } = useCharacterBurnerMiscStore.getState();
+  const { special, questions } = useCharacterBurnerSpecialStore.getState();
+  const { limits } = useCharacterBurnerLimitsStore.getState();
 
   return {
     basics: { name, concept, gender, stock, beliefs, instincts },
@@ -57,7 +59,8 @@ export function HydrateCharacterBurner(snapshot: CharacterBurnerExportSnapshot):
   useCharacterBurnerTraitStore.setState({ traits: new UniqueArray(snapshot.traits.traits) });
   useCharacterBurnerAttributeStore.setState({ attributes: new UniqueArray(snapshot.attributes.attributes) });
   useCharacterBurnerResourceStore.setState({ resources: snapshot.resources.resources });
-  useCharacterBurnerMiscStore.setState(snapshot.misc);
+  useCharacterBurnerSpecialStore.setState({ special: snapshot.misc.special, questions: snapshot.misc.questions });
+  useCharacterBurnerLimitsStore.setState({ limits: snapshot.misc.limits });
 
   useCharacterBurnerLifepathStore.getState().updateAvailableLifepaths();
   RecomputeCharacter("skillTrait");

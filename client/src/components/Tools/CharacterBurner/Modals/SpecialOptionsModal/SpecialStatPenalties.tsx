@@ -2,14 +2,14 @@ import { Grid, Select, Title } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
 export function SpecialStatPenalties(): React.JSX.Element {
   const ruleset = useRulesetStore();
   const { hasTraitOpenByName } = useCharacterBurnerTraitStore();
-  const { special, modifyCrippledStat, modifyFrailStat, modifyMissingLimb } = useCharacterBurnerMiscStore();
+  const { special, modifyCrippledStat, modifyFrailStat, modifyMissingLimb } = useCharacterBurnerSpecialStore();
 
   const statOptions = ruleset.abilities
     .filter((a): a is Ability & { id: dat.AbilityId; name: string; } => a.id !== null && a.name !== null && (a.abilityType[1] === "Mental Stat" || a.abilityType[1] === "Physical Stat"))

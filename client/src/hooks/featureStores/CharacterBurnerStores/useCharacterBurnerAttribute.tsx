@@ -5,9 +5,9 @@ import { devtools } from "zustand/middleware";
 import { ResolveGriefOrSpite } from "./resolveGriefOrSpite";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerResourceStore } from "./useCharacterBurnerResource";
 import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { GetAncestralTaint, GetCircles, GetCorruption, GetFaith, GetFaithInDeadGods, GetGreed, GetHatred, GetHealth, GetHesitation, GetMortalWound, GetNaturalGreed, GetReflexes, GetResources, GetSteel, GetStride, GetVoidEmbrace } from "../../../logic/attributeFormulas";
@@ -86,14 +86,14 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
 
       getHealth: (): AbilityPoints => {
         const { stock } = useCharacterBurnerBasicsStore.getState();
-        const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
         const { getStat } = useCharacterBurnerStatStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
         return GetHealth(getStat("Will"), getStat("Forte"), stock[1], hasQuestionTrueByName, hasTraitOpenByName);
       },
 
       getSteel: (): AbilityPoints => {
-        const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
         const { getStat } = useCharacterBurnerStatStore.getState();
         return GetSteel(getStat("Will"), getStat("Forte"), hasQuestionTrueByName);
       },
@@ -106,7 +106,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
 
       getGreed: (): AbilityPoints => {
         const { resources, getResourcePools } = useCharacterBurnerResourceStore.getState();
-        const { hasQuestionTrueByName, special } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrueByName, special } = useCharacterBurnerSpecialStore.getState();
         const { getStat } = useCharacterBurnerStatStore.getState();
         const { getAge, lifepaths } = useCharacterBurnerLifepathStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
@@ -115,7 +115,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
 
       getNaturalGreed: (): number => {
         const { resources, getResourcePools } = useCharacterBurnerResourceStore.getState();
-        const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
         const { getStat } = useCharacterBurnerStatStore.getState();
         const { getAge, lifepaths } = useCharacterBurnerLifepathStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
@@ -123,7 +123,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
       },
 
       getGriefOrSpite: (isSpite: boolean): AbilityPoints => {
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         return ResolveGriefOrSpite(get().getSteel, isSpite, special.mournerGrief);
       },
 
@@ -132,25 +132,25 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
       },
 
       getFaith: (): AbilityPoints => {
-        const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
         return GetFaith(hasQuestionTrueByName, hasTraitOpenByName);
       },
 
       getFaithInDeadGods: (): AbilityPoints => {
-        const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
         return GetFaithInDeadGods(hasQuestionTrueByName);
       },
 
       getHatred: (): AbilityPoints => {
-        const { special, hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+        const { special, hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
         const { getStat } = useCharacterBurnerStatStore.getState();
         const steel = get().getSteel();
         return GetHatred(getStat("Perception"), getStat("Will"), steel, special, hasQuestionTrueByName);
       },
 
       getVoidEmbrace: (): AbilityPoints => {
-        const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
         return GetVoidEmbrace(hasQuestionTrueByName);
       },
 
@@ -162,7 +162,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
 
       getCorruption: (): AbilityPoints => {
         const { resources } = useCharacterBurnerResourceStore.getState();
-        const { hasQuestionTrueByName } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrueByName } = useCharacterBurnerSpecialStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
         return GetCorruption(resources, hasTraitOpenByName, hasQuestionTrueByName);
       },
@@ -170,7 +170,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
       getResources: (): AbilityPoints => {
         const { resources } = useCharacterBurnerResourceStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         return GetResources(resources, hasTraitOpenByName, special.darlingOfCourtResource, special.lordOfAgesResource);
       },
 
@@ -178,7 +178,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
         const { resources } = useCharacterBurnerResourceStore.getState();
         const { getStat } = useCharacterBurnerStatStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         return GetCircles(getStat("Will"), resources, hasTraitOpenByName, special.earToGroundResource);
       },
 
@@ -186,7 +186,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
         const { stock } = useCharacterBurnerBasicsStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
         const { getStock, getAbility } = useRulesetStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         const isMissingLeg = special.missingLimb !== undefined && getAbility(special.missingLimb).name === "Speed";
         return GetStride(getStock(stock[0]).stride ?? 0, hasTraitOpenByName, isMissingLeg);
       },

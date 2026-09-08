@@ -2,14 +2,14 @@ import { Grid, Select, Title } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useCharacterBurnerTraitStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
 export function SpecialTaintedLegacy(): React.JSX.Element {
   const ruleset = useRulesetStore();
   const { hasTraitOpenByName } = useCharacterBurnerTraitStore();
-  const { special, modifyTaintedLegacyTrait } = useCharacterBurnerMiscStore();
+  const { special, modifyTaintedLegacyTrait } = useCharacterBurnerSpecialStore();
 
   if (!hasTraitOpenByName("Tainted Legacy")) return <Fragment />;
 
