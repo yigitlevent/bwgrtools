@@ -1,4 +1,5 @@
 import { Average } from "../utils/Average";
+import { Clamp } from "../utils/Clamp";
 
 
 const GreedLifepaths = ["Trader", "Mask Bearer", "Master of Arches", "Master of Forges", "Master Engraver", "Treasurer", "Quartermaster", "Seneschal", "Prince"];
@@ -16,19 +17,34 @@ export function GetMortalWound(power: AbilityPoints, forte: AbilityPoints): Abil
   return { shade: shades.every(v => v === "G") ? "G" : "B", exponent: Average(roots) };
 }
 
-export function GetReflexes(perception: AbilityPoints, agility: AbilityPoints, speed: AbilityPoints): AbilityPoints {
+export function GetReflexes(perception: AbilityPoints, agility: AbilityPoints, speed: AbilityPoints, hasTraitOpenByName: (name: string) => boolean): AbilityPoints {
   const shades = [perception.shade, agility.shade, speed.shade];
   const roots = [perception.exponent, agility.exponent, speed.exponent];
 
   if (shades.some(v => v === "G") && shades.some(v => v === "B")) roots[0] += 2;
 
   const shade = shades.every(v => v === "G") ? "G" : "B";
-  const exponent = Math.floor(Average(roots));
+  const average = Average(roots);
+  const exponent = (hasTraitOpenByName("Quickened Pulse") ? Math.ceil(average) : Math.floor(average)) + (hasTraitOpenByName("Fast Reflexes") ? 1 : 0);
 
   return { shade, exponent };
 }
 
-export function GetHealth(will: AbilityPoints, forte: AbilityPoints, stockName: string, hasQuestionTrueByName: (name: string) => boolean): AbilityPoints {
+export function GetStride(stockStride: number, hasTraitOpenByName: (name: string) => boolean, isMissingLeg: boolean): number {
+  // Amoeboid overrides stride entirely, regardless of any other trait.
+  if (hasTraitOpenByName("Amoeboid")) return 1;
+
+  let stride = stockStride;
+  // Lame blocks any stride-increasing trait (Sprinter), so its own -1 is applied last/unconditionally.
+  if (hasTraitOpenByName("Sprinter") && !hasTraitOpenByName("Lame")) stride += 1;
+  if (hasTraitOpenByName("Lame")) stride -= 1;
+  // Missing Limb: a missing leg (not arm) reduces stride by two.
+  if (hasTraitOpenByName("Missing Limb") && isMissingLeg) stride -= 2;
+
+  return stride;
+}
+
+export function GetHealth(will: AbilityPoints, forte: AbilityPoints, stockName: string, hasQuestionTrueByName: (name: string) => boolean, hasTraitOpenByName: (name: string) => boolean): AbilityPoints {
   const shades = [will.shade, forte.shade];
   const roots = [will.exponent, forte.exponent];
   if (shades.some(v => v === "G") && shades.some(v => v === "B")) { roots.push(2); }
@@ -41,8 +57,12 @@ export function GetHealth(will: AbilityPoints, forte: AbilityPoints, stockName: 
   if (["Dwarf", "Elf", "Orc"].includes(stockName)) bonus += 1;
   if (hasQuestionTrueByName("ACTIVE")) bonus += 1;
   if (hasQuestionTrueByName("HAPPY")) bonus += 1;
+  if (hasTraitOpenByName("Sickly")) bonus -= 1;
 
-  return { shade: shades.every(v => v === "G") ? "G" : "B", exponent: Math.floor(Average(roots)) + bonus };
+  const average = Average(roots);
+  const exponent = (hasTraitOpenByName("Hardened") ? Math.ceil(average) : Math.floor(average)) + bonus;
+
+  return { shade: shades.every(v => v === "G") ? "G" : "B", exponent: hasTraitOpenByName("Sickly") ? Clamp(exponent, 0, 5) : exponent };
 }
 
 export function GetSteel(will: AbilityPoints, forte: AbilityPoints, hasQuestionTrueByName: (name: string) => boolean): AbilityPoints {
@@ -100,7 +120,7 @@ export const HesitationSituationalTraits: { name: string; note: string; }[] = [
   { name: "Skittish", note: "Increase hesitation by one for Steel tests caused by fear and surprise." }
 ];
 
-export function GetGreed(
+export function GetNaturalGreed(
   will: AbilityPoints,
   age: number,
   resourcePoints: Points,
@@ -108,7 +128,7 @@ export function GetGreed(
   resources: Record<string, CharacterResource>,
   hasTraitOpenByName: (name: string) => boolean,
   hasQuestionTrueByName: (name: string) => boolean
-): AbilityPoints {
+): number {
   const relationships = Object.values(resources).filter(v => v.type[1] === "Relationship");
 
   let bonus = 0;
@@ -127,7 +147,27 @@ export function GetGreed(
   bonus += -1 * relationships.filter(v => v.modifiers.includes("Romantic")).length;
   bonus += 1 * relationships.filter(v => v.modifiers.includes("Hateful")).length;
   bonus += 2 * relationships.filter(v => v.modifiers.includes("Immediate family") && v.modifiers.includes("Hateful")).length;
-  if (hasTraitOpenByName("Virtuous")) bonus += 1;
+  if (hasTraitOpenByName("Dangerous Obsession")) bonus += 1;
+  if (hasTraitOpenByName("Obsessive")) bonus += 1;
+  if (hasTraitOpenByName("Virtuous")) bonus -= 1;
+
+  return bonus;
+}
+
+export function GetGreed(
+  will: AbilityPoints,
+  age: number,
+  resourcePoints: Points,
+  lifepaths: Lifepath[],
+  resources: Record<string, CharacterResource>,
+  hasTraitOpenByName: (name: string) => boolean,
+  hasQuestionTrueByName: (name: string) => boolean,
+  avariceGreed: number | undefined
+): AbilityPoints {
+  const naturalGreed = GetNaturalGreed(will, age, resourcePoints, lifepaths, resources, hasTraitOpenByName, hasQuestionTrueByName);
+
+  // Avarice: the player may raise starting Greed to any exponent higher than it would otherwise be.
+  const bonus = hasTraitOpenByName("Avarice") && avariceGreed !== undefined && avariceGreed > naturalGreed ? avariceGreed : naturalGreed;
 
   return { shade: "B", exponent: bonus };
 }
@@ -141,7 +181,9 @@ export function GetGriefOrSpite(
   skills: CharacterSkill[],
   traits: CharacterTrait[],
   hasLifepathByName: (name: string) => number,
-  hasQuestionTrueByName: (name: string) => boolean
+  hasQuestionTrueByName: (name: string) => boolean,
+  hasTraitOpenByName: (name: string) => boolean,
+  mournerGrief: number | undefined
 ): AbilityPoints {
   const knowsLament = skills.filter(v => v.name.toLowerCase().includes("lament") && v.isOpen !== "no");
 
@@ -163,6 +205,10 @@ export function GetGriefOrSpite(
   else if (age > 750) bonus += 2;
   else if (age > 500) bonus += 1;
 
+  if (hasTraitOpenByName("Exile")) bonus += 1;
+  if (hasTraitOpenByName("Slayer")) bonus += 1;
+  if (hasTraitOpenByName("Unbreakable")) bonus -= 2;
+
   if (isSpite) {
     if (SpiteTraits.some(v => traits.filter(t => t.name === v && t.isOpen).length > 0)) bonus += 1;
     const bitterReminders = Object.values(resources).filter(v => v.name === "Bitter Reminder");
@@ -176,16 +222,26 @@ export function GetGriefOrSpite(
     if (hasQuestionTrueByName("LOVE")) bonus -= 1;
   }
 
+  // Mourner: the player may set starting Grief to any value up to exponent 9 (never lower than the
+  // naturally computed value).
+  if (!isSpite && hasTraitOpenByName("Mourner") && mournerGrief !== undefined && mournerGrief > bonus) bonus = Math.min(mournerGrief, 9);
+
   return { shade: "B", exponent: bonus };
 }
 
-export function GetFaith(hasQuestionTrueByName: (name: string) => boolean): AbilityPoints {
+export function GetFaith(hasQuestionTrueByName: (name: string) => boolean, hasTraitOpenByName: (name: string) => boolean): AbilityPoints {
+  const shade = hasTraitOpenByName("Chosen One") ? "G" : "B";
+
+  // Visionary Faith is a fixed B3 with no question-driven advancement -- it's instead increased by
+  // purchasing a Visionary Cult, a mechanic the burner doesn't otherwise model.
+  if (hasTraitOpenByName("Visionary Faith")) return { shade, exponent: 3 };
+
   let bonus = 0;
   if (hasQuestionTrueByName("TRUST")) bonus += 1;
   if (hasQuestionTrueByName("CONSULT")) bonus += 1;
   if (hasQuestionTrueByName("SERVE")) bonus += 1;
 
-  return { shade: "B", exponent: 3 + bonus };
+  return { shade, exponent: 3 + bonus };
 }
 
 export function GetFaithInDeadGods(hasQuestionTrueByName: (name: string) => boolean): AbilityPoints {
@@ -250,6 +306,7 @@ export function GetCorruption(
   if (hasTraitOpenByName("Gifted")) bonus += 1;
   if (hasTraitOpenByName("Faithful") || hasTraitOpenByName("Faith in Dead Gods")) bonus += 1;
   if (hasTraitOpenByName("Chosen One")) bonus += 1;
+  if (hasTraitOpenByName("Corrupted")) bonus += 1;
   bonus += spiritMarks.length > 0 ? spiritMarks.map(v => v.cost).reduce((a, b) => a + (b === 10 ? 1 : b === 25 ? 2 : 3), 0) : 0;
   bonus += orders.length > 0 ? orders.map(v => v.cost).reduce((a, b) => a + (b === 10 ? 1 : b === 20 ? 2 : b === 25 ? 3 : 4), 0) : 0;
   if (hasQuestionTrueByName("PRAY")) bonus += 1;
@@ -258,18 +315,33 @@ export function GetCorruption(
   return { shade: "B", exponent: bonus };
 }
 
-export function GetResources(resources: Record<string, CharacterResource>): AbilityPoints {
+export function GetResources(
+  resources: Record<string, CharacterResource>, hasTraitOpenByName: (name: string) => boolean,
+  darlingOfCourtResource: string | undefined, lordOfAgesResource: string | undefined
+): AbilityPoints {
   let bonus = 0;
-  const res = Object.values(resources).filter(v => ["Property", "Reputation", "Affiliation"].includes(v.type[1]));
-  if (res.length > 0) { bonus += Math.floor(res.map(v => v.cost).reduce((a, b) => a + b) / 15); }
+  const res = Object.entries(resources).filter(([, v]) => ["Property", "Reputation", "Affiliation"].includes(v.type[1]));
+  // Darling of the Court: +1D to a chosen owned Reputation resource's cost. Lord of Ages: +1D to a
+  // chosen owned Reputation or Affiliation resource's cost.
+  const total = res.reduce((a, [key, v]) => {
+    const darlingBonus = hasTraitOpenByName("Darling of the Court") && key === darlingOfCourtResource ? 1 : 0;
+    const lordBonus = hasTraitOpenByName("Lord of Ages") && key === lordOfAgesResource ? 1 : 0;
+    return a + v.cost + darlingBonus + lordBonus;
+  }, 0);
+  if (res.length > 0) { bonus += Math.floor(total / 15); }
 
   return { shade: "B", exponent: bonus };
 }
 
-export function GetCircles(will: AbilityPoints, resources: Record<string, CharacterResource>): AbilityPoints {
+export function GetCircles(
+  will: AbilityPoints, resources: Record<string, CharacterResource>, hasTraitOpenByName: (name: string) => boolean, earToGroundResource: string | undefined
+): AbilityPoints {
   let bonus = 0;
   const res = Object.values(resources).filter(v => ["Property", "Relationship"].includes(v.type[1]));
   if (res.length > 0 && res.map(v => v.cost).reduce((a, b) => a + b) >= 50) { bonus += 1; }
+  if (hasTraitOpenByName("Prince of the Blood")) bonus += 1;
+  // Ear to the Ground: +1 Circles if a chosen owned Relationship is with an important/powerful captain.
+  if (hasTraitOpenByName("Ear to the Ground") && earToGroundResource !== undefined && earToGroundResource in resources) bonus += 1;
 
   return { shade: "B", exponent: Math.floor(will.exponent / 2) + bonus };
 }

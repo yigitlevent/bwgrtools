@@ -61,6 +61,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
           }));
 
           useCharacterBurnerResourceStore.getState().updateResources();
+          useCharacterBurnerResourceStore.getState().updateLessonOfOne();
           useCharacterBurnerMiscStore.getState().refreshLimits();
         }
       },
@@ -84,6 +85,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
       getTraitPools: (lifepaths?: Lifepath[]): Points => {
         const { getTrait } = useRulesetStore.getState();
         const lps = lifepaths ?? useCharacterBurnerLifepathStore.getState().lifepaths;
+        const { special } = useCharacterBurnerMiscStore.getState();
         const state = get();
 
         // Law of Diminishing Returns: a lifepath's trait pool contribution is lost entirely on its
@@ -101,6 +103,8 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
           if (trait.isOpen) {
             if (trait.type === "Mandatory" || trait.type === "Lifepath") tSpent += 1;
             else if (trait.type === "General") {
+              // Tainted Legacy's chosen Monstrous trait is granted free.
+              if (trait.id === special.taintedLegacyTrait) return;
               const rulesetTrait = getTrait(trait.id);
               tSpent += rulesetTrait.cost ?? 0;
             }
@@ -171,8 +175,8 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
           state.traits = characterTraits;
         }));
 
-        useCharacterBurnerMiscStore.getState().refreshTraitEffects();
         useCharacterBurnerResourceStore.getState().updateResources();
+        useCharacterBurnerResourceStore.getState().updateLessonOfOne();
         useCharacterBurnerMiscStore.getState().refreshLimits();
       }
     }),

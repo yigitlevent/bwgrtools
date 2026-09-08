@@ -47,6 +47,42 @@ interface CharacterSpecial {
   companionSkills: Record<string, dat.SkillId[]>;
   chosenSubskills: Record<dat.SkillId, dat.SkillId[]>;
   chosenResourceType: Record<dat.TraitId, dat.ResourceTypeId>;
+  avariceGreed: number | undefined;
+  // Crippled: player-chosen stat, capped start <=3 / max 4.
+  crippledStat: dat.AbilityId | undefined;
+  // Frail: player-chosen stat (Power or Forte), -1 and capped at max 5.
+  frailStat: dat.AbilityId | undefined;
+  // Missing Limb: Agility's id for a missing arm (cap 5), Speed's id for a missing leg (cap 4, stride
+  // -2).
+  missingLimb: dat.AbilityId | undefined;
+  // Child Prodigy: exactly one of these two is set (mutually exclusive) -- either +3D to a chosen
+  // stat (Perception or Will), or one chosen skill shade-shifted to gray.
+  childProdigyStat: dat.AbilityId | undefined;
+  childProdigyShiftedSkill: dat.SkillId | undefined;
+  // Darling of the Court: +1D to a chosen owned Reputation resource (keyed by its `resources` record
+  // key, same as other resource references).
+  darlingOfCourtResource: string | undefined;
+  // Ear to the Ground: +1 Circles if a chosen owned Relationship resource is flagged as "the captain".
+  earToGroundResource: string | undefined;
+  // Fey Blood: one trait chosen from the Elf/Dwarf/Orc trait lists, added as a General trait (its
+  // own ruleset cost already correctly free for Lifepath/Common, paid for Special).
+  feyBloodTrait: dat.TraitId | undefined;
+  // Lesson of One: a chosen owned Relationship (with the mentor) grants a free Reputation resource --
+  // 1D if the relationship is "important" (cost 10), 2D if "powerful" (cost 15), nothing otherwise.
+  lessonOfOneRelationship: string | undefined;
+  // Lord of Ages: +1D to a chosen owned Reputation or Affiliation resource.
+  lordOfAgesResource: string | undefined;
+  // Mourner: player-chosen starting Grief, up to exponent 9 (never lower than the natural value).
+  mournerGrief: number | undefined;
+  // Servant of the Citadel / Sworn to Protect: player affirms they've written a qualifying
+  // Belief (+Instinct, for Servant of the Citadel) about the citadel/Wilderlands/royalty. The burner
+  // cannot verify Belief/Instinct text, so this is a self-reported checkbox gating the 2D
+  // reputation + 2D major affiliation grant.
+  servantOfCitadelQualifies: boolean;
+  swornToProtectQualifies: boolean;
+  // Tainted Legacy: one trait chosen from the Monstrous category, added as a General trait but
+  // granted free (its normal 1-point ruleset cost is waived in getTraitPools).
+  taintedLegacyTrait: dat.TraitId | undefined;
 }
 
 interface CharacterStockLimits {
@@ -77,12 +113,6 @@ interface CharacterQuestion {
   question: string;
   answer: boolean;
 }
-
-type CharacterTraitEffect =
-  | { roundUp: dat.AbilityId; }
-  | { roundUp: "Mortal Wound"; }
-  | { callOn: dat.AbilityId; }
-  | { callOn: dat.SkillId; };
 
 type HuntingGroundsList = "Waste" | "Marginal" | "Typical" | "Plentiful" | "Untouched";
 
@@ -132,6 +162,5 @@ interface CharacterBurnerExportSnapshot {
     special: CharacterSpecial;
     questions: CharacterQuestion[];
     limits: CharacterStockLimits;
-    traitEffects: CharacterTraitEffect[];
   };
 }

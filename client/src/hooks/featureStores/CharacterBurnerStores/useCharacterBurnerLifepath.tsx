@@ -106,13 +106,16 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         const lps = lifepaths ?? get().lifepaths;
         const { getAgePool } = useCharacterBurnerBasicsStore.getState();
         const { stats } = useCharacterBurnerStatStore.getState();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
 
         // Law of Diminishing Returns: a lifepath's stat pool contribution is lost entirely on its
         // 3rd+ occurrence.
         const occurrences = GetLifepathOccurrences(lps);
         const stockAgePool = getAgePool().mentalPool;
         const lifepathPool = lps.reduce((pv, cv, i) => occurrences[i] >= 3 ? pv : pv + (cv.pools.mentalStatPool ?? 0), 0);
-        const total = stockAgePool + lifepathPool;
+        // Mind over Matter/Robust move one point between the mental and physical pools.
+        const traitShift = (hasTraitOpenByName("Mind over Matter") ? 1 : 0) - (hasTraitOpenByName("Robust") ? 1 : 0);
+        const total = stockAgePool + lifepathPool + traitShift;
 
         const spent =
           Object.values(stats)
@@ -127,13 +130,16 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         const lps = lifepaths ?? get().lifepaths;
         const { getAgePool } = useCharacterBurnerBasicsStore.getState();
         const { stats } = useCharacterBurnerStatStore.getState();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
 
         // Law of Diminishing Returns: a lifepath's stat pool contribution is lost entirely on its
         // 3rd+ occurrence.
         const occurrences = GetLifepathOccurrences(lps);
         const stockAgePool = getAgePool().physicalPool;
         const lifepathPool = lps.reduce((pv, cv, i) => occurrences[i] >= 3 ? pv : pv + (cv.pools.physicalStatPool ?? 0), 0);
-        const total = stockAgePool + lifepathPool;
+        // Mind over Matter/Robust move one point between the mental and physical pools.
+        const traitShift = (hasTraitOpenByName("Robust") ? 1 : 0) - (hasTraitOpenByName("Mind over Matter") ? 1 : 0);
+        const total = stockAgePool + lifepathPool + traitShift;
 
         const spent =
           Object.values(stats)

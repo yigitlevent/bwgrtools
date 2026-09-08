@@ -6,6 +6,7 @@ import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute"
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
+import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { Average } from "../../../utils/Average";
 import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 import { GetLifepathYears } from "../../../utils/GetLifepathYears";
@@ -170,6 +171,8 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         const ruleset = useRulesetStore.getState();
         const { getStat } = useCharacterBurnerStatStore.getState();
         const { getAttribute, hasAttribute } = useCharacterBurnerAttributeStore.getState();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
+        const { special } = useCharacterBurnerMiscStore.getState();
 
         const charSkill = skills.find(skillId);
 
@@ -191,8 +194,20 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
               else return getStat(s[1]).exponent;
             });
 
-            shade = rootShades.every(v => v === "G") ? "G" : "B";
-            exponent = Math.floor(Average(rootExponents) / 2);
+            // Cipher: unconditionally shade-shifts Inconspicuous to gray. Child Prodigy: player-chosen
+            // skill shade-shifted to gray (mutually exclusive with the +3D stat option).
+            shade =
+              (charSkill.name === "Inconspicuous" && hasTraitOpenByName("Cipher")) || (hasTraitOpenByName("Child Prodigy") && special.childProdigyShiftedSkill === skillId) || rootShades.every(v => v === "G") ? "G" : "B";
+
+            // Acute: round up instead of down for any skill with Perception in its roots. Hand-Eye
+            // Coordination: same, but only for skills rooted specifically in Perception AND Agility.
+            const rootNames = skillRoots.map(s => s[1]);
+            const isPerceptionAndAgility = rootNames.includes("Perception") && rootNames.includes("Agility");
+            const roundsUp =
+              (hasTraitOpenByName("Acute") && rootNames.includes("Perception"))
+              || (hasTraitOpenByName("Hand-Eye Coordination") && isPerceptionAndAgility);
+
+            exponent = roundsUp ? Math.ceil(Average(rootExponents) / 2) : Math.floor(Average(rootExponents) / 2);
           }
 
           exponent += charSkill.advancement.general + charSkill.advancement.lifepath;

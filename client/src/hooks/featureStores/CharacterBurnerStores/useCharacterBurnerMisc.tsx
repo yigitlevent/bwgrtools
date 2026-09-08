@@ -17,7 +17,6 @@ export interface CharacterBurnerMiscState {
   special: CharacterSpecial;
   questions: CharacterQuestion[];
   limits: CharacterStockLimits;
-  traitEffects: CharacterTraitEffect[];
 
   reset: () => void;
 
@@ -27,6 +26,21 @@ export interface CharacterBurnerMiscState {
   modifySkillSubskills: (skillId: dat.SkillId, subskillIds: dat.SkillId[] | null, canSelectMultiple: boolean) => void;
   resetSkillSubskills: (skillIds: dat.SkillId[]) => void;
   modifyChosenResourceType: (traitId: dat.TraitId, resourceTypeId: dat.ResourceTypeId) => void;
+  modifyAvariceGreed: (greed: number | undefined) => void;
+  modifyCrippledStat: (stat: dat.AbilityId | undefined) => void;
+  modifyFrailStat: (stat: dat.AbilityId | undefined) => void;
+  modifyMissingLimb: (limb: dat.AbilityId | undefined) => void;
+  modifyChildProdigyStat: (stat: dat.AbilityId | undefined) => void;
+  modifyChildProdigyShiftedSkill: (skillId: dat.SkillId | undefined) => void;
+  modifyDarlingOfCourtResource: (resourceKey: string | undefined) => void;
+  modifyEarToGroundResource: (resourceKey: string | undefined) => void;
+  modifyFeyBloodTrait: (trait: Trait | undefined) => void;
+  modifyLessonOfOneRelationship: (resourceKey: string | undefined) => void;
+  modifyLordOfAgesResource: (resourceKey: string | undefined) => void;
+  modifyMournerGrief: (grief: number | undefined) => void;
+  modifyServantOfCitadelQualifies: (qualifies: boolean) => void;
+  modifySwornToProtectQualifies: (qualifies: boolean) => void;
+  modifyTaintedLegacyTrait: (trait: Trait | undefined) => void;
 
   addBrutalLifeTrait: (traitId: [id: dat.TraitId, name: string] | "No Trait") => void;
   setHuntingGround: (huntingGround: HuntingGroundsList) => void;
@@ -37,7 +51,6 @@ export interface CharacterBurnerMiscState {
   hasQuestionTrueByName: (name: string) => boolean;
 
   getTolerances: () => string[];
-  refreshTraitEffects: () => void;
   refreshLimits: () => void;
 }
 
@@ -50,12 +63,25 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         variableAge: {},
         companionSkills: {},
         chosenSubskills: {},
-        chosenResourceType: {}
+        chosenResourceType: {},
+        avariceGreed: undefined,
+        crippledStat: undefined,
+        frailStat: undefined,
+        missingLimb: undefined,
+        childProdigyStat: undefined,
+        childProdigyShiftedSkill: undefined,
+        darlingOfCourtResource: undefined,
+        earToGroundResource: undefined,
+        feyBloodTrait: undefined,
+        lessonOfOneRelationship: undefined,
+        lordOfAgesResource: undefined,
+        mournerGrief: undefined,
+        servantOfCitadelQualifies: false,
+        swornToProtectQualifies: false,
+        taintedLegacyTrait: undefined
       },
 
       questions: [],
-
-      traitEffects: [],
 
       limits: {
         beliefs: 3,
@@ -79,13 +105,26 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
             variableAge: {},
             companionSkills: {},
             chosenSubskills: {},
-            chosenResourceType: {}
+            chosenResourceType: {},
+            avariceGreed: undefined,
+            crippledStat: undefined,
+            frailStat: undefined,
+            missingLimb: undefined,
+            childProdigyStat: undefined,
+            childProdigyShiftedSkill: undefined,
+            darlingOfCourtResource: undefined,
+            earToGroundResource: undefined,
+            feyBloodTrait: undefined,
+            lessonOfOneRelationship: undefined,
+            lordOfAgesResource: undefined,
+            mournerGrief: undefined,
+            servantOfCitadelQualifies: false,
+            swornToProtectQualifies: false,
+            taintedLegacyTrait: undefined
           };
           state.questions = [];
-          state.traitEffects = [];
         }));
 
-        get().refreshTraitEffects();
         get().refreshLimits();
       },
 
@@ -153,6 +192,122 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         useCharacterBurnerResourceStore.getState().updateResources();
       },
 
+      modifyAvariceGreed: (greed: number | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.avariceGreed = greed;
+        }));
+      },
+
+      modifyCrippledStat: (stat: dat.AbilityId | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.crippledStat = stat;
+        }));
+
+        get().refreshLimits();
+      },
+
+      modifyFrailStat: (stat: dat.AbilityId | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.frailStat = stat;
+        }));
+
+        get().refreshLimits();
+      },
+
+      modifyMissingLimb: (limb: dat.AbilityId | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.missingLimb = limb;
+        }));
+
+        get().refreshLimits();
+      },
+
+      modifyChildProdigyStat: (stat: dat.AbilityId | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.childProdigyStat = stat;
+          state.special.childProdigyShiftedSkill = undefined;
+        }));
+      },
+
+      modifyChildProdigyShiftedSkill: (skillId: dat.SkillId | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.childProdigyShiftedSkill = skillId;
+          state.special.childProdigyStat = undefined;
+        }));
+      },
+
+      modifyDarlingOfCourtResource: (resourceKey: string | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.darlingOfCourtResource = resourceKey;
+        }));
+      },
+
+      modifyEarToGroundResource: (resourceKey: string | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.earToGroundResource = resourceKey;
+        }));
+      },
+
+      modifyFeyBloodTrait: (trait: Trait | undefined): void => {
+        const { special } = get();
+        const { addGeneralTrait, removeGeneralTrait } = useCharacterBurnerTraitStore.getState();
+
+        if (special.feyBloodTrait !== undefined) removeGeneralTrait(special.feyBloodTrait);
+        if (trait?.id) addGeneralTrait(trait);
+
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.feyBloodTrait = trait?.id ?? undefined;
+        }));
+      },
+
+      modifyLessonOfOneRelationship: (resourceKey: string | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.lessonOfOneRelationship = resourceKey;
+        }));
+
+        useCharacterBurnerResourceStore.getState().updateLessonOfOne();
+      },
+
+      modifyLordOfAgesResource: (resourceKey: string | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.lordOfAgesResource = resourceKey;
+        }));
+      },
+
+      modifyMournerGrief: (grief: number | undefined): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.mournerGrief = grief;
+        }));
+      },
+
+      modifyServantOfCitadelQualifies: (qualifies: boolean): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.servantOfCitadelQualifies = qualifies;
+        }));
+
+        useCharacterBurnerResourceStore.getState().updateResources();
+      },
+
+      modifySwornToProtectQualifies: (qualifies: boolean): void => {
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.swornToProtectQualifies = qualifies;
+        }));
+
+        useCharacterBurnerResourceStore.getState().updateResources();
+      },
+
+      modifyTaintedLegacyTrait: (trait: Trait | undefined): void => {
+        const { special } = get();
+        const { addGeneralTrait, removeGeneralTrait } = useCharacterBurnerTraitStore.getState();
+
+        if (special.taintedLegacyTrait !== undefined) removeGeneralTrait(special.taintedLegacyTrait);
+        if (trait?.id) addGeneralTrait(trait);
+
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.special.taintedLegacyTrait = trait?.id ?? undefined;
+        }));
+      },
+
       addBrutalLifeTrait: (traitId: [id: dat.TraitId, name: string] | "No Trait") => {
         set(produce<CharacterBurnerMiscState>(state => {
           const prev = state.special.stock.brutalLifeTraits;
@@ -215,34 +370,6 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         return get().questions.some(v => v.name === name && v.answer);
       },
 
-      refreshTraitEffects: () => {
-        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-
-        set(produce<CharacterBurnerMiscState>(state => {
-          state.traitEffects = [];
-
-          // TODO: The ruleset has ~544 Call-on/Die traits and ~125 Monstrous traits; there's no
-          // generic rule for deriving their mechanical effect from type/category alone, so each one
-          // needs its own case added here as it's needed, following the pattern below (Tough).
-          // This also needs to cover traits that grant free resources (e.g. a trait that grants a
-          // free reputation/relationship), not just numeric calculation effects like Tough's --
-          // that's a new kind of CharacterTraitEffect (or a separate resource-granting mechanism,
-          // see the "auto resources from traits list" TODO in useCharacterBurnerResource.tsx).
-          // Go through traits stock by stock rather than trying to do all ~670 at once:
-          //   - Dwarf traits
-          //   - Elf traits (including Dark Elf)
-          //   - Human traits
-          //   - Orc traits
-          //   - Roden traits
-          //   - Great Wolf traits
-          //   - Troll traits
-          //   - General call-on traits
-          //   - General die traits
-          //   - Monstrous traits
-          if (hasTraitOpenByName("Tough")) state.traitEffects.push({ roundUp: "Mortal Wound" });
-        }));
-      },
-
       refreshLimits: (): void => {
         const { stock } = useCharacterBurnerBasicsStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
@@ -283,13 +410,41 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
             limits.stats.Agility = { min: 1, max: 5 };
             limits.stats.Speed = { min: 1, max: 5 };
           }
+          if (hasTraitOpenByName("Stone's Age")) {
+            limits.stats.Perception = { min: 1, max: 6 };
+            limits.stats.Will = { min: 1, max: 6 };
+          }
         }
 
         // Traits granting an additional (4th) Belief or Instinct -- verified against each trait's
         // actual description text. "Possessed" also grants an extra BIT set but for a separate
         // possessing spirit (not a 4th slot on the character's own sheet), so it's out of scope here.
-        if (["Loyal", "Oathsworn", "Sworn to the Order", "Zealot"].some(name => hasTraitOpenByName(name))) limits.beliefs = 4;
+        if (["Loyal", "Oathsworn", "Sworn to the Order", "Zealot", "Noblesse Oblige"].some(name => hasTraitOpenByName(name))) limits.beliefs = 4;
         if (hasTraitOpenByName("Alarmist")) limits.instincts = 4;
+
+        const ruleset = useRulesetStore.getState();
+        const { special } = get();
+
+        // Crippled: player-chosen stat capped at exponent 4 (the "cannot start higher than 3" half
+        // of the rule isn't representable -- the burner has no starting-vs-advancement distinction).
+        if (hasTraitOpenByName("Crippled") && special.crippledStat !== undefined) {
+          const statName = ruleset.getAbility(special.crippledStat).name;
+          if (statName) limits.stats[statName] = { min: 1, max: 4 };
+        }
+
+        // Frail: player-chosen stat (Power or Forte) capped at exponent 5.
+        if (hasTraitOpenByName("Frail") && special.frailStat !== undefined) {
+          const statName = ruleset.getAbility(special.frailStat).name;
+          if (statName) limits.stats[statName] = { min: 1, max: 5 };
+        }
+
+        // Missing Limb: a missing arm caps Agility at 5; a missing leg caps Speed at 4 (stride is
+        // handled in GetStride, not here).
+        if (hasTraitOpenByName("Missing Limb") && special.missingLimb !== undefined) {
+          const limbName = ruleset.getAbility(special.missingLimb).name;
+          if (limbName === "Agility") limits.stats.Agility = { min: 1, max: 5 };
+          else if (limbName === "Speed") limits.stats.Speed = { min: 1, max: 4 };
+        }
 
         set(produce<CharacterBurnerMiscState>(state => {
           state.limits = limits;
@@ -298,7 +453,7 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
 
       getTolerances: (): string[] => {
         const { getStat } = useCharacterBurnerStatStore.getState();
-        const { traitEffects } = get();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
 
         const power = getStat("Power");
         const forte = getStat("Forte");
@@ -308,7 +463,7 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         const maxDistance = Math.ceil(forte.exponent / 2);
 
         const mortalWound =
-          traitEffects.some(x => "roundUp" in x && x.roundUp === "Mortal Wound") ? Math.ceil(Average([power.exponent, forte.exponent])) + 6 : Math.floor(Average([power.exponent, forte.exponent])) + 6;
+          hasTraitOpenByName("Tough") ? Math.ceil(Average([power.exponent, forte.exponent])) + 6 : Math.floor(Average([power.exponent, forte.exponent])) + 6;
 
         let traumatic = mortalWound - 1;
         let severe = mortalWound - 2;

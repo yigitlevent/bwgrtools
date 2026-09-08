@@ -19,6 +19,7 @@ export async function GetTraits(rulesets: dat.RulesetId[]): Promise<Trait[]> {
     if (v.callOnAbilityIds && v.callOnAbilityIds.length > 0) r.callOnAbilities = v.callOnAbilityIds;
     if (v.grantsResourceIds && v.grantsResourceIds.length > 0) {
       r.grantsResources = v.grantsResourceIds.map((resource, i) => ({ resource, minCost: (v.grantsResourceMinCosts ?? [])[i] }));
+      r.grantsResourcesIsChoice = v.grantsResourceIsChoice ?? true;
     }
 
     return r;

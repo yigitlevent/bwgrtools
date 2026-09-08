@@ -30,12 +30,19 @@ SELECT
   a."routine",
   a."difficult",
   a."challenging",
-  a."requiredTraitId",
-  t."name" AS "requiredTrait"
+  ARRAY (
+    SELECT
+      art."traitId"
+    FROM
+      dat."AbilityRequiredTrait" art
+    WHERE
+      art."abilityId" = a."id"
+    ORDER BY
+      art."traitId"
+  ) AS "requiredTraitIds"
 FROM
   dat."Ability" a
-  LEFT JOIN dat."AbilityType" aty ON aty."id" = a."abilityTypeId"
-  LEFT JOIN dat."Trait" t ON t."id" = a."requiredTraitId";
+  LEFT JOIN dat."AbilityType" aty ON aty."id" = a."abilityTypeId";
 
 CREATE OR REPLACE VIEW
   dat."StocksList" AS
@@ -192,7 +199,15 @@ SELECT
       tgr."traitId" = t."id"
     ORDER BY
       tgr."resourceId"
-  ) AS "grantsResourceMinCosts"
+  ) AS "grantsResourceMinCosts",
+  (
+    SELECT
+      BOOL_AND(tgr."isChoice")
+    FROM
+      dat."TraitGrantsResource" tgr
+    WHERE
+      tgr."traitId" = t."id"
+  ) AS "grantsResourceIsChoice"
 FROM
   dat."Trait" t
   LEFT JOIN dat."Stock" sto ON sto."id" = t."stockId"

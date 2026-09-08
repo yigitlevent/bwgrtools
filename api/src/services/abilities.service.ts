@@ -11,8 +11,8 @@ export async function GetAbilities(): Promise<Ability[]> {
       hasShades: v.hasShades
     };
 
-    if (v.requiredTraitId !== null && v.requiredTrait) {
-      r.requiredTrait = [v.requiredTraitId, v.requiredTrait];
+    if (v.requiredTraitIds && v.requiredTraitIds.length > 0) {
+      r.requiredTraits = v.requiredTraitIds;
     }
 
     if (v.cycle !== null && v.routine !== null && v.difficult !== null && v.challenging !== null) {

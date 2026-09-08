@@ -18,13 +18,11 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
   const { name, stock, gender, concept, beliefs, instincts, setName, setGender, setConcept, setStockAndReset } = useCharacterBurnerBasicsStore();
   const { getAge, lifepaths } = useCharacterBurnerLifepathStore();
   const { stats } = useCharacterBurnerStatStore();
-  const { attributes } = useCharacterBurnerAttributeStore();
+  const { attributes, getStride } = useCharacterBurnerAttributeStore();
   const { skills } = useCharacterBurnerSkillStore();
   const { traits } = useCharacterBurnerTraitStore();
   const { resources } = useCharacterBurnerResourceStore();
-  const { special, questions, limits, traitEffects } = useCharacterBurnerMiscStore();
-
-  const rulesetStock = ruleset.getStock(stock[0]);
+  const { special, questions, limits } = useCharacterBurnerMiscStore();
 
   const lifepathsText = lifepaths.map(v => v.name).join(", ");
 
@@ -42,7 +40,37 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
   const hasSpecialResourceGrant =
     traits.filter(trait => trait.isOpen).some(trait => (ruleset.getTrait(trait.id).grantsResources ?? []).length >= 2);
 
-  const disableSpecialOptionsModal = !hasSpecialStock && !hasSpecialLifepath && !hasSpecialSkills && !hasSpecialResourceGrant;
+  const hasSpecialAvarice = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Avarice");
+
+  const hasSpecialStatPenalty =
+    traits.filter(trait => trait.isOpen).some(trait => ["Crippled", "Frail", "Missing Limb"].includes(trait.name));
+
+  const hasSpecialChildProdigy = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Child Prodigy");
+
+  const hasSpecialDarlingOfCourt = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Darling of the Court");
+
+  const hasSpecialEarToGround = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Ear to the Ground");
+
+  const hasSpecialFamilyHeirloom = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Family Heirloom");
+
+  const hasSpecialFeyBlood = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Fey Blood");
+
+  const hasSpecialLessonOfOne = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Lesson of One");
+
+  const hasSpecialLordOfAges = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Lord of Ages");
+
+  const hasSpecialMourner = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Mourner");
+
+  const hasSpecialCitadelVows =
+    traits.filter(trait => trait.isOpen).some(trait => ["Servant of the Citadel", "Sworn to Protect"].includes(trait.name));
+
+  const hasSpecialTaintedLegacy = traits.filter(trait => trait.isOpen).some(trait => trait.name === "Tainted Legacy");
+
+  const disableSpecialOptionsModal =
+    !hasSpecialStock && !hasSpecialLifepath && !hasSpecialSkills && !hasSpecialResourceGrant
+    && !hasSpecialAvarice && !hasSpecialStatPenalty && !hasSpecialChildProdigy && !hasSpecialDarlingOfCourt
+    && !hasSpecialEarToGround && !hasSpecialFamilyHeirloom && !hasSpecialFeyBlood && !hasSpecialLessonOfOne
+    && !hasSpecialLordOfAges && !hasSpecialMourner && !hasSpecialCitadelVows && !hasSpecialTaintedLegacy;
 
   const exportChar = useCallback(() => {
     const json: CharacterBurnerExportSnapshot = {
@@ -53,13 +81,13 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
       traits: { traits: traits.items },
       attributes: { attributes: attributes.items },
       resources: { resources },
-      misc: { special, questions, limits, traitEffects }
+      misc: { special, questions, limits }
     };
 
     const filename = `character-${json.basics.name.replaceAll(" ", "-")}.json`;
     const content = "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(json));
     DownloadFile(filename, content);
-  }, [attributes.items, beliefs, concept, gender, instincts, lifepaths, limits, name, questions, resources, skills.items, special, stats, stock, traitEffects, traits.items]);
+  }, [attributes.items, beliefs, concept, gender, instincts, lifepaths, limits, name, questions, resources, skills.items, special, stats, stock, traits.items]);
 
   return (
     <Grid columns={12} align="center" justify="center" mb="xl">
@@ -101,7 +129,7 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
       </Grid.Col>
 
       <Grid.Col span={{ base: 12, sm: 2 }}>
-        <TextInput label="Stride" value={rulesetStock.stride ?? 0} variant="filled" disabled />
+        <TextInput label="Stride" value={getStride()} variant="filled" disabled />
       </Grid.Col>
 
       <Grid.Col span={12}>

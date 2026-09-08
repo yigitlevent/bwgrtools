@@ -5,7 +5,9 @@ import { devtools } from "zustand/middleware";
 import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { Clamp } from "../../../utils/Clamp";
+import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
 
 export interface CharacterBurnerStatState {
@@ -48,7 +50,19 @@ export const useCharacterBurnerStatStore = create<CharacterBurnerStatState>()(
         const state = get();
         const shade = state.stats[statName].shadeShifted ? "G" : "B";
         const exponent = state.stats[statName].eitherPoolSpent.exponent + state.stats[statName].mainPoolSpent.exponent;
-        return { shade, exponent };
+
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
+        const { special } = useCharacterBurnerMiscStore.getState();
+        const ruleset = useRulesetStore.getState();
+
+        let penalty = 0;
+        if (statName === "Agility" && hasTraitOpenByName("Missing Hand")) penalty += 1;
+        if (hasTraitOpenByName("Frail") && special.frailStat !== undefined && ruleset.getAbility(special.frailStat).name === statName) penalty += 1;
+
+        let bonus = 0;
+        if (hasTraitOpenByName("Child Prodigy") && special.childProdigyStat !== undefined && ruleset.getAbility(special.childProdigyStat).name === statName) bonus += 3;
+
+        return { shade, exponent: exponent - penalty + bonus };
       },
 
       shiftStatShade: (statName: string): void => {

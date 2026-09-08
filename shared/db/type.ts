@@ -18,10 +18,11 @@ void (async () => {
       typeOverrides: {
         "dat.AbilitiesList.abilityTypeId": "dat.AbilityTypeId",
         "dat.AbilitiesList.id": "dat.AbilityId",
-        "dat.AbilitiesList.requiredTraitId": "dat.TraitId",
+        "dat.AbilitiesList.requiredTraitIds": "dat.TraitId[]",
         "dat.Ability.abilityTypeId": "dat.AbilityTypeId",
         "dat.Ability.id": "dat.AbilityId",
-        "dat.Ability.requiredTraitId": "dat.TraitId",
+        "dat.AbilityRequiredTrait.abilityId": "dat.AbilityId",
+        "dat.AbilityRequiredTrait.traitId": "dat.TraitId",
         "dat.AbilityType.id": "dat.AbilityTypeId",
         "dat.ActionResolutionType.id": "dat.ActionResolutionTypeId",
         "dat.AgePool.id": "dat.AgePoolId",

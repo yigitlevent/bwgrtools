@@ -12,8 +12,7 @@ declare namespace dat {
     hasShades: boolean | null;
     id: dat.AbilityId | null;
     name: string | null;
-    requiredTrait: string | null;
-    requiredTraitId: dat.TraitId | null;
+    requiredTraitIds: dat.TraitId[] | null;
     routine: number | null;
   }
   interface Ability {
@@ -24,8 +23,11 @@ declare namespace dat {
     hasShades: boolean;
     id: dat.AbilityId;
     name: string;
-    requiredTraitId: dat.TraitId | null;
     routine: number | null;
+  }
+  interface AbilityRequiredTrait {
+    abilityId: dat.AbilityId;
+    traitId: dat.TraitId;
   }
   interface AbilityType {
     id: dat.AbilityTypeId;
@@ -761,6 +763,7 @@ declare namespace dat {
     name: string;
   }
   interface TraitGrantsResource {
+    isChoice: boolean;
     minCost: number;
     resourceId: dat.ResourceId;
     traitId: dat.TraitId;
@@ -773,6 +776,7 @@ declare namespace dat {
     cost: number | null;
     description: string | null;
     grantsResourceIds: dat.ResourceId[] | null;
+    grantsResourceIsChoice: boolean | null;
     grantsResourceMinCosts: number[] | null;
     id: dat.TraitId | null;
     name: string | null;
