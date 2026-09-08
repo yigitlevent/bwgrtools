@@ -1,14 +1,18 @@
 # bwgrtools
 
+<https://yigitlevent.com/bwgrtools>
+
 A browser-based companion toolset for the **Burning Wheel Gold Revised** tabletop RPG — a React client with a set of calculator/reference tools (character creation, dice rolling, combat and magic planners, rules lookup tables) backed by a Fastify API and a PostgreSQL reference database of the ruleset's content.
+
+There is no user accounts / auth system — the API and database are read-only reference data.
 
 ## Root Structure
 
 ```text
 bwgrtools/
-├── api/       Fastify REST API (auth + ruleset data)
+├── api/       Fastify REST API (ruleset data)
 ├── client/    Vite + React frontend
-├── shared/    PostgreSQL schema, migrations, type generation, env/logger utils
+├── shared/    PostgreSQL schema, migrations, type generation, env utils
 ├── .tests/    Vitest test suite (separate package, mirrors source structure)
 ├── .scripts/  Deployment script and deployment guide
 ├── .env.example
@@ -19,22 +23,21 @@ bwgrtools/
 
 | Directory | Purpose |
 | --- | --- |
-| `configs/` | CORS and session setup |
-| `controllers/` | Request handlers (`ruleset.controller.ts`, `user.controller.ts`) |
-| `middlewares/` | Auth/access guards (`access.middleware.ts`) |
-| `routes/` | Route registration (`bwgr.route.ts`, `user.route.ts`) |
+| `configs/` | CORS setup |
+| `controllers/` | Request handlers (`ruleset.controller.ts`) |
+| `routes/` | Route registration (`bwgr.route.ts`) |
 | `services/` | One query module per ruleset data domain (stocks, skills, traits, lifepaths, spell facets, Duel of Wits/Range and Cover/Fight actions, practices, questions, resources, abilities, settings) |
 | `utils/` | Logger and error helpers |
-| `validators/` | AJV schemas for auth requests |
+| `validators/` | AJV schemas for ruleset requests |
 
 ### client/src/
 
 | Directory | Purpose |
 | --- | --- |
-| `components/Menu/` | App chrome — top bar, ruleset selector, sign in/up, tool picker drawers |
+| `components/Menu/` | App chrome — top bar, ruleset selector, tool picker drawers |
 | `components/Tools/` | One folder per RPG tool (Character Burner, Dice Roller, Duel of Wits/Range and Cover/Fight planners, Practice Planner, Magic Wheel, and the Lifepath/Skill/Trait/Resource lookup lists) |
 | `components/Shared/` | Small reusable UI pieces |
-| `hooks/apiStores/` | App-wide Zustand stores (`useRulesetStore`, `useUserStore`) |
+| `hooks/apiStores/` | App-wide Zustand store (`useRulesetStore`) |
 | `hooks/featureStores/` | Per-tool Zustand stores, including `CharacterBurnerStores/` |
 | `logic/` | Pure Burning Wheel rules math (attribute formulas, resource cost) |
 | `utils/` | Misc pure helpers (dice probability, fetch wrapper, array/object utilities) |
@@ -43,13 +46,13 @@ bwgrtools/
 
 | Directory/File | Purpose |
 | --- | --- |
-| `@types/` | Ambient type declarations — the ruleset data contract (`bwgr.d.ts`), character sheet shapes (`character.d.ts`), branded ids, env, session, and the auto-generated `db.d.ts` |
+| `@types/` | Ambient type declarations — the ruleset data contract (`bwgr.d.ts`), character sheet shapes (`character.d.ts`), branded ids, env, and the auto-generated `db.d.ts` |
 | `db/migrations/` | Numbered SQL migrations — schema (`000xx`) then ruleset seed data (`100xx`) |
 | `db/migrate.ts` | Runs pending migrations |
 | `db/reset.ts` | Drops and recreates the database |
 | `db/type.ts` | Generates TypeScript types from the DB schema |
 | `db/utils/pgPool.ts` | Postgres pool wrapper |
-| `utils/` | Env and logger utilities shared by `api/` |
+| `utils/` | Env utilities shared by `api/` |
 
 ## Environment
 
@@ -57,19 +60,17 @@ Copy `.env.example` to `.env` in the root and fill in each value:
 
 ```env
 VITE_ENV=dev               # dev | prod
-VITE_API_URL=http://localhost:3000
-CLIENT_URL=http://localhost:5173
 API_PORT=3000
 API_INTERNAL_URL=http://localhost:3000
-API_SECRET=<random secret>
+CLIENT_URL=http://localhost:5173
 DB_USER=<postgres user>
 DB_PASS=<postgres password>
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=bwgr
-SIGNIN_LOCKOUT_THRESHOLD=5
-LOG_LEVEL=info              # optional, defaults to info
 PGPOOL_MAX=10               # optional, defaults to 10
+VITE_API_URL=http://localhost:3000
+LOG_LEVEL=info              # optional, defaults to info
 ```
 
 Each package reads `.env` from the repo root via `dotenv`.

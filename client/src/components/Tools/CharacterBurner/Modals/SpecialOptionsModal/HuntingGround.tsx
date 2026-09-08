@@ -3,7 +3,7 @@ import { Fragment, useCallback } from "react";
 
 import { useCharacterBurnerBasicsStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { Clamp } from "../../../../../utils/Clamp";
 import { RandomNumber } from "../../../../../utils/RandomNumber";
 
@@ -11,7 +11,7 @@ import { RandomNumber } from "../../../../../utils/RandomNumber";
 export function HuntingGround(): React.JSX.Element {
   const { stock } = useCharacterBurnerBasicsStore();
   const { lifepaths } = useCharacterBurnerLifepathStore();
-  const { special, setHuntingGround } = useCharacterBurnerMiscStore();
+  const { special, setHuntingGround } = useCharacterBurnerSpecialStore();
 
   const rollTerritory = useCallback(() => {
     const huntingGrounds: HuntingGroundsList[] = ["Waste", "Marginal", "Typical", "Plentiful", "Untouched"];

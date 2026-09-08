@@ -27,9 +27,9 @@ export function Stats(): React.JSX.Element {
       </Grid.Col>
 
       <Grid.Col span={6}>
-        <Text>{mentalText}</Text>
-        <Text>{physicalText}</Text>
-        <Text>{eitherText}</Text>
+        <Text c={mental.remaining < 0 ? "red" : undefined} fw={mental.remaining < 0 ? 700 : undefined}>{mentalText}</Text>
+        <Text c={physical.remaining < 0 ? "red" : undefined} fw={physical.remaining < 0 ? 700 : undefined}>{physicalText}</Text>
+        <Text c={either.remaining < 0 ? "red" : undefined} fw={either.remaining < 0 ? 700 : undefined}>{eitherText}</Text>
       </Grid.Col>
 
       <Fragment>

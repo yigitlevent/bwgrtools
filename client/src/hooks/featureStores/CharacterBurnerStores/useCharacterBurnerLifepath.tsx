@@ -5,11 +5,13 @@ import { devtools } from "zustand/middleware";
 import { RecomputeCharacter } from "./recomputeCharacter";
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { FilterLifepaths } from "../../../utils/FilterLifepaths";
+import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
+import { GetLifepathYears } from "../../../utils/GetLifepathYears";
 import { Pairwise } from "../../../utils/Pairwise";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
@@ -54,7 +56,11 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
       addLifepath: (lifepath: Lifepath): void => {
         set(produce<CharacterBurnerLifepathState>(state => { state.lifepaths.push(lifepath); }));
         get().updateAvailableLifepaths();
-        RecomputeCharacter("stat");
+        // Deliberately not "stat": a lifepath add/remove can shift stat pool totals (LoDR occurrence
+        // changes, Mind over Matter/Robust trait shifts) but must not wipe the player's existing stat
+        // spend - if a pool shrinks below what's already spent, that's surfaced in the UI (Stats.tsx)
+        // as a negative remaining, not silently corrected here.
+        RecomputeCharacter("skillTrait");
       },
 
       removeLastLifepath: (): void => {
@@ -62,7 +68,7 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
           state.lifepaths = state.lifepaths.slice(0, state.lifepaths.length - 1);
         }));
         get().updateAvailableLifepaths();
-        RecomputeCharacter("stat");
+        RecomputeCharacter("skillTrait");
       },
 
       hasLifepath: (id: dat.LifepathId): number => {
@@ -93,12 +99,9 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
 
         if (lps.length === 0) return 0;
 
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
 
-        const yrs = lps.map(v => {
-          if (typeof v.years === "number") return v.years;
-          return (v.id !== null ? special.variableAge[v.id] : undefined) ?? v.years[0];
-        });
+        const yrs = lps.map(v => GetLifepathYears(v, special.variableAge));
         const sum = yrs.reduce((prev, curr) => prev + curr, 0);
         return sum + get().getLeadCount();
       },
@@ -107,10 +110,16 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         const lps = lifepaths ?? get().lifepaths;
         const { getAgePool } = useCharacterBurnerBasicsStore.getState();
         const { stats } = useCharacterBurnerStatStore.getState();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
 
+        // Law of Diminishing Returns: a lifepath's stat pool contribution is lost entirely on its
+        // 3rd+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
         const stockAgePool = getAgePool().mentalPool;
-        const lifepathPool = lps.length > 0 ? lps.map(lp => lp.pools.mentalStatPool ?? 0).reduce((pv, cv) => pv + cv) : 0;
-        const total = stockAgePool + lifepathPool;
+        const lifepathPool = lps.reduce((pv, cv, i) => occurrences[i] >= 3 ? pv : pv + (cv.pools.mentalStatPool ?? 0), 0);
+        // Mind over Matter/Robust move one point between the mental and physical pools.
+        const traitShift = (hasTraitOpenByName("Mind over Matter") ? 1 : 0) - (hasTraitOpenByName("Robust") ? 1 : 0);
+        const total = stockAgePool + lifepathPool + traitShift;
 
         const spent =
           Object.values(stats)
@@ -125,10 +134,16 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         const lps = lifepaths ?? get().lifepaths;
         const { getAgePool } = useCharacterBurnerBasicsStore.getState();
         const { stats } = useCharacterBurnerStatStore.getState();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
 
+        // Law of Diminishing Returns: a lifepath's stat pool contribution is lost entirely on its
+        // 3rd+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
         const stockAgePool = getAgePool().physicalPool;
-        const lifepathPool = lps.length > 0 ? lps.map(lp => lp.pools.physicalStatPool ?? 0).reduce((pv, cv) => pv + cv) : 0;
-        const total = stockAgePool + lifepathPool;
+        const lifepathPool = lps.reduce((pv, cv, i) => occurrences[i] >= 3 ? pv : pv + (cv.pools.physicalStatPool ?? 0), 0);
+        // Mind over Matter/Robust move one point between the mental and physical pools.
+        const traitShift = (hasTraitOpenByName("Robust") ? 1 : 0) - (hasTraitOpenByName("Mind over Matter") ? 1 : 0);
+        const total = stockAgePool + lifepathPool + traitShift;
 
         const spent =
           Object.values(stats)
@@ -143,7 +158,10 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         const lps = lifepaths ?? get().lifepaths;
         const { stats } = useCharacterBurnerStatStore.getState();
 
-        const total = lps.length > 0 ? lps.map(lp => lp.pools.eitherStatPool ?? 0).reduce((pv, cv) => pv + cv) : 0;
+        // Law of Diminishing Returns: a lifepath's stat pool contribution is lost entirely on its
+        // 3rd+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
+        const total = lps.reduce((pv, cv, i) => occurrences[i] >= 3 ? pv : pv + (cv.pools.eitherStatPool ?? 0), 0);
         const spent =
           Object.values(stats)
             .map((v): number => v.eitherPoolSpent.shade + v.eitherPoolSpent.exponent)
@@ -152,12 +170,12 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         return { total, spent, remaining: total - spent };
       },
 
-      updateAvailableLifepaths: (onlyReturn?: boolean): Lifepath[] => {
+      updateAvailableLifepaths: (): Lifepath[] => {
         const { lifepaths, hasSetting, getAge } = get();
 
         const ruleset = useRulesetStore.getState();
         const { gender, stock } = useCharacterBurnerBasicsStore.getState();
-        const { hasQuestionTrue } = useCharacterBurnerMiscStore.getState();
+        const { hasQuestionTrue } = useCharacterBurnerSpecialStore.getState();
         const { hasSkillOpen } = useCharacterBurnerSkillStore.getState();
         const { hasTraitOpen } = useCharacterBurnerTraitStore.getState();
         const { attributes, hasAttribute } = useCharacterBurnerAttributeStore.getState();
@@ -176,8 +194,6 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
           hasSetting: hasSetting,
           hasQuestionTrue: hasQuestionTrue
         });
-
-        if (onlyReturn) return possibleLifepaths;
 
         set(produce<CharacterBurnerLifepathState>(state => { state.availableLifepaths = possibleLifepaths; }));
         return possibleLifepaths;

@@ -4,6 +4,7 @@ import { devtools } from "zustand/middleware";
 
 import { ResetCharacterBurner } from "./recomputeCharacter";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
+import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
 
@@ -101,10 +102,16 @@ export const useCharacterBurnerBasicsStore = create<CharacterBurnerBasicsState>(
       getAgePool: (): { minAge: number; mentalPool: number; physicalPool: number; } => {
         const { getStock } = useRulesetStore.getState();
         const { getAge } = useCharacterBurnerLifepathStore.getState();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
         const { stock } = get();
 
         const age = getAge();
         if (age === 0) return { minAge: 0, mentalPool: 0, physicalPool: 0 };
+
+        // Vigor of Youth: a character starting older than 40 uses the same 7 mental / 14 physical
+        // pool a younger character would, instead of whatever pool their actual age bracket grants.
+        if (age > 40 && hasTraitOpenByName("Vigor of Youth")) return { minAge: 0, mentalPool: 7, physicalPool: 14 };
+
         const stockMaybe = getStock(stock[0]);
         const agePool = stockMaybe.agePool;
         return agePool.filter(a => age > a.minAge).reduce((pv, cv) => pv.minAge < cv.minAge ? pv : cv);

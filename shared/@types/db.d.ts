@@ -12,8 +12,7 @@ declare namespace dat {
     hasShades: boolean | null;
     id: dat.AbilityId | null;
     name: string | null;
-    requiredTrait: string | null;
-    requiredTraitId: dat.TraitId | null;
+    requiredTraitIds: dat.TraitId[] | null;
     routine: number | null;
   }
   interface Ability {
@@ -24,8 +23,11 @@ declare namespace dat {
     hasShades: boolean;
     id: dat.AbilityId;
     name: string;
-    requiredTraitId: dat.TraitId | null;
     routine: number | null;
+  }
+  interface AbilityRequiredTrait {
+    abilityId: dat.AbilityId;
+    traitId: dat.TraitId;
   }
   interface AbilityType {
     id: dat.AbilityTypeId;
@@ -563,7 +565,6 @@ declare namespace dat {
     isOfficial: boolean;
     isPublic: boolean;
     name: string;
-    userId: string | null;
   }
   interface RulesetExpansion {
     expansionId: dat.RulesetId;
@@ -592,7 +593,6 @@ declare namespace dat {
     isOfficial: boolean | null;
     isPublic: boolean | null;
     name: string | null;
-    user: string | null;
   }
   interface RulesetStock {
     rulesetId: dat.RulesetId;
@@ -748,15 +748,34 @@ declare namespace dat {
     stockId: dat.StockId | null;
     typeId: dat.TraitTypeId;
   }
+  interface TraitCallOnAbility {
+    abilityId: dat.AbilityId;
+    traitId: dat.TraitId;
+  }
+  interface TraitCallOnSkill {
+    skillId: dat.SkillId;
+    traitId: dat.TraitId;
+  }
   interface TraitCategory {
     id: dat.TraitCategoryId;
     name: string;
   }
+  interface TraitGrantsResource {
+    isChoice: boolean;
+    minCost: number;
+    resourceId: dat.ResourceId;
+    traitId: dat.TraitId;
+  }
   interface TraitsList {
+    callOnAbilityIds: dat.AbilityId[] | null;
+    callOnSkillIds: dat.SkillId[] | null;
     category: string | null;
     categoryId: dat.TraitCategoryId | null;
     cost: number | null;
     description: string | null;
+    grantsResourceIds: dat.ResourceId[] | null;
+    grantsResourceIsChoice: boolean | null;
+    grantsResourceMinCosts: number[] | null;
     id: dat.TraitId | null;
     name: string | null;
     rulesets: string[] | null;
@@ -779,40 +798,5 @@ declare namespace meta {
     executedAt: Date | null;
     id: meta.MigrationId;
     name: string;
-  }
-}
-declare namespace usr {
-  interface RateLimit {
-    count: number;
-    expiresAt: Date;
-    key: string;
-  }
-  interface User {
-    active: boolean;
-    createdAt: Date;
-    deletedAt: Date | null;
-    email: string;
-    failedSignInAttempts: number;
-    id: usr.UserId;
-    lastSigninAt: Date | null;
-    lockedUntil: Date | null;
-    password: string;
-    updatedAt: Date;
-  }
-  interface UserAccess {
-    createdAt: Date;
-    deletedAt: Date | null;
-    id: usr.UserAccessId;
-    userAccessTypeId: usr.UserAccessTypeId;
-    userId: usr.UserId;
-  }
-  interface UserAccessType {
-    id: usr.UserAccessTypeId;
-    name: string;
-  }
-  interface UserSession {
-    expire: Date;
-    sess: unknown;
-    sid: string;
   }
 }

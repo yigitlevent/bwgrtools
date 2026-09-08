@@ -1,5 +1,5 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetSettings(rulesets: dat.RulesetId[]): Promise<Setting[]> {
@@ -14,13 +14,8 @@ export async function GetSettings(rulesets: dat.RulesetId[]): Promise<Setting[]>
     };
   };
 
-  const log = new Logger("GetSettings Querying");
-  const query = `select * from dat."SettingsList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
-  return PgPool.query<dat.SettingsList>(query).then(result => {
-    log.end();
-    const log2 = new Logger("GetSettings Conversion");
-    const res = result.rows.map(convert);
-    log2.end();
-    return res;
-  });
+  const query = "select * from dat.\"SettingsList\" where \"rulesets\"::text[] && $1::text[];";
+  return Timed("GetSettings Querying", () => PgPool.query<dat.SettingsList>(query, [rulesets])).then(result =>
+    Timed("GetSettings Conversion", () => result.rows.map(convert))
+  );
 }

@@ -5,7 +5,6 @@ import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores
 import { LifepathBox } from "../../LifepathLists/LifepathBox";
 
 
-// TODO: random lifepath selection: "Choose Lifepaths" or "Random Lifepaths"
 export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; close: () => void; }): React.JSX.Element {
   const { availableLifepaths, lifepaths, addLifepath, removeLastLifepath } = useCharacterBurnerLifepathStore();
 

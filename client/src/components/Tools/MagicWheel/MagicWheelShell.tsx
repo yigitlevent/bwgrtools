@@ -4,7 +4,6 @@ import { createRef, Fragment, useEffect, useState } from "react";
 import { BackCanvas } from "./BackCanvas";
 import { FacetControls } from "./FacetControls";
 import { FrontCanvas } from "./FrontCanvas";
-import codeFont from "../../../assets/fonts/SourceCodePro-SemiBold.woff";
 import { useFontLoading } from "../../../hooks/useFontLoading";
 import { useMagicWheel } from "../../../hooks/useMagicWheel";
 
@@ -21,7 +20,7 @@ interface MagicWheelShellProps<T extends OneOfWheelObjects> {
 }
 
 export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, bands, setBands, isAvailable, selectedElementCategory, setSelectedElementCategory }: MagicWheelShellProps<T>): React.JSX.Element {
-  const { isFontLoaded } = useFontLoading(codeFont);
+  const { isFontLoaded } = useFontLoading("/fonts/SourceCodePro-SemiBold.woff");
 
   const wrapperRef = createRef<HTMLDivElement>();
   const canvasRef = createRef<HTMLCanvasElement>();

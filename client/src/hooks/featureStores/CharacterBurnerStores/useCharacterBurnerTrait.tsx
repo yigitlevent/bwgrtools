@@ -2,9 +2,12 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
+import { RefreshCharacterLimits } from "./refreshCharacterLimits";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { useCharacterBurnerResourceStore } from "./useCharacterBurnerResource";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
+import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
@@ -27,7 +30,9 @@ export interface CharacterBurnerTraitState {
   /**
    * Updates the character's traits list.
    * It preserves the common traits, and re-adds previously selected general traits, if they are not present in the lifepath trait list.
-   * @remarks TODO: Repated lifepaths should be checked to determine the mandatory-ness.
+   * Applies the Law of Diminishing Returns for repeated lifepaths: 1st occurrence's 1st trait is
+   * mandatory, 2nd occurrence's 2nd trait is mandatory (if it exists), 3rd+ occurrence grants no
+   * mandatory trait from that lifepath at all.
   **/
   updateTraits: () => void;
 }
@@ -44,40 +49,63 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
       },
 
       openTrait: (traitId: dat.TraitId): void => {
-        set(produce<CharacterBurnerTraitState>(state => {
-          // TODO: Check remaining counts, use either pool too
-          const charTrait = state.traits.find(traitId);
-          if (charTrait) {
-            charTrait.isOpen = !charTrait.isOpen;
-            state.traits = new UniqueArray(state.traits.add(charTrait).items);
-          }
-        }));
+        const { traits, getTraitPools } = get();
+        const charTrait = traits.find(traitId);
+
+        if (charTrait && (charTrait.isOpen || getTraitPools().remaining > 0)) {
+          set(produce<CharacterBurnerTraitState>(state => {
+            const stateTrait = state.traits.find(traitId);
+            if (stateTrait) {
+              stateTrait.isOpen = !stateTrait.isOpen;
+              state.traits = new UniqueArray(state.traits.add(stateTrait).items);
+            }
+          }));
+
+          useCharacterBurnerResourceStore.getState().updateResources();
+          useCharacterBurnerResourceStore.getState().updateLessonOfOne();
+          RefreshCharacterLimits();
+        }
       },
 
       addGeneralTrait: (trait: Trait): void => {
         if (!trait.id) return;
         const charTrait: CharacterTrait = { id: trait.id, name: trait.name ?? "", isOpen: false, type: "General" };
         set(produce<CharacterBurnerTraitState>(state => { state.traits = new UniqueArray(state.traits.add(charTrait).items); }));
+
+        RefreshCharacterLimits();
       },
 
       removeGeneralTrait: (traitId: dat.TraitId): void => {
         set(produce<CharacterBurnerTraitState>(state => {
           state.traits = new UniqueArray(state.traits.remove(traitId).items);
         }));
+
+        RefreshCharacterLimits();
       },
 
       getTraitPools: (lifepaths?: Lifepath[]): Points => {
         const { getTrait } = useRulesetStore.getState();
         const lps = lifepaths ?? useCharacterBurnerLifepathStore.getState().lifepaths;
+        const { special } = useCharacterBurnerSpecialStore.getState();
         const state = get();
 
-        const tTotal = lps.reduce((pv, cv) => pv + (cv.pools.traitPool ?? 0), 0);
+        // Law of Diminishing Returns: a lifepath's trait pool contribution is lost entirely on its
+        // 3rd+ occurrence, and reduced by 1 on its 2nd occurrence if it has no 2nd trait to grant.
+        const occurrences = GetLifepathOccurrences(lps);
+        const tTotal = lps.reduce((pv, cv, i) => {
+          const occurrence = occurrences[i];
+          if (occurrence >= 3) return pv;
+          if (occurrence === 2 && (cv.traits?.length ?? 0) < 2) return pv + (cv.pools.traitPool ?? 0) - 1;
+          return pv + (cv.pools.traitPool ?? 0);
+        }, 0);
         let tSpent = 0;
 
         state.traits.forEach(trait => {
           if (trait.isOpen) {
             if (trait.type === "Mandatory" || trait.type === "Lifepath") tSpent += 1;
             else if (trait.type === "General") {
+              // Tainted Legacy's chosen Monstrous trait is granted free.
+              if (trait.id === special.taintedLegacyTrait) return;
               const rulesetTrait = getTrait(trait.id);
               tSpent += rulesetTrait.cost ?? 0;
             }
@@ -108,12 +136,18 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         const { lifepaths } = useCharacterBurnerLifepathStore.getState();
         const state = get();
 
+        // Law of Diminishing Returns: 1st occurrence -> 1st trait mandatory, 2nd occurrence -> 2nd
+        // trait mandatory (if it exists), 3rd+ occurrence -> no mandatory trait from this lifepath.
+        const occurrences = GetLifepathOccurrences(lifepaths);
+
         // Add Lifepath Traits
-        const characterTraits = new UniqueArray<dat.TraitId, CharacterTrait>(lifepaths.map(lp => {
+        const characterTraits = new UniqueArray<dat.TraitId, CharacterTrait>(lifepaths.map((lp, lpIndex) => {
+          const occurrence = occurrences[lpIndex];
+          const mandatoryIndex = occurrence <= 2 ? occurrence - 1 : -1;
+
           return lp.traits ? lp.traits.map((tr: dat.TraitId, i: number) => {
             const trait = ruleset.getTrait(tr);
-            const isMandatory = (i === 0);
-            // TODO: Repeat lifepaths also should be checked
+            const isMandatory = (i === mandatoryIndex);
             const entry: CharacterTrait = {
               id: trait.id ?? tr,
               name: trait.name ?? "",
@@ -142,7 +176,9 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
           state.traits = characterTraits;
         }));
 
-        useCharacterBurnerMiscStore.getState().refreshTraitEffects();
+        useCharacterBurnerResourceStore.getState().updateResources();
+        useCharacterBurnerResourceStore.getState().updateLessonOfOne();
+        RefreshCharacterLimits();
       }
     }),
     { name: "useCharacterBurnerTraitStore" }

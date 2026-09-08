@@ -1,7 +1,5 @@
 import { createRef, useEffect } from "react";
 
-import burningwheel from "../../../assets/images/burningwheel.png";
-
 import type { MagicWheelConstants } from "../../../hooks/useMagicWheel";
 
 
@@ -35,7 +33,7 @@ export function FrontCanvas({ constants }: { constants: MagicWheelConstants; }):
         context.drawImage(img, xOffset, yOffset, constants.innerCircleRadius, constants.innerCircleRadius);
         context.restore();
       });
-      img.src = burningwheel;
+      img.src = "/images/burningwheel.png";
     }
   }, [canvasRef, constants.canvasSize, constants.innerCircleRadius, constants.circleOffset, constants.circleRadius, constants.ringCount]);
 

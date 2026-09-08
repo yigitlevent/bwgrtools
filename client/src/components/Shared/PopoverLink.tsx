@@ -1,4 +1,4 @@
-import { Anchor, Box, Grid, Popover, Text } from "@mantine/core";
+import { Anchor, Box, Divider, Grid, Group, Popover, Text } from "@mantine/core";
 import { memo } from "react";
 
 
@@ -14,45 +14,47 @@ function GetSkillRestrictionString(skill: Skill): string {
 
 function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
   return (
-    <Grid gap="xs" columns={2}>
+    <Grid gap={4} columns={2}>
       <Grid.Col span={2}>
         <Text fw={700} size="lg">{skill.name}</Text>
+        <Divider />
       </Grid.Col>
 
       {skill.roots ? (
         <Grid.Col span={{ base: 2, md: 1 }}>
-          <Text size="xs">
-            Root:
-            {skill.roots.map(v => v[1]).join("/")}
-          </Text>
+          <Group gap={4} justify="start">
+            <Text fw={700}>Root:</Text>
+            <Text>{skill.roots.map(v => v[1]).join("/")}</Text>
+          </Group>
         </Grid.Col>
       ) : null}
 
       <Grid.Col span={{ base: 2, md: 1 }}>
-        <Text size="xs">
-          Type:
-          {skill.type[1]}
-        </Text>
+        <Group gap={4} justify="start">
+          <Text fw={700}>Type:</Text>
+          <Text>{skill.type[1]}</Text>
+        </Group>
       </Grid.Col>
 
       <Grid.Col span={2}>
-        <Text size="xs">
-          Tools:
-          {skill.tool.tool}
-          {skill.tool.description ? ` ${skill.tool.description}` : ""}
-        </Text>
+        <Group gap={4} justify="start">
+          <Text fw={700}>Tools:</Text>
+          <Text>{skill.tool.tool}</Text>
+          <Text>{skill.tool.description ? `(${skill.tool.description})` : ""}</Text>
+        </Group>
       </Grid.Col>
 
       <Grid.Col span={2}>
-        <Text size="xs">
-          Restrictions:
-          {GetSkillRestrictionString(skill)}
-        </Text>
+        <Group gap={4} justify="start">
+          <Text fw={700}>Restrictions:</Text>
+          <Text>{GetSkillRestrictionString(skill)}</Text>
+        </Group>
       </Grid.Col>
 
       {skill.description ? (
         <Grid.Col span={2}>
-          {skill.description.split("<br>").map(v => <Text key={v} size="sm">{v}</Text>)}
+          <Divider mb={4} />
+          {skill.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
         </Grid.Col>
       ) : null}
     </Grid>
@@ -61,44 +63,48 @@ function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
 
 function TraitPop({ trait }: { trait: Trait; }): React.JSX.Element {
   return (
-    <Grid gap="xs" columns={3}>
+    <Grid gap={4} columns={2}>
       <Grid.Col span={3}>
         <Text fw={700} size="lg">{trait.name}</Text>
+        <Divider />
       </Grid.Col>
 
       <Grid.Col span={{ base: 3, md: 1 }}>
-        <Text size="xs">
-          Type:
-          {trait.type[1]}
-        </Text>
+        <Group gap={4} justify="start">
+          <Text fw={700}>Type:</Text>
+          <Text>{trait.type[1]}</Text>
+        </Group>
       </Grid.Col>
 
       {trait.cost !== 0 ? (
         <Grid.Col span={{ base: 3, md: 1 }}>
-          <Text size="xs">
-            Cost:
-            {" "}
-            {trait.cost}
-          </Text>
+          <Group gap={4} justify="start">
+            <Text fw={700}>Cost:</Text>
+            <Text>{trait.cost}</Text>
+          </Group>
         </Grid.Col>
       ) : null}
 
       {trait.stock ? (
         <Grid.Col span={{ base: 3, md: 1 }}>
-          <Text size="xs">
-            Stock:
-            {trait.stock[1]}
-          </Text>
+          <Group gap={4} justify="start">
+            <Text fw={700}>Stock:</Text>
+            <Text>{trait.stock[1]}</Text>
+          </Group>
         </Grid.Col>
       ) : (
         <Grid.Col span={{ base: 3, md: 1 }}>
-          <Text size="xs">Stock: Any</Text>
+          <Group gap={4} justify="start">
+            <Text fw={700}>Stock:</Text>
+            <Text>Any</Text>
+          </Group>
         </Grid.Col>
       )}
 
       {trait.description ? (
-        <Grid.Col span={3}>
-          {trait.description.split("<br>").map(v => <Text key={v} size="sm" style={{ textIndent: "8px" }}>{v}</Text>)}
+        <Grid.Col span={2}>
+          <Divider mb={4} />
+          {trait.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
         </Grid.Col>
       ) : null}
     </Grid>

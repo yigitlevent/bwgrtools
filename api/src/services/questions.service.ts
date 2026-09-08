@@ -1,5 +1,5 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetQuestions(): Promise<Question[]> {
@@ -17,14 +17,7 @@ export async function GetQuestions(): Promise<Question[]> {
     return r;
   };
 
-  const log = new Logger("GetQuestions Querying");
   const query = "select * from dat.\"QuestionList\";";
-  return PgPool.query<dat.QuestionList>(query)
-    .then(result => {
-      log.end();
-      const log2 = new Logger("GetQuestions Conversion");
-      const res = result.rows.map(convert);
-      log2.end();
-      return res;
-    });
+  return Timed("GetQuestions Querying", () => PgPool.query<dat.QuestionList>(query))
+    .then(result => Timed("GetQuestions Conversion", () => result.rows.map(convert)));
 }

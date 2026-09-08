@@ -5,7 +5,9 @@ interface Ability {
   name: string | null;
   abilityType: NamedTuple<dat.AbilityTypeId>;
   hasShades: boolean | null;
-  requiredTrait?: NamedTuple<dat.TraitId>;
+  // Having ANY of these traits open unlocks the ability. Usually one; Faith has two (Faithful, or
+  // Roden's separate Visionary Faith).
+  requiredTraits?: dat.TraitId[];
   practice?: {
     cycle: number | null;
     routineTests: number | null;
@@ -201,7 +203,6 @@ interface Ruleset {
   isPublic: boolean | null;
   isExpansion: boolean | null;
   expansionIds?: dat.RulesetId[];
-  user?: string;
 }
 
 interface Setting {
@@ -283,6 +284,10 @@ interface Trait {
   cost: number | null;
   stock?: NamedTuple<dat.StockId>;
   description?: string;
+  callOnSkills?: dat.SkillId[];
+  callOnAbilities?: dat.AbilityId[];
+  grantsResources?: { resource: dat.ResourceId; minCost: number; }[];
+  grantsResourcesIsChoice?: boolean;
 }
 
 interface RulesetResponse {

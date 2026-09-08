@@ -57,7 +57,7 @@ The script prompts for these before doing anything:
 | pgAdmin login email | must be a real, non-reserved domain — pgAdmin rejects `.local`/`.test`/`.invalid` at startup and crash-loops instead of starting; doesn't need a working mailbox |
 | Deploy user's SSH public key | paste the `ssh-ed25519 AAAA...` line from above |
 
-When the script finishes it prints the remaining manual steps (GitHub secrets, workflow trigger, first `pm2 start`). The generated `API_SECRET` is also printed — save it if you need it elsewhere, as it is already written to `/opt/bwgrtools/.env`.
+When the script finishes it prints the remaining manual steps (GitHub secrets, workflow trigger, first `pm2 start`).
 
 ---
 
@@ -233,15 +233,13 @@ chmod 600 /opt/bwgrtools/.env
 Populate it (replace all `CHANGE_ME_*` values):
 
 ```env
-# Environment — must be "prod" for secure sessions and SSL DB connections
+# Environment — must be "prod" for SSL DB connections
 VITE_ENV=prod
 
 # API
 API_PORT=3001
 API_INTERNAL_URL=http://127.0.0.1:3001
-API_SECRET=CHANGE_ME_LONG_RANDOM_SECRET_MIN_32_CHARS
 CLIENT_URL=https://yigitlevent.com/bwgrtools
-SIGNIN_LOCKOUT_THRESHOLD=5
 
 # Database
 DB_USER=bwgrtools
@@ -252,13 +250,7 @@ DB_NAME=bwgrtools
 PGPOOL_MAX=10
 ```
 
-`SIGNIN_LOCKOUT_THRESHOLD` is required and validated at boot (`shared/utils/env.ts`) — the API will refuse to start without it. `PGPOOL_MAX` is read directly via `process.env` with a default (`10`) rather than validated by `Env`, so it's optional but shown above for completeness.
-
-Generate a strong `API_SECRET`:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
-```
+`PGPOOL_MAX` is read directly via `process.env` with a default (`10`) rather than validated by `Env`, so it's optional but shown above for completeness.
 
 ### 3.2 PM2 Ecosystem Config
 

@@ -1,18 +1,20 @@
 import { Alert, Box, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Fragment, useRef } from "react";
+import { Fragment } from "react";
 
 import { ResourceItem } from "./ResourceItem";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useSearch } from "../../../hooks/useSearch";
 
 
-export function ResourcesList(): React.JSX.Element {
+export function ResourcesList({ scrollRef }: { scrollRef: React.RefObject<HTMLDivElement | null>; }): React.JSX.Element {
   const { stocks, resources, resourceTypes } = useRulesetStore();
   const { searchValues, setFilter, filteredList } = useSearch<Resource>(resources, ["stock", "type"]);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-
+  // react-virtual's useVirtualizer() returns methods (getTotalSize, getVirtualItems, measureElement)
+  // the React Compiler can't statically prove are stable, so it skips memoizing this component. None
+  // of those values are passed to other memoized components/hooks here, so that's safe to accept.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
     count: filteredList.length,
     getScrollElement: () => scrollRef.current,
@@ -69,19 +71,17 @@ export function ResourcesList(): React.JSX.Element {
       </Grid>
 
       {filteredList.length > 0 ? (
-        <Box ref={scrollRef} mt="md" style={{ height: "70vh", overflowY: "auto" }}>
-          <Box style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
-            {rowVirtualizer.getVirtualItems().map(virtualRow => (
-              <Box
-                key={virtualRow.key}
-                ref={rowVirtualizer.measureElement}
-                data-index={virtualRow.index}
-                style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${virtualRow.start.toString()}px)`, paddingBottom: "var(--mantine-spacing-xs)" }}
-              >
-                <ResourceItem resource={filteredList[virtualRow.index]} />
-              </Box>
-            ))}
-          </Box>
+        <Box mt={16} style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
+          {rowVirtualizer.getVirtualItems().map(virtualRow => (
+            <Box
+              key={virtualRow.key}
+              ref={rowVirtualizer.measureElement}
+              data-index={virtualRow.index}
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${virtualRow.start.toString()}px)`, paddingBottom: "var(--mantine-spacing-xs)" }}
+            >
+              <ResourceItem resource={filteredList[virtualRow.index]} />
+            </Box>
+          ))}
         </Box>
       ) : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
     </Fragment>

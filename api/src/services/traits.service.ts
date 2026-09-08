@@ -1,5 +1,5 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetTraits(rulesets: dat.RulesetId[]): Promise<Trait[]> {
@@ -15,17 +15,18 @@ export async function GetTraits(rulesets: dat.RulesetId[]): Promise<Trait[]> {
 
     if (v.stockId !== null && v.stock !== null) r.stock = [v.stockId, v.stock];
     if (v.description !== null) r.description = v.description;
+    if (v.callOnSkillIds && v.callOnSkillIds.length > 0) r.callOnSkills = v.callOnSkillIds;
+    if (v.callOnAbilityIds && v.callOnAbilityIds.length > 0) r.callOnAbilities = v.callOnAbilityIds;
+    if (v.grantsResourceIds && v.grantsResourceIds.length > 0) {
+      r.grantsResources = v.grantsResourceIds.map((resource, i) => ({ resource, minCost: (v.grantsResourceMinCosts ?? [])[i] }));
+      r.grantsResourcesIsChoice = v.grantsResourceIsChoice ?? true;
+    }
 
     return r;
   };
 
-  const log = new Logger("GetTraits Querying");
-  const query = `select * from dat."TraitsList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
-  return PgPool.query<dat.TraitsList>(query).then(result => {
-    log.end();
-    const log2 = new Logger("GetTraits Conversion");
-    const res = result.rows.map(convert);
-    log2.end();
-    return res;
-  });
+  const query = "select * from dat.\"TraitsList\" where \"rulesets\"::text[] && $1::text[];";
+  return Timed("GetTraits Querying", () => PgPool.query<dat.TraitsList>(query, [rulesets])).then(result =>
+    Timed("GetTraits Conversion", () => result.rows.map(convert))
+  );
 }

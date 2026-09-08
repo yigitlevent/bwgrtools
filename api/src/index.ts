@@ -1,16 +1,11 @@
-// eslint-disable-next-line import/default
-import fastifyCookie from "@fastify/cookie";
 import fastifyCors from "@fastify/cors";
 import fastifyHelmet from "@fastify/helmet";
-import fastifySession from "@fastify/session";
+import fastifyRateLimit from "@fastify/rate-limit";
 import "dotenv/config";
 import Fastify from "fastify";
 
-
 import { CorsConfig } from "./configs/cors.config";
-import { SessionMaxAgeMs, SessionStore } from "./configs/session.config";
 import BwgrRoutes from "./routes/bwgr.route";
-import UserRoutes from "./routes/user.route";
 import { Env } from "../../shared/utils/env";
 
 import type { FastifyError } from "fastify";
@@ -24,21 +19,8 @@ const App = Fastify({
 
 App.register(fastifyHelmet);
 App.register(fastifyCors, CorsConfig);
-App.register(fastifyCookie);
-App.register(fastifySession, {
-  store: SessionStore,
-  secret: Env.apiSecret,
-  saveUninitialized: false,
-  rolling: false,
-  cookie: {
-    secure: Env.env === "prod",
-    httpOnly: true,
-    sameSite: "strict",
-    maxAge: SessionMaxAgeMs
-  }
-});
+App.register(fastifyRateLimit, { max: 10, timeWindow: "1 minute" });
 
-App.register(UserRoutes, { prefix: "/api" });
 App.register(BwgrRoutes, { prefix: "/api" });
 
 App.setErrorHandler((err: FastifyError, _request, reply) => {

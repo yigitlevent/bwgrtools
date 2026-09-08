@@ -4,9 +4,12 @@ import { devtools } from "zustand/middleware";
 
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { useCharacterBurnerSpecialStore } from "./useCharacterBurnerSpecial";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
+import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { Average } from "../../../utils/Average";
+import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
+import { GetLifepathYears } from "../../../utils/GetLifepathYears";
 import { RecordGet } from "../../../utils/RecordGet";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
@@ -31,7 +34,9 @@ export interface CharacterBurnerSkillState {
   /**
    * Updates the character's skills list.
    * It re-adds previously selected general skills, if they are not present in the lifepath skills list.
-   * @remarks TODO: Repated lifepaths should be checked to determine the mandatory-ness.
+   * Applies the Law of Diminishing Returns for repeated lifepaths: 1st occurrence's 1st skill is
+   * mandatory, 2nd occurrence's 2nd skill is mandatory (if it exists), 3rd+ occurrence grants no
+   * mandatory skill from that lifepath at all.
   **/
   updateSkills: () => void;
 }
@@ -55,22 +60,22 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
 
         if (skill) {
           const rulesetSkill = getSkill(skill.id);
+          const openState = rulesetSkill.flags.isMagical || rulesetSkill.flags.isTraining ? "double" : "yes";
+
+          let newIsOpen = skill.isOpen;
+          let newAdvancement = skill.advancement;
 
           if (skill.isOpen === "no") {
-            if (skill.type === "General" && general.remaining > 0) {
-              skill.isOpen = rulesetSkill.flags.isMagical || rulesetSkill.flags.isTraining ? "double" : "yes";
-            }
-            else if (skill.type !== "General" && (general.remaining > 0 || lifepath.remaining > 0)) {
-              skill.isOpen = rulesetSkill.flags.isMagical || rulesetSkill.flags.isTraining ? "double" : "yes";
-            }
+            if (skill.type === "General" && general.remaining > 0) newIsOpen = openState;
+            else if (skill.type !== "General" && (general.remaining > 0 || lifepath.remaining > 0)) newIsOpen = openState;
           }
           else {
-            skill.isOpen = "no";
-            skill.advancement = { general: 0, lifepath: 0 };
+            newIsOpen = "no";
+            newAdvancement = { general: 0, lifepath: 0 };
           }
 
           set(produce<CharacterBurnerSkillState>(state => {
-            state.skills = new UniqueArray(state.skills.add(skill).items);
+            state.skills = new UniqueArray(state.skills.add({ ...skill, isOpen: newIsOpen, advancement: newAdvancement }).items);
           }));
         }
       },
@@ -112,9 +117,31 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
       getSkillPools: (lifepaths?: Lifepath[]): { general: Points; lifepath: Points; } => {
         const state = get();
         const lps = lifepaths ?? useCharacterBurnerLifepathStore.getState().lifepaths;
+        const { special } = useCharacterBurnerSpecialStore.getState();
 
-        const gpTotal = lps.reduce((pv, cv) => pv + (cv.pools.generalSkillPool ?? 0), 0);
-        const lpTotal = lps.reduce((pv, cv) => pv + (cv.pools.lifepathSkillPool ?? 0), 0);
+        // isGSPMultipliedByYear/isLSPMultipliedByYear: the pool value is a per-year rate, not a flat
+        // amount -- e.g. Advisor to the Court grants 1 GSP per year actually spent in the lifepath.
+        // getHalfGSPFromPrevLP/getHalfLSPFromPrevLP: this lifepath grants (in addition to its own
+        // points) half of the immediately preceding lifepath's own points in that same pool, rounded
+        // down.
+        const resolvePool = (
+          lp: Lifepath, prevLp: Lifepath | undefined,
+          pool: "generalSkillPool" | "lifepathSkillPool", isMultiplied: boolean, halfFromPrev: boolean
+        ): number => {
+          const base = isMultiplied ? (lp.pools[pool] ?? 0) * GetLifepathYears(lp, special.variableAge) : (lp.pools[pool] ?? 0);
+          const fromPrev = halfFromPrev && prevLp ? Math.floor((prevLp.pools[pool] ?? 0) / 2) : 0;
+          return base + fromPrev;
+        };
+
+        // Law of Diminishing Returns: a lifepath's skill point contribution is halved (rounded down)
+        // on its 3rd occurrence, and lost entirely on its 4th+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
+        const occurrenceScale = (occurrence: number): number => occurrence >= 4 ? 0 : occurrence === 3 ? 0.5 : 1;
+
+        const gpTotal = lps.reduce((pv, cv, i) =>
+          pv + Math.floor(resolvePool(cv, lps[i - 1], "generalSkillPool", !!cv.flags.isGSPMultipliedByYear, !!cv.flags.getHalfGSPFromPrevLP) * occurrenceScale(occurrences[i])), 0);
+        const lpTotal = lps.reduce((pv, cv, i) =>
+          pv + Math.floor(resolvePool(cv, lps[i - 1], "lifepathSkillPool", !!cv.flags.isLSPMultipliedByYear, !!cv.flags.getHalfLSPFromPrevLP) * occurrenceScale(occurrences[i])), 0);
 
         let gpRemaining = gpTotal;
         let lpRemaining = lpTotal;
@@ -144,6 +171,8 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         const ruleset = useRulesetStore.getState();
         const { getStat } = useCharacterBurnerStatStore.getState();
         const { getAttribute, hasAttribute } = useCharacterBurnerAttributeStore.getState();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
 
         const charSkill = skills.find(skillId);
 
@@ -165,8 +194,20 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
               else return getStat(s[1]).exponent;
             });
 
-            shade = rootShades.every(v => v === "G") ? "G" : "B";
-            exponent = Math.floor(Average(rootExponents) / 2);
+            // Cipher: unconditionally shade-shifts Inconspicuous to gray. Child Prodigy: player-chosen
+            // skill shade-shifted to gray (mutually exclusive with the +3D stat option).
+            shade =
+              (charSkill.name === "Inconspicuous" && hasTraitOpenByName("Cipher")) || (hasTraitOpenByName("Child Prodigy") && special.childProdigyShiftedSkill === skillId) || rootShades.every(v => v === "G") ? "G" : "B";
+
+            // Acute: round up instead of down for any skill with Perception in its roots. Hand-Eye
+            // Coordination: same, but only for skills rooted specifically in Perception AND Agility.
+            const rootNames = skillRoots.map(s => s[1]);
+            const isPerceptionAndAgility = rootNames.includes("Perception") && rootNames.includes("Agility");
+            const roundsUp =
+              (hasTraitOpenByName("Acute") && rootNames.includes("Perception"))
+              || (hasTraitOpenByName("Hand-Eye Coordination") && isPerceptionAndAgility);
+
+            exponent = roundsUp ? Math.ceil(Average(rootExponents) / 2) : Math.floor(Average(rootExponents) / 2);
           }
 
           exponent += charSkill.advancement.general + charSkill.advancement.lifepath;
@@ -186,14 +227,20 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
       updateSkills: (): void => {
         const { getSkill } = useRulesetStore.getState();
         const { lifepaths } = useCharacterBurnerLifepathStore.getState();
-        const { special } = useCharacterBurnerMiscStore.getState();
+        const { special } = useCharacterBurnerSpecialStore.getState();
         const state = get();
 
-        const characterSkills = new UniqueArray<dat.SkillId, CharacterSkill>(lifepaths.map(lp => {
+        // Law of Diminishing Returns: 1st occurrence -> 1st skill mandatory, 2nd occurrence -> 2nd
+        // skill mandatory (if it exists), 3rd+ occurrence -> no mandatory skill from this lifepath.
+        const occurrences = GetLifepathOccurrences(lifepaths);
+
+        const characterSkills = new UniqueArray<dat.SkillId, CharacterSkill>(lifepaths.map((lp, lpIndex) => {
+          const occurrence = occurrences[lpIndex];
+          const mandatoryIndex = occurrence <= 2 ? occurrence - 1 : -1;
+
           return lp.skills ? lp.skills.map((sk: dat.SkillId, i: number) => {
             const skill = getSkill(sk);
-            const isMandatory = (i === 0);
-            // TODO: Repeat lifepaths also should be checked
+            const isMandatory = (i === mandatoryIndex);
             const entry: CharacterSkill = {
               id: skill.id ?? sk,
               name: skill.name ?? "",

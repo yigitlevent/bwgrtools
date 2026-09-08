@@ -5,8 +5,8 @@ import { useRulesetStore } from "../../../../../hooks/apiStores/useRulesetStore"
 import { useCharacterBurnerAttributeStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
-import { useCharacterBurnerMiscStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
 import { useCharacterBurnerSkillStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
+import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { RecordGet } from "../../../../../utils/RecordGet";
 
 
@@ -15,7 +15,7 @@ export function SpecialSkills(): React.JSX.Element {
   const { stock } = useCharacterBurnerBasicsStore();
   const { lifepaths } = useCharacterBurnerLifepathStore();
   const { skills } = useCharacterBurnerSkillStore();
-  const { special, resetSkillSubskills, modifySkillSubskills } = useCharacterBurnerMiscStore();
+  const { special, resetSkillSubskills, modifySkillSubskills } = useCharacterBurnerSpecialStore();
   const { hasAttribute } = useCharacterBurnerAttributeStore();
   const [specialSkillIds, setSpecialSkillIds] = useState<dat.SkillId[]>([]);
 

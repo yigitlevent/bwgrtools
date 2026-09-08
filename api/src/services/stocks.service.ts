@@ -1,12 +1,10 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetStocks(rulesets: dat.RulesetId[]): Promise<Stock[]> {
-  const convert = (v: dat.StocksList[], a: dat.AgePool[]): Stock[] => {
-    const log = new Logger("GetStocks Conversion");
-
-    const r = v.map(stock => {
+  const convert = (v: dat.StocksList[], a: dat.AgePool[]): Stock[] => Timed("GetStocks Conversion", () =>
+    v.map(stock => {
       return {
         rulesets: stock.rulesets,
         id: stock.id,
@@ -16,21 +14,13 @@ export async function GetStocks(rulesets: dat.RulesetId[]): Promise<Stock[]> {
         settingIds: stock.settingIds,
         agePool: a.filter(ap => ap.stockId === stock.id).map(ap => ({ minAge: ap.minAge, mentalPool: ap.mentalPool, physicalPool: ap.physicalPool }))
       };
-    });
+    })
+  );
 
-    log.end();
-    return r;
-  };
-
-  const log = new Logger("GetStocks Querying");
-  const query1 = `select * from dat."StocksList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
+  const query1 = "select * from dat.\"StocksList\" where \"rulesets\"::text[] && $1::text[];";
   const query2 = "select * from dat.\"AgePool\";";
-  return Promise.all([
-    PgPool.query<dat.StocksList>(query1),
+  return Timed("GetStocks Querying", () => Promise.all([
+    PgPool.query<dat.StocksList>(query1, [rulesets]),
     PgPool.query<dat.AgePool>(query2)
-  ]).then(result => {
-    log.end();
-    const res = convert(result[0].rows, result[1].rows);
-    return res;
-  });
+  ])).then(result => convert(result[0].rows, result[1].rows));
 }

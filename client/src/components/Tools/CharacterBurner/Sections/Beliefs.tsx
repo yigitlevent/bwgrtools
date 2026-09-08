@@ -2,11 +2,11 @@ import { Grid, TextInput, Title } from "@mantine/core";
 import { Fragment } from "react";
 
 import { useCharacterBurnerBasicsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
-import { useCharacterBurnerMiscStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerMisc";
+import { useCharacterBurnerLimitsStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLimits";
 
 
 export function Beliefs(): React.JSX.Element {
-  const { limits } = useCharacterBurnerMiscStore();
+  const { limits } = useCharacterBurnerLimitsStore();
   const { beliefs, setBelief } = useCharacterBurnerBasicsStore();
 
   return (

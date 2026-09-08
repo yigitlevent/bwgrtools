@@ -5,7 +5,6 @@ type Nominal<Type, Identifier> = Type & { readonly [NominalBrand]: Identifier; }
 
 type Id =
   | meta.Id
-  | usr.Id
   | dat.Id;
 
 declare namespace meta {
@@ -13,19 +12,6 @@ declare namespace meta {
     | MigrationId;
 
   type MigrationId = Nominal<number, "MigrationId">;
-}
-
-declare namespace usr {
-  type Id =
-    | UserId
-    | UserAccessId
-    | UserAccessTypeId
-    | UserSessionId;
-
-  type UserId = Nominal<string, "UserId">;
-  type UserAccessId = Nominal<string, "UserAccessId">;
-  type UserAccessTypeId = Nominal<string, "UserAccessTypeId">;
-  type UserSessionId = Nominal<string, "UserSessionId">;
 }
 
 declare namespace dat {

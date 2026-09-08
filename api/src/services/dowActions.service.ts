@@ -1,11 +1,9 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetDoWActions(): Promise<DoWAction[]> {
-  const convert = (a: dat.DuelOfWitsAction[], at: dat.DoWActionTestList[], ar: dat.DoWActionResolutionList[]): DoWAction[] => {
-    const log = new Logger("GetDoWActions Conversion");
-
+  const convert = (a: dat.DuelOfWitsAction[], at: dat.DoWActionTestList[], ar: dat.DoWActionResolutionList[]): DoWAction[] => Timed("GetDoWActions Conversion", () => {
     const r: DoWAction[] = a.map(v => {
       const act: DoWAction = {
         id: v.id,
@@ -55,21 +53,15 @@ export async function GetDoWActions(): Promise<DoWAction[]> {
       return act;
     });
 
-    log.end();
     return r;
-  };
+  });
 
-  const log = new Logger("GetDoWActions Querying");
   const query1 = "select * from dat.\"DuelOfWitsAction\";";
   const query2 = "select * from dat.\"DoWActionTestList\";";
   const query3 = "select * from dat.\"DoWActionResolutionList\";";
-  return Promise.all([
+  return Timed("GetDoWActions Querying", () => Promise.all([
     PgPool.query<dat.DuelOfWitsAction>(query1),
     PgPool.query<dat.DoWActionTestList>(query2),
     PgPool.query<dat.DoWActionResolutionList>(query3)
-  ]).then(result => {
-    log.end();
-    const res = convert(result[0].rows, result[1].rows, result[2].rows);
-    return res;
-  });
+  ])).then(result => convert(result[0].rows, result[1].rows, result[2].rows));
 }
