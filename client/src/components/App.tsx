@@ -5,7 +5,7 @@ import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 // eslint-disable-next-line import/no-unresolved
 import "mantine-datatable/styles.css";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import { Menu } from "./Menu/Menu";
@@ -32,6 +32,8 @@ export function App(): React.JSX.Element {
   const cursorType = useCursorStore(s => s.cursorType);
   const theme = useMantineTheme();
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (fetchState === "fetch-full") fetchList();
   }, [fetchList, fetchState]);
@@ -46,33 +48,35 @@ export function App(): React.JSX.Element {
   }, [cursorType, theme]);
 
   return (
-    <Box h="100svh" w="100svw">
+    <Box ref={scrollRef} style={{ height: "100svh", width: "100svw", overflowY: "auto" }}>
       <Container size="lg">
-        <Stack style={{ height: "100%" }} justify="start">
-          <Group justify="space-between">
+        <Stack gap={0} justify="start" style={{ height: "100svh" }}>
+          <Group justify="space-between" style={{ height: "54px", minHeight: "54px" }}>
             <Title mt={8}>BWGR Tools</Title>
             <Menu />
           </Group>
 
-          {fetchState === "failed" ? <Text>Data fetching failed.</Text> : null}
+          <Box style={{ height: "calc(100svh - 54px)", minHeight: "calc(100svh - 54px)" }}>
+            {fetchState === "failed" ? <Text>Data fetching failed.</Text> : null}
 
-          {fetchState === "done" ? (
-            <Routes>
-              <Route path="/" element={<Navigate replace to="/diceroller" />} />
-              <Route path="/diceroller" element={<DiceRoller />} />
-              <Route path="/lifepaths" element={<LifepathLists />} />
-              <Route path="/skills" element={<SkillLists />} />
-              <Route path="/traits" element={<TraitLists />} />
-              <Route path="/resources" element={<ResourcesList />} />
-              <Route path="/practiceplanner" element={<PracticePlanner />} />
-              <Route path="/magicwheel" element={<MagicWheel />} />
-              <Route path="/magicwheelalt" element={<MagicWheelAlt />} />
-              <Route path="/dowplanner" element={<DuelOfWitsPlanner />} />
-              <Route path="/racplanner" element={<RangeAndCoverPlanner />} />
-              <Route path="/fightplanner" element={<FightPlanner />} />
-              <Route path="/characterburner" element={<CharacterBurner />} />
-            </Routes>
-          ) : <Text>Loading</Text>}
+            {fetchState === "done" ? (
+              <Routes>
+                <Route path="/" element={<Navigate replace to="/diceroller" />} />
+                <Route path="/diceroller" element={<DiceRoller />} />
+                <Route path="/lifepaths" element={<LifepathLists scrollRef={scrollRef} />} />
+                <Route path="/skills" element={<SkillLists />} />
+                <Route path="/traits" element={<TraitLists />} />
+                <Route path="/resources" element={<ResourcesList scrollRef={scrollRef} />} />
+                <Route path="/practiceplanner" element={<PracticePlanner />} />
+                <Route path="/magicwheel" element={<MagicWheel />} />
+                <Route path="/magicwheelalt" element={<MagicWheelAlt />} />
+                <Route path="/dowplanner" element={<DuelOfWitsPlanner />} />
+                <Route path="/racplanner" element={<RangeAndCoverPlanner />} />
+                <Route path="/fightplanner" element={<FightPlanner />} />
+                <Route path="/characterburner" element={<CharacterBurner />} />
+              </Routes>
+            ) : <Text>Loading</Text>}
+          </Box>
         </Stack>
       </Container>
     </Box>

@@ -1,13 +1,13 @@
 import { Alert, Box, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Fragment, useCallback, useRef, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 
 import { LifepathBox } from "./LifepathBox";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useSearch } from "../../../hooks/useSearch";
 
 
-export function LifepathLists(): React.JSX.Element {
+export function LifepathLists({ scrollRef }: { scrollRef: React.RefObject<HTMLDivElement | null>; }): React.JSX.Element {
   const { stocks, settings, lifepaths } = useRulesetStore();
   const { searchValues, setFilter, filteredList } = useSearch<Lifepath>(lifepaths, ["stock", "setting"], { "stock": stocks[0].name ?? "", "setting": settings[0].name ?? "" });
 
@@ -18,8 +18,6 @@ export function LifepathLists(): React.JSX.Element {
     setAllowedSettings(newAllowed);
     setFilter([{ key: "stock", value: val }, { key: "setting", value: newAllowed[0] }]);
   }, [setFilter, settings]);
-
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   // react-virtual's useVirtualizer() returns methods (getTotalSize, getVirtualItems, measureElement)
   // the React Compiler can't statically prove are stable, so it skips memoizing this component. None
@@ -81,19 +79,17 @@ export function LifepathLists(): React.JSX.Element {
       </Grid>
 
       {filteredList.length > 0 ? (
-        <Box ref={scrollRef} mt="md" style={{ height: "70vh", overflowY: "auto" }}>
-          <Box style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
-            {rowVirtualizer.getVirtualItems().map(virtualRow => (
-              <Box
-                key={virtualRow.key}
-                ref={rowVirtualizer.measureElement}
-                data-index={virtualRow.index}
-                style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${virtualRow.start.toString()}px)`, paddingBottom: "var(--mantine-spacing-xs)" }}
-              >
-                <LifepathBox lifepath={filteredList[virtualRow.index]} />
-              </Box>
-            ))}
-          </Box>
+        <Box mt={16} style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
+          {rowVirtualizer.getVirtualItems().map(virtualRow => (
+            <Box
+              key={virtualRow.key}
+              ref={rowVirtualizer.measureElement}
+              data-index={virtualRow.index}
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${virtualRow.start.toString()}px)`, paddingBottom: "var(--mantine-spacing-xs)" }}
+            >
+              <LifepathBox lifepath={filteredList[virtualRow.index]} />
+            </Box>
+          ))}
         </Box>
       ) : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
     </Fragment>
