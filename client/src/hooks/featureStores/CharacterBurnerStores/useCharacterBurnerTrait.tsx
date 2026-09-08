@@ -5,6 +5,7 @@ import { devtools } from "zustand/middleware";
 import { useCharacterBurnerBasicsStore } from "./useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
+import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
@@ -27,7 +28,9 @@ export interface CharacterBurnerTraitState {
   /**
    * Updates the character's traits list.
    * It preserves the common traits, and re-adds previously selected general traits, if they are not present in the lifepath trait list.
-   * On the Nth occurrence of a repeated lifepath, its Nth trait (not always the 1st) is the mandatory one.
+   * Applies the Law of Diminishing Returns for repeated lifepaths: 1st occurrence's 1st trait is
+   * mandatory, 2nd occurrence's 2nd trait is mandatory (if it exists), 3rd+ occurrence grants no
+   * mandatory trait from that lifepath at all.
   **/
   updateTraits: () => void;
 }
@@ -75,7 +78,15 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         const lps = lifepaths ?? useCharacterBurnerLifepathStore.getState().lifepaths;
         const state = get();
 
-        const tTotal = lps.reduce((pv, cv) => pv + (cv.pools.traitPool ?? 0), 0);
+        // Law of Diminishing Returns: a lifepath's trait pool contribution is lost entirely on its
+        // 3rd+ occurrence, and reduced by 1 on its 2nd occurrence if it has no 2nd trait to grant.
+        const occurrences = GetLifepathOccurrences(lps);
+        const tTotal = lps.reduce((pv, cv, i) => {
+          const occurrence = occurrences[i];
+          if (occurrence >= 3) return pv;
+          if (occurrence === 2 && (cv.traits?.length ?? 0) < 2) return pv + (cv.pools.traitPool ?? 0) - 1;
+          return pv + (cv.pools.traitPool ?? 0);
+        }, 0);
         let tSpent = 0;
 
         state.traits.forEach(trait => {
@@ -112,18 +123,18 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         const { lifepaths } = useCharacterBurnerLifepathStore.getState();
         const state = get();
 
-        // On the Nth time a lifepath is taken, its Nth trait is the mandatory one (1st time -> 1st
-        // trait, 2nd time -> 2nd trait, etc.), rather than always the 1st.
-        const occurrenceCounts = new Map<dat.LifepathId, number>();
+        // Law of Diminishing Returns: 1st occurrence -> 1st trait mandatory, 2nd occurrence -> 2nd
+        // trait mandatory (if it exists), 3rd+ occurrence -> no mandatory trait from this lifepath.
+        const occurrences = GetLifepathOccurrences(lifepaths);
 
         // Add Lifepath Traits
-        const characterTraits = new UniqueArray<dat.TraitId, CharacterTrait>(lifepaths.map(lp => {
-          const occurrence = lp.id !== null ? (occurrenceCounts.get(lp.id) ?? 0) : 0;
-          if (lp.id !== null) occurrenceCounts.set(lp.id, occurrence + 1);
+        const characterTraits = new UniqueArray<dat.TraitId, CharacterTrait>(lifepaths.map((lp, lpIndex) => {
+          const occurrence = occurrences[lpIndex];
+          const mandatoryIndex = occurrence <= 2 ? occurrence - 1 : -1;
 
           return lp.traits ? lp.traits.map((tr: dat.TraitId, i: number) => {
             const trait = ruleset.getTrait(tr);
-            const isMandatory = (i === occurrence);
+            const isMandatory = (i === mandatoryIndex);
             const entry: CharacterTrait = {
               id: trait.id ?? tr,
               name: trait.name ?? "",

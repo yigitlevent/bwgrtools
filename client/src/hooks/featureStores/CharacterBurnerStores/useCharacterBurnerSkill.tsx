@@ -7,6 +7,7 @@ import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerMiscStore } from "./useCharacterBurnerMisc";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { Average } from "../../../utils/Average";
+import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 import { RecordGet } from "../../../utils/RecordGet";
 import { UniqueArray } from "../../../utils/UniqueArray";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
@@ -31,7 +32,9 @@ export interface CharacterBurnerSkillState {
   /**
    * Updates the character's skills list.
    * It re-adds previously selected general skills, if they are not present in the lifepath skills list.
-   * On the Nth occurrence of a repeated lifepath, its Nth skill (not always the 1st) is the mandatory one.
+   * Applies the Law of Diminishing Returns for repeated lifepaths: 1st occurrence's 1st skill is
+   * mandatory, 2nd occurrence's 2nd skill is mandatory (if it exists), 3rd+ occurrence grants no
+   * mandatory skill from that lifepath at all.
   **/
   updateSkills: () => void;
 }
@@ -113,8 +116,13 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         const state = get();
         const lps = lifepaths ?? useCharacterBurnerLifepathStore.getState().lifepaths;
 
-        const gpTotal = lps.reduce((pv, cv) => pv + (cv.pools.generalSkillPool ?? 0), 0);
-        const lpTotal = lps.reduce((pv, cv) => pv + (cv.pools.lifepathSkillPool ?? 0), 0);
+        // Law of Diminishing Returns: a lifepath's skill point contribution is halved (rounded down)
+        // on its 3rd occurrence, and lost entirely on its 4th+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
+        const occurrenceScale = (occurrence: number): number => occurrence >= 4 ? 0 : occurrence === 3 ? 0.5 : 1;
+
+        const gpTotal = lps.reduce((pv, cv, i) => pv + Math.floor((cv.pools.generalSkillPool ?? 0) * occurrenceScale(occurrences[i])), 0);
+        const lpTotal = lps.reduce((pv, cv, i) => pv + Math.floor((cv.pools.lifepathSkillPool ?? 0) * occurrenceScale(occurrences[i])), 0);
 
         let gpRemaining = gpTotal;
         let lpRemaining = lpTotal;
@@ -189,17 +197,17 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         const { special } = useCharacterBurnerMiscStore.getState();
         const state = get();
 
-        // On the Nth time a lifepath is taken, its Nth skill is the mandatory one (1st time -> 1st
-        // skill, 2nd time -> 2nd skill, etc.), rather than always the 1st.
-        const occurrenceCounts = new Map<dat.LifepathId, number>();
+        // Law of Diminishing Returns: 1st occurrence -> 1st skill mandatory, 2nd occurrence -> 2nd
+        // skill mandatory (if it exists), 3rd+ occurrence -> no mandatory skill from this lifepath.
+        const occurrences = GetLifepathOccurrences(lifepaths);
 
-        const characterSkills = new UniqueArray<dat.SkillId, CharacterSkill>(lifepaths.map(lp => {
-          const occurrence = lp.id !== null ? (occurrenceCounts.get(lp.id) ?? 0) : 0;
-          if (lp.id !== null) occurrenceCounts.set(lp.id, occurrence + 1);
+        const characterSkills = new UniqueArray<dat.SkillId, CharacterSkill>(lifepaths.map((lp, lpIndex) => {
+          const occurrence = occurrences[lpIndex];
+          const mandatoryIndex = occurrence <= 2 ? occurrence - 1 : -1;
 
           return lp.skills ? lp.skills.map((sk: dat.SkillId, i: number) => {
             const skill = getSkill(sk);
-            const isMandatory = (i === occurrence);
+            const isMandatory = (i === mandatoryIndex);
             const entry: CharacterSkill = {
               id: skill.id ?? sk,
               name: skill.name ?? "",

@@ -10,6 +10,7 @@ import { useCharacterBurnerSkillStore } from "./useCharacterBurnerSkill";
 import { useCharacterBurnerStatStore } from "./useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "./useCharacterBurnerTrait";
 import { FilterLifepaths } from "../../../utils/FilterLifepaths";
+import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 import { Pairwise } from "../../../utils/Pairwise";
 import { useRulesetStore } from "../../apiStores/useRulesetStore";
 
@@ -108,8 +109,11 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         const { getAgePool } = useCharacterBurnerBasicsStore.getState();
         const { stats } = useCharacterBurnerStatStore.getState();
 
+        // Law of Diminishing Returns: a lifepath's stat pool contribution is lost entirely on its
+        // 3rd+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
         const stockAgePool = getAgePool().mentalPool;
-        const lifepathPool = lps.length > 0 ? lps.map(lp => lp.pools.mentalStatPool ?? 0).reduce((pv, cv) => pv + cv) : 0;
+        const lifepathPool = lps.reduce((pv, cv, i) => occurrences[i] >= 3 ? pv : pv + (cv.pools.mentalStatPool ?? 0), 0);
         const total = stockAgePool + lifepathPool;
 
         const spent =
@@ -126,8 +130,11 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         const { getAgePool } = useCharacterBurnerBasicsStore.getState();
         const { stats } = useCharacterBurnerStatStore.getState();
 
+        // Law of Diminishing Returns: a lifepath's stat pool contribution is lost entirely on its
+        // 3rd+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
         const stockAgePool = getAgePool().physicalPool;
-        const lifepathPool = lps.length > 0 ? lps.map(lp => lp.pools.physicalStatPool ?? 0).reduce((pv, cv) => pv + cv) : 0;
+        const lifepathPool = lps.reduce((pv, cv, i) => occurrences[i] >= 3 ? pv : pv + (cv.pools.physicalStatPool ?? 0), 0);
         const total = stockAgePool + lifepathPool;
 
         const spent =
@@ -143,7 +150,10 @@ export const useCharacterBurnerLifepathStore = create<CharacterBurnerLifepathSta
         const lps = lifepaths ?? get().lifepaths;
         const { stats } = useCharacterBurnerStatStore.getState();
 
-        const total = lps.length > 0 ? lps.map(lp => lp.pools.eitherStatPool ?? 0).reduce((pv, cv) => pv + cv) : 0;
+        // Law of Diminishing Returns: a lifepath's stat pool contribution is lost entirely on its
+        // 3rd+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
+        const total = lps.reduce((pv, cv, i) => occurrences[i] >= 3 ? pv : pv + (cv.pools.eitherStatPool ?? 0), 0);
         const spent =
           Object.values(stats)
             .map((v): number => v.eitherPoolSpent.shade + v.eitherPoolSpent.exponent)

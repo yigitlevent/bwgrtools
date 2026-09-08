@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
+import { GetLifepathOccurrences } from "../../../utils/GetLifepathOccurrences";
 
 
 export interface CharacterBurnerResourceState {
@@ -37,7 +38,11 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
         // this is a systemic gap, not specific to resources -- the equivalent GSP/LSP flags on skill
         // pools (useCharacterBurnerSkill.tsx's getSkillPools) are unimplemented too, and there's no
         // existing formula anywhere in the codebase to derive the intended calculation from.
-        const totalRps = lps.map(v => v.pools.resourcePoints ?? 0).reduce((pv, cv) => pv + cv, 0);
+
+        // Law of Diminishing Returns: a lifepath's resource point contribution is halved (rounded
+        // down) on its 3rd occurrence, and stays halved (not reduced further) on its 4th+ occurrence.
+        const occurrences = GetLifepathOccurrences(lps);
+        const totalRps = lps.reduce((pv, cv, i) => pv + Math.floor((cv.pools.resourcePoints ?? 0) * (occurrences[i] >= 3 ? 0.5 : 1)), 0);
 
         return { total: totalRps, spent: spending, remaining: totalRps - spending };
       },
