@@ -50,9 +50,7 @@ function SkillBlock({ title, skills, remove, addButton }: {
       </Grid.Col>
 
       <Fragment>
-        {skills
-          // TODO: re-enable .filter(v => !SpecialSkills.includes(v as SkillPath))
-          .map(skill => <Skill key={skill.id} skill={skill} remove={remove} />)}
+        {skills.map(skill => <Skill key={skill.id} skill={skill} remove={remove} />)}
       </Fragment>
 
       {addButton ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
