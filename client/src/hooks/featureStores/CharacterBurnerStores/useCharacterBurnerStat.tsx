@@ -105,6 +105,7 @@ export const useCharacterBurnerStatStore = create<CharacterBurnerStatState>()(
           }
         }));
 
+        useCharacterBurnerMiscStore.getState().refreshLimits();
         RecomputeCharacter("skillTrait");
       }
     }),

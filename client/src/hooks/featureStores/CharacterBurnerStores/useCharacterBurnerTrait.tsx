@@ -61,6 +61,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
           }));
 
           useCharacterBurnerResourceStore.getState().updateResources();
+          useCharacterBurnerMiscStore.getState().refreshLimits();
         }
       },
 
@@ -68,12 +69,16 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         if (!trait.id) return;
         const charTrait: CharacterTrait = { id: trait.id, name: trait.name ?? "", isOpen: false, type: "General" };
         set(produce<CharacterBurnerTraitState>(state => { state.traits = new UniqueArray(state.traits.add(charTrait).items); }));
+
+        useCharacterBurnerMiscStore.getState().refreshLimits();
       },
 
       removeGeneralTrait: (traitId: dat.TraitId): void => {
         set(produce<CharacterBurnerTraitState>(state => {
           state.traits = new UniqueArray(state.traits.remove(traitId).items);
         }));
+
+        useCharacterBurnerMiscStore.getState().refreshLimits();
       },
 
       getTraitPools: (lifepaths?: Lifepath[]): Points => {
@@ -168,6 +173,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
 
         useCharacterBurnerMiscStore.getState().refreshTraitEffects();
         useCharacterBurnerResourceStore.getState().updateResources();
+        useCharacterBurnerMiscStore.getState().refreshLimits();
       }
     }),
     { name: "useCharacterBurnerTraitStore" }

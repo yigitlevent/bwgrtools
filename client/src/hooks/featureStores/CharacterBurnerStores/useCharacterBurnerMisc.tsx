@@ -38,6 +38,7 @@ export interface CharacterBurnerMiscState {
 
   getTolerances: () => string[];
   refreshTraitEffects: () => void;
+  refreshLimits: () => void;
 }
 
 export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
@@ -71,42 +72,6 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
       },
 
       reset: (): void => {
-        const { stock } = useCharacterBurnerBasicsStore.getState();
-        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
-
-        // TODO: stock-related ability limits are incomplete. Stat exponent caps are handled below
-        // (Elf/Great Wolf/Troll), but belief count, instinct count, and skill exponent caps have no
-        // trait-based overrides yet -- CharacterStockLimits (shared/@types/character.d.ts) doesn't
-        // even have a `skills` field yet, so that needs a type change too, not just logic here.
-        const limits: CharacterStockLimits = {
-          beliefs: 3, // TODO: trait-based belief limit
-          instincts: 3, // TODO: trait-based instinct limit
-          stats: {
-            Will: { min: 1, max: 8 },
-            Perception: { min: 1, max: 8 },
-            Power: { min: 1, max: 8 },
-            Agility: { min: 1, max: 8 },
-            Forte: { min: 1, max: 8 },
-            Speed: { min: 1, max: 8 }
-          },
-          attributes: 9
-        };
-
-        if (stock[1] === "Elf") {
-          if (hasTraitOpenByName("First Born")) limits.stats.Perception = { min: 1, max: 9 };
-        }
-        else if (stock[1] === "Great Wolf") {
-          if (hasTraitOpenByName("Great Lupine Form")) limits.stats.Agility = { min: 1, max: 6 };
-        }
-        else if (stock[1] === "Troll") {
-          if (hasTraitOpenByName("Massive Stature")) {
-            limits.stats.Power = { min: 4, max: 9 };
-            limits.stats.Forte = { min: 4, max: 9 };
-            limits.stats.Agility = { min: 1, max: 5 };
-            limits.stats.Speed = { min: 1, max: 5 };
-          }
-        }
-
         set(produce<CharacterBurnerMiscState>(state => {
           state.special = {
             stock: { brutalLifeTraits: [], huntingGround: undefined },
@@ -118,10 +83,10 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
           };
           state.questions = [];
           state.traitEffects = [];
-          state.limits = limits;
         }));
 
         get().refreshTraitEffects();
+        get().refreshLimits();
       },
 
       modifyCompanionLifepath: (companionName: string, companionLifepathId: dat.LifepathId): void => {
@@ -275,6 +240,59 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
           //   - General die traits
           //   - Monstrous traits
           if (hasTraitOpenByName("Tough")) state.traitEffects.push({ roundUp: "Mortal Wound" });
+        }));
+      },
+
+      refreshLimits: (): void => {
+        const { stock } = useCharacterBurnerBasicsStore.getState();
+        const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
+
+        const limits: CharacterStockLimits = {
+          beliefs: 3,
+          instincts: 3,
+          stats: {
+            Will: { min: 1, max: 8 },
+            Perception: { min: 1, max: 8 },
+            Power: { min: 1, max: 8 },
+            Agility: { min: 1, max: 8 },
+            Forte: { min: 1, max: 8 },
+            Speed: { min: 1, max: 8 }
+          },
+          attributes: 9
+        };
+
+        if (stock[1] === "Dwarf") {
+          if (hasTraitOpenByName("Stout")) {
+            const { getStat } = useCharacterBurnerStatStore.getState();
+            limits.stats.Forte = { min: 1, max: 9 };
+            // Speed must always be lower than the higher of Power/Forte, on top of its own flat cap.
+            const higherOfPowerForte = Math.max(getStat("Power").exponent, getStat("Forte").exponent);
+            limits.stats.Speed = { min: 1, max: Math.max(1, Math.min(6, higherOfPowerForte - 1)) };
+          }
+        }
+        else if (stock[1] === "Elf") {
+          if (hasTraitOpenByName("First Born")) limits.stats.Perception = { min: 1, max: 9 };
+        }
+        else if (stock[1] === "Great Wolf") {
+          if (hasTraitOpenByName("Great Lupine Form")) limits.stats.Agility = { min: 1, max: 6 };
+        }
+        else if (stock[1] === "Troll") {
+          if (hasTraitOpenByName("Massive Stature")) {
+            limits.stats.Power = { min: 4, max: 9 };
+            limits.stats.Forte = { min: 4, max: 9 };
+            limits.stats.Agility = { min: 1, max: 5 };
+            limits.stats.Speed = { min: 1, max: 5 };
+          }
+        }
+
+        // Traits granting an additional (4th) Belief or Instinct -- verified against each trait's
+        // actual description text. "Possessed" also grants an extra BIT set but for a separate
+        // possessing spirit (not a 4th slot on the character's own sheet), so it's out of scope here.
+        if (["Loyal", "Oathsworn", "Sworn to the Order", "Zealot"].some(name => hasTraitOpenByName(name))) limits.beliefs = 4;
+        if (hasTraitOpenByName("Alarmist")) limits.instincts = 4;
+
+        set(produce<CharacterBurnerMiscState>(state => {
+          state.limits = limits;
         }));
       },
 
