@@ -14,8 +14,8 @@ export async function GetSettings(rulesets: dat.RulesetId[]): Promise<Setting[]>
     };
   };
 
-  const query = `select * from dat."SettingsList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
-  return Timed("GetSettings Querying", () => PgPool.query<dat.SettingsList>(query)).then(result =>
+  const query = "select * from dat.\"SettingsList\" where \"rulesets\"::text[] && $1::text[];";
+  return Timed("GetSettings Querying", () => PgPool.query<dat.SettingsList>(query, [rulesets])).then(result =>
     Timed("GetSettings Conversion", () => result.rows.map(convert))
   );
 }

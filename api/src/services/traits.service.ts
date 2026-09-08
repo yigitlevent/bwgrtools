@@ -25,8 +25,8 @@ export async function GetTraits(rulesets: dat.RulesetId[]): Promise<Trait[]> {
     return r;
   };
 
-  const query = `select * from dat."TraitsList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
-  return Timed("GetTraits Querying", () => PgPool.query<dat.TraitsList>(query)).then(result =>
+  const query = "select * from dat.\"TraitsList\" where \"rulesets\"::text[] && $1::text[];";
+  return Timed("GetTraits Querying", () => PgPool.query<dat.TraitsList>(query, [rulesets])).then(result =>
     Timed("GetTraits Conversion", () => result.rows.map(convert))
   );
 }

@@ -35,8 +35,8 @@ export async function GetSkills(rulesets: dat.RulesetId[]): Promise<Skill[]> {
     return r;
   };
 
-  const query = `select * from dat."SkillsList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
-  return Timed("GetSkills Querying", () => PgPool.query<dat.SkillsList>(query)).then(result =>
+  const query = "select * from dat.\"SkillsList\" where \"rulesets\"::text[] && $1::text[];";
+  return Timed("GetSkills Querying", () => PgPool.query<dat.SkillsList>(query, [rulesets])).then(result =>
     Timed("GetSkills Conversion", () => result.rows.map(convert))
   );
 }

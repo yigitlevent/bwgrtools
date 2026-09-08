@@ -17,10 +17,10 @@ export async function GetStocks(rulesets: dat.RulesetId[]): Promise<Stock[]> {
     })
   );
 
-  const query1 = `select * from dat."StocksList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
+  const query1 = "select * from dat.\"StocksList\" where \"rulesets\"::text[] && $1::text[];";
   const query2 = "select * from dat.\"AgePool\";";
   return Timed("GetStocks Querying", () => Promise.all([
-    PgPool.query<dat.StocksList>(query1),
+    PgPool.query<dat.StocksList>(query1, [rulesets]),
     PgPool.query<dat.AgePool>(query2)
   ])).then(result => convert(result[0].rows, result[1].rows));
 }

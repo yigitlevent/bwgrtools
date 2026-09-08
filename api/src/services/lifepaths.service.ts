@@ -122,11 +122,11 @@ export async function GetLifepaths(rulesets: dat.RulesetId[]): Promise<Lifepath[
     return r;
   });
 
-  const query1 = `select * from dat."LifepathsList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
+  const query1 = "select * from dat.\"LifepathsList\" where \"rulesets\"::text[] && $1::text[];";
   const query2 = "select * from dat.\"LifepathRequirementBlock\";";
   const query3 = "select * from dat.\"LifepathRequirementBlockItem\";";
   return Timed("GetLifepaths Querying", () => Promise.all([
-    PgPool.query<dat.LifepathsList>(query1),
+    PgPool.query<dat.LifepathsList>(query1, [rulesets]),
     PgPool.query<dat.LifepathRequirementBlock>(query2),
     PgPool.query<dat.LifepathRequirementBlockItem>(query3)
   ])).then(result => convert(result[0].rows, result[1].rows, result[2].rows));

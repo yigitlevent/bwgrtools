@@ -75,11 +75,11 @@ export async function GetResources(rulesets: dat.RulesetId[]): Promise<Resource[
     return r;
   });
 
-  const query1 = `select * from dat."ResourcesList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
+  const query1 = "select * from dat.\"ResourcesList\" where \"rulesets\"::text[] && $1::text[];";
   const query2 = "select * from dat.\"ResourceMagicDetailsList\";";
   const query3 = "select * from dat.\"ResourceMagicObstaclesList\";";
   return Timed("GetResources Querying", () => Promise.all([
-    PgPool.query<dat.ResourcesList>(query1),
+    PgPool.query<dat.ResourcesList>(query1, [rulesets]),
     PgPool.query<dat.ResourceMagicDetailsList>(query2),
     PgPool.query<dat.ResourceMagicObstaclesList>(query3)
   ])).then(result => convert(result[0].rows, result[1].rows, result[2].rows));
