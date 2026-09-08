@@ -1,7 +1,6 @@
-// eslint-disable-next-line import/default
-import fastifyCookie from "@fastify/cookie";
 import fastifyCors from "@fastify/cors";
 import fastifyHelmet from "@fastify/helmet";
+import fastifyRateLimit from "@fastify/rate-limit";
 import "dotenv/config";
 import Fastify from "fastify";
 
@@ -20,7 +19,7 @@ const App = Fastify({
 
 App.register(fastifyHelmet);
 App.register(fastifyCors, CorsConfig);
-App.register(fastifyCookie);
+App.register(fastifyRateLimit, { max: 10, timeWindow: "1 minute" });
 
 App.register(BwgrRoutes, { prefix: "/api" });
 
