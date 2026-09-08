@@ -795,3 +795,189 @@ CREATE TABLE
     "resource" INTEGER NOT NULL,
     PRIMARY KEY ("id")
   );
+
+CREATE INDEX IF NOT EXISTS "IDX_Ruleset_userId" ON dat."Ruleset" ("userId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RulesetExpansion_expansionId" ON dat."RulesetExpansion" ("expansionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_AgePool_stockId" ON dat."AgePool" ("stockId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RulesetStock_rulesetId" ON dat."RulesetStock" ("rulesetId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Setting_stockId" ON dat."Setting" ("stockId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RulesetSetting_rulesetId" ON dat."RulesetSetting" ("rulesetId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Trait_stockId" ON dat."Trait" ("stockId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Trait_categoryId" ON dat."Trait" ("categoryId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Trait_typeId" ON dat."Trait" ("typeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RulesetTrait_rulesetId" ON dat."RulesetTrait" ("rulesetId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Ability_abilityTypeId" ON dat."Ability" ("abilityTypeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Skill_stockId" ON dat."Skill" ("stockId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Skill_categoryId" ON dat."Skill" ("categoryId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Skill_typeId" ON dat."Skill" ("typeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Skill_root1Id" ON dat."Skill" ("root1Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_Skill_root2Id" ON dat."Skill" ("root2Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_Skill_toolTypeId" ON dat."Skill" ("toolTypeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Skill_restrictionOnlyStockId" ON dat."Skill" ("restrictionOnlyStockId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Skill_restrictionAbilityId" ON dat."Skill" ("restrictionAbilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RulesetSkill_rulesetId" ON dat."RulesetSkill" ("rulesetId");
+
+CREATE INDEX IF NOT EXISTS "IDX_SkillSubskill_subskillId" ON dat."SkillSubskill" ("subskillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_TraitCallOnSkill_skillId" ON dat."TraitCallOnSkill" ("skillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_TraitCallOnAbility_abilityId" ON dat."TraitCallOnAbility" ("abilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_AbilityRequiredTrait_traitId" ON dat."AbilityRequiredTrait" ("traitId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Lifepath_stockId" ON dat."Lifepath" ("stockId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Lifepath_settingId" ON dat."Lifepath" ("settingId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathLead_settingId" ON dat."LifepathLead" ("settingId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathSkill_skillId" ON dat."LifepathSkill" ("skillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathTrait_traitId" ON dat."LifepathTrait" ("traitId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathCompanionSetting_companionSettingId" ON dat."LifepathCompanionSetting" ("companionSettingId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RulesetLifepath_rulesetId" ON dat."RulesetLifepath" ("rulesetId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirement_lifepathId" ON dat."LifepathRequirement" ("lifepathId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirement_logicTypeId" ON dat."LifepathRequirement" ("logicTypeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirementItem_requirementId" ON dat."LifepathRequirementItem" ("requirementId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirementItem_requirementTypeId" ON dat."LifepathRequirementItem" ("requirementTypeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirementItem_settingId" ON dat."LifepathRequirementItem" ("settingId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirementItem_lifepathId" ON dat."LifepathRequirementItem" ("lifepathId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirementItem_skillId" ON dat."LifepathRequirementItem" ("skillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirementItem_traitId" ON dat."LifepathRequirementItem" ("traitId");
+
+CREATE INDEX IF NOT EXISTS "IDX_LifepathRequirementItem_attributeId" ON dat."LifepathRequirementItem" ("attributeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionTest_actionId" ON dat."DuelOfWitsActionTest" ("actionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionTest_skillId" ON dat."DuelOfWitsActionTest" ("skillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionTest_abilityId" ON dat."DuelOfWitsActionTest" ("abilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionResolution_actionId" ON dat."DuelOfWitsActionResolution" ("actionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionResolution_opposingActionId" ON dat."DuelOfWitsActionResolution" ("opposingActionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionResolution_resolutionTypeId" ON dat."DuelOfWitsActionResolution" ("resolutionTypeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionResolution_skillId" ON dat."DuelOfWitsActionResolution" ("skillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionResolution_abilityId" ON dat."DuelOfWitsActionResolution" ("abilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionResolution_opposingSkillId" ON dat."DuelOfWitsActionResolution" ("opposingSkillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_DuelOfWitsActionResolution_opposingAbilityId" ON dat."DuelOfWitsActionResolution" ("opposingAbilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RangeAndCoverAction_groupId" ON dat."RangeAndCoverAction" ("groupId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RangeAndCoverActionResolution_actionId" ON dat."RangeAndCoverActionResolution" ("actionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RangeAndCoverActionResolution_opposingActionId" ON dat."RangeAndCoverActionResolution" ("opposingActionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RangeAndCoverActionResolution_resolutionTypeId" ON dat."RangeAndCoverActionResolution" ("resolutionTypeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RangeAndCoverActionResolution_skillId" ON dat."RangeAndCoverActionResolution" ("skillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RangeAndCoverActionResolution_abilityId" ON dat."RangeAndCoverActionResolution" ("abilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RangeAndCoverActionResolution_opposingSkillId" ON dat."RangeAndCoverActionResolution" ("opposingSkillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_RangeAndCoverActionResolution_opposingAbilityId" ON dat."RangeAndCoverActionResolution" ("opposingAbilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightAction_groupId" ON dat."FightAction" ("groupId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionTest_actionId" ON dat."FightActionTest" ("actionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionTest_skillId" ON dat."FightActionTest" ("skillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionTest_abilityId" ON dat."FightActionTest" ("abilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionResolution_actionId" ON dat."FightActionResolution" ("actionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionResolution_opposingActionId" ON dat."FightActionResolution" ("opposingActionId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionResolution_resolutionTypeId" ON dat."FightActionResolution" ("resolutionTypeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionResolution_skillId" ON dat."FightActionResolution" ("skillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionResolution_abilityId" ON dat."FightActionResolution" ("abilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionResolution_opposingSkillId" ON dat."FightActionResolution" ("opposingSkillId");
+
+CREATE INDEX IF NOT EXISTS "IDX_FightActionResolution_opposingAbilityId" ON dat."FightActionResolution" ("opposingAbilityId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Resource_stockId" ON dat."Resource" ("stockId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Resource_resourceTypeId" ON dat."Resource" ("resourceTypeId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceCost_resourceId" ON dat."ResourceCost" ("resourceId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceModifier_resourceId" ON dat."ResourceModifier" ("resourceId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_resourceId" ON dat."ResourceMagicDetail" ("resourceId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_originModifierId" ON dat."ResourceMagicDetail" ("originModifierId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_areaOfEffectModifierId" ON dat."ResourceMagicDetail" ("areaOfEffectModifierId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_durationUnitId" ON dat."ResourceMagicDetail" ("durationUnitId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_areaOfEffectUnitId" ON dat."ResourceMagicDetail" ("areaOfEffectUnitId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_originId" ON dat."ResourceMagicDetail" ("originId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_durationId" ON dat."ResourceMagicDetail" ("durationId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_areaOfEffectId" ON dat."ResourceMagicDetail" ("areaOfEffectId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_element1Id" ON dat."ResourceMagicDetail" ("element1Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_element2Id" ON dat."ResourceMagicDetail" ("element2Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_element3Id" ON dat."ResourceMagicDetail" ("element3Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_impetus1Id" ON dat."ResourceMagicDetail" ("impetus1Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicDetail_impetus2Id" ON dat."ResourceMagicDetail" ("impetus2Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicObstacle_resourceId" ON dat."ResourceMagicObstacle" ("resourceId");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicObstacle_obstacleAbility1Id" ON dat."ResourceMagicObstacle" ("obstacleAbility1Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_ResourceMagicObstacle_obstacleAbility2Id" ON dat."ResourceMagicObstacle" ("obstacleAbility2Id");
+
+CREATE INDEX IF NOT EXISTS "IDX_RulesetResource_rulesetId" ON dat."RulesetResource" ("rulesetId");
+
+CREATE INDEX IF NOT EXISTS "IDX_TraitGrantsResource_resourceId" ON dat."TraitGrantsResource" ("resourceId");
+
+CREATE INDEX IF NOT EXISTS "IDX_Question_attributeId1" ON dat."Question" ("attributeId1");
+
+CREATE INDEX IF NOT EXISTS "IDX_Question_attributeId2" ON dat."Question" ("attributeId2");
