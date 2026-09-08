@@ -33,7 +33,10 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
 
         const state = useCharacterBurnerLifepathStore.getState();
         const lps = lifepaths ?? state.lifepaths;
-        // TODO: Special lifepaths should matter here
+        // TODO: Lifepath.flags.isRPMultipliedByYear and .getHalfRPFromPrevLP are not applied here:
+        // this is a systemic gap, not specific to resources -- the equivalent GSP/LSP flags on skill
+        // pools (useCharacterBurnerSkill.tsx's getSkillPools) are unimplemented too, and there's no
+        // existing formula anywhere in the codebase to derive the intended calculation from.
         const totalRps = lps.map(v => v.pools.resourcePoints ?? 0).reduce((pv, cv) => pv + cv, 0);
 
         return { total: totalRps, spent: spending, remaining: totalRps - spending };
@@ -57,8 +60,11 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
         }));
       }
 
-      // TODO: auto resources from traits list
-      // state.totals.resources.fromTraitsList = newResources;
+      // TODO: auto resources from traits list -- some BWG traits grant free resources (gear,
+      // animals, etc.) on their own. Nothing in the ruleset data model links a Trait to a Resource
+      // yet (Trait has no `resources` field), so this needs a new DB relationship (shared/db
+      // migrations + api/src/services/traits.service.ts + the Trait type in shared/@types/bwgr.d.ts)
+      // before a client-side "grant these resources when this trait is open" step can be added here.
     }),
     { name: "useCharacterBurnerResourceStore" }
   )

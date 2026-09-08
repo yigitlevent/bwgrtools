@@ -22,7 +22,9 @@ export function FilterLifepaths({ rulesetLifepaths, stock, age, lifepaths, gende
 
   const checkRequirementBlock = (lifepath: Lifepath, block: LifepathRequirementBlock): boolean => {
     const itemResults = block.items.map((item): boolean => {
-      // TODO: item.forCompanion
+      // TODO: item.forCompanion is not evaluated: doing so correctly would require tracking the
+      // companion's own attributes/skills/traits separately from the character, which isn't modeled
+      // (special.companionLifepath/companionSkills only record which lifepath/skills a companion has).
 
       if ("isUnique" in item) return lifepath.id !== null && checkLifepath(lifepath.id) === -1;
       else if ("isSettingEntry" in item) return true; // TODO: Check if any other lifepath from this setting chosen (true), else, other lifepaths should be disabled
@@ -34,7 +36,10 @@ export function FilterLifepaths({ rulesetLifepaths, stock, age, lifepaths, gende
         if (gender) return item.gender === gender;
         else return true;
       }
-      else if ("oldestBy" in item) return true; // TODO: Implementable only by having the campaign
+      // TODO: oldestBy is not evaluated: "must be oldest in the party by N years" requires knowing
+      // other party members' ages, which needs a campaign/party feature that doesn't exist in this
+      // single-character burner. Always treated as satisfied until that feature exists.
+      else if ("oldestBy" in item) return true;
       else if (attributes && "attribute" in item && item.attribute) {
         const exp = attributes.find(item.attribute[0])?.exponent;
         if (item.min) return exp ? exp >= item.min : false;

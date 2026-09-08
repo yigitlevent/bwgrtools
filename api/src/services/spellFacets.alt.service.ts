@@ -1,5 +1,5 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetAltSpellFacets(): Promise<AltSpellFacets> {
@@ -14,8 +14,7 @@ export async function GetAltSpellFacets(): Promise<AltSpellFacets> {
   const query6 = `${queryWithSubfacet} from dat."AltSpellDurationFacet";`;
   const query7 = `${queryWithSubfacet} from dat."AltSpellAreaOfEffectFacet";`;
 
-  const log = new Logger("GetAltSpellFacets Querying");
-  return Promise.all([
+  return Timed("GetAltSpellFacets Querying", () => Promise.all([
     PgPool.query<SpellOriginFacet>(query1),
     PgPool.query<SpellElementFacet>(query2),
     PgPool.query<SpellElementFacet>(query3),
@@ -23,17 +22,13 @@ export async function GetAltSpellFacets(): Promise<AltSpellFacets> {
     PgPool.query<SpellImpetusFacet>(query5),
     PgPool.query<SpellDurationFacet>(query6),
     PgPool.query<SpellAreaOfEffectFacet>(query7)
-  ]).then((result): AltSpellFacets => {
-    log.end();
-    const res = {
-      origins: result[0].rows,
-      primeElements: result[1].rows,
-      lowerElements: result[2].rows,
-      higherElements: result[3].rows,
-      impetus: result[4].rows,
-      duration: result[5].rows,
-      areaOfEffects: result[6].rows
-    };
-    return res;
-  });
+  ])).then((result): AltSpellFacets => ({
+    origins: result[0].rows,
+    primeElements: result[1].rows,
+    lowerElements: result[2].rows,
+    higherElements: result[3].rows,
+    impetus: result[4].rows,
+    duration: result[5].rows,
+    areaOfEffects: result[6].rows
+  }));
 }

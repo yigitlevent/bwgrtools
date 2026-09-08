@@ -1,11 +1,9 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetRaCActions(): Promise<RaCAction[]> {
-  const convert = (a: dat.RangeAndCoverActionsList[], ar: dat.RangeAndCoverActionResolutionList[]): RaCAction[] => {
-    const log = new Logger("GetRaCActions Conversion");
-
+  const convert = (a: dat.RangeAndCoverActionsList[], ar: dat.RangeAndCoverActionResolutionList[]): RaCAction[] => Timed("GetRaCActions Conversion", () => {
     const r: RaCAction[] = a.map(v => {
       const act: RaCAction = {
         id: v.id,
@@ -52,19 +50,13 @@ export async function GetRaCActions(): Promise<RaCAction[]> {
       return act;
     });
 
-    log.end();
     return r;
-  };
+  });
 
-  const log = new Logger("GetRaCActions Querying");
   const query1 = "select * from dat.\"RangeAndCoverActionsList\";";
   const query2 = "select * from dat.\"RangeAndCoverActionResolutionList\";";
-  return Promise.all([
+  return Timed("GetRaCActions Querying", () => Promise.all([
     PgPool.query<dat.RangeAndCoverActionsList>(query1),
     PgPool.query<dat.RangeAndCoverActionResolutionList>(query2)
-  ]).then(result => {
-    log.end();
-    const res = convert(result[0].rows, result[1].rows);
-    return res;
-  });
+  ])).then(result => convert(result[0].rows, result[1].rows));
 }

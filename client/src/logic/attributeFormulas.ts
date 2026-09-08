@@ -66,6 +66,10 @@ export function GetSteel(will: AbilityPoints, forte: AbilityPoints, hasQuestionT
   return { shade: "B", exponent: 3 + bonus };
 }
 
+// TODO: sum up trait-based Hesitation modifiers here, the same way GetHealth/GetSteel above
+// accumulate a `bonus` from questions. Needs a breakdown of which traits modify Hesitation and by
+// how much, then surfacing that per-category (stock traits, general traits, etc.) somewhere in the
+// UI rather than just folding it into a single number, per the request.
 export function GetHesitation(will: AbilityPoints): AbilityPoints {
   return { shade: "B", exponent: 10 - will.exponent };
 }

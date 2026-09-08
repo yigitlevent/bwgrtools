@@ -44,8 +44,6 @@ export interface CharacterBurnerAttributeState {
   /**
    * Updates the character's attributes list.
    * It calculates the attribute exponents, filters the ones that are not available to the character.
-   * @remarks TODO: Calculate exponents.
-   * @remarks TODO: Preserve shades.
   **/
   updateAttributes: () => void;
 }
@@ -234,29 +232,18 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
         const characterAttributes = new UniqueArray<dat.AbilityId, CharacterAttribute>(
           abilities
             .filter((ability): ability is Ability & { id: dat.AbilityId; } => (ability.abilityType[1].endsWith("Attribute")) && ability.id !== null)
+            .filter(ability => ability.abilityType[1] === "Attribute" || (ability.requiredTrait && hasTraitOpen(ability.requiredTrait[0])))
             .map(ability => {
               const attr = getAttribute([ability.id, ability.name ?? ""]);
 
-              if (ability.abilityType[1] === "Attribute") {
-                return {
-                  id: ability.id,
-                  name: ability.name ?? "",
-                  hasShade: ability.hasShades ?? false,
-                  shadeShifted: attr.shade === "G",
-                  exponent: getAttribute([ability.id, ability.name ?? ""]).exponent - (attr.shade === "G" ? 5 : 0)
-                };
-              }
-              else if (ability.requiredTrait && hasTraitOpen(ability.requiredTrait[0])) {
-                return {
-                  id: ability.id,
-                  name: ability.name ?? "",
-                  hasShade: ability.hasShades ?? false,
-                  shadeShifted: attr.shade === "G",
-                  exponent: getAttribute([ability.id, ability.name ?? ""]).exponent - (attr.shade === "G" ? 5 : 0)
-                };
-              }
-              else return [];
-            }).flat());
+              return {
+                id: ability.id,
+                name: ability.name ?? "",
+                hasShade: ability.hasShades ?? false,
+                shadeShifted: attr.shade === "G",
+                exponent: attr.exponent - (attr.shade === "G" ? 5 : 0)
+              };
+            }));
 
         set(produce<CharacterBurnerAttributeState>(state => {
           state.attributes = characterAttributes;

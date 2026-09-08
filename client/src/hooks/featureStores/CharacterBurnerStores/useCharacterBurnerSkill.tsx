@@ -31,7 +31,7 @@ export interface CharacterBurnerSkillState {
   /**
    * Updates the character's skills list.
    * It re-adds previously selected general skills, if they are not present in the lifepath skills list.
-   * @remarks TODO: Repated lifepaths should be checked to determine the mandatory-ness.
+   * On the Nth occurrence of a repeated lifepath, its Nth skill (not always the 1st) is the mandatory one.
   **/
   updateSkills: () => void;
 }
@@ -189,11 +189,17 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         const { special } = useCharacterBurnerMiscStore.getState();
         const state = get();
 
+        // On the Nth time a lifepath is taken, its Nth skill is the mandatory one (1st time -> 1st
+        // skill, 2nd time -> 2nd skill, etc.), rather than always the 1st.
+        const occurrenceCounts = new Map<dat.LifepathId, number>();
+
         const characterSkills = new UniqueArray<dat.SkillId, CharacterSkill>(lifepaths.map(lp => {
+          const occurrence = lp.id !== null ? (occurrenceCounts.get(lp.id) ?? 0) : 0;
+          if (lp.id !== null) occurrenceCounts.set(lp.id, occurrence + 1);
+
           return lp.skills ? lp.skills.map((sk: dat.SkillId, i: number) => {
             const skill = getSkill(sk);
-            const isMandatory = (i === 0);
-            // TODO: Repeat lifepaths also should be checked
+            const isMandatory = (i === occurrence);
             const entry: CharacterSkill = {
               id: skill.id ?? sk,
               name: skill.name ?? "",

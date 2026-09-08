@@ -7,6 +7,11 @@ import { BlockTraitPopover } from "../BlockText";
 import type { UniqueArrayItem } from "../../../../utils/UniqueArray";
 
 
+// TODO: show a warning on call-on traits (ruleset Trait.type "Call-on" / "Call-on and Die") when the
+// character doesn't have the skill/ability the trait calls on. Needs the same per-trait "what does
+// this call on" data as the call-on trait effects TODO in useCharacterBurnerMisc.tsx's
+// refreshTraitEffects -- there's no ruleset field linking a Trait to the skill/ability it calls on,
+// so this is blocked on the same missing data, not just missing UI.
 function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, CharacterTrait>; remove?: (traitId: dat.TraitId) => void; }): React.JSX.Element {
   const { openTrait } = useCharacterBurnerTraitStore();
 

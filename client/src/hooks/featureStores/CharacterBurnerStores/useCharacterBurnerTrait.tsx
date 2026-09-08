@@ -27,7 +27,7 @@ export interface CharacterBurnerTraitState {
   /**
    * Updates the character's traits list.
    * It preserves the common traits, and re-adds previously selected general traits, if they are not present in the lifepath trait list.
-   * @remarks TODO: Repated lifepaths should be checked to determine the mandatory-ness.
+   * On the Nth occurrence of a repeated lifepath, its Nth trait (not always the 1st) is the mandatory one.
   **/
   updateTraits: () => void;
 }
@@ -44,14 +44,18 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
       },
 
       openTrait: (traitId: dat.TraitId): void => {
-        set(produce<CharacterBurnerTraitState>(state => {
-          // TODO: Check remaining counts, use either pool too
-          const charTrait = state.traits.find(traitId);
-          if (charTrait) {
-            charTrait.isOpen = !charTrait.isOpen;
-            state.traits = new UniqueArray(state.traits.add(charTrait).items);
-          }
-        }));
+        const { traits, getTraitPools } = get();
+        const charTrait = traits.find(traitId);
+
+        if (charTrait && (charTrait.isOpen || getTraitPools().remaining > 0)) {
+          set(produce<CharacterBurnerTraitState>(state => {
+            const stateTrait = state.traits.find(traitId);
+            if (stateTrait) {
+              stateTrait.isOpen = !stateTrait.isOpen;
+              state.traits = new UniqueArray(state.traits.add(stateTrait).items);
+            }
+          }));
+        }
       },
 
       addGeneralTrait: (trait: Trait): void => {
@@ -108,12 +112,18 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         const { lifepaths } = useCharacterBurnerLifepathStore.getState();
         const state = get();
 
+        // On the Nth time a lifepath is taken, its Nth trait is the mandatory one (1st time -> 1st
+        // trait, 2nd time -> 2nd trait, etc.), rather than always the 1st.
+        const occurrenceCounts = new Map<dat.LifepathId, number>();
+
         // Add Lifepath Traits
         const characterTraits = new UniqueArray<dat.TraitId, CharacterTrait>(lifepaths.map(lp => {
+          const occurrence = lp.id !== null ? (occurrenceCounts.get(lp.id) ?? 0) : 0;
+          if (lp.id !== null) occurrenceCounts.set(lp.id, occurrence + 1);
+
           return lp.traits ? lp.traits.map((tr: dat.TraitId, i: number) => {
             const trait = ruleset.getTrait(tr);
-            const isMandatory = (i === 0);
-            // TODO: Repeat lifepaths also should be checked
+            const isMandatory = (i === occurrence);
             const entry: CharacterTrait = {
               id: trait.id ?? tr,
               name: trait.name ?? "",

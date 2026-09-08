@@ -1,5 +1,5 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetAbilities(): Promise<Ability[]> {
@@ -27,13 +27,8 @@ export async function GetAbilities(): Promise<Ability[]> {
     return r;
   };
 
-  const log = new Logger("GetAbilities Querying");
   const query = "select * from dat.\"AbilitiesList\";";
-  return PgPool.query<dat.AbilitiesList>(query).then(result => {
-    log.end();
-    const log2 = new Logger("GetAbilities Conversion");
-    const res = result.rows.map(convert);
-    log2.end();
-    return res;
-  });
+  return Timed("GetAbilities Querying", () => PgPool.query<dat.AbilitiesList>(query)).then(result =>
+    Timed("GetAbilities Conversion", () => result.rows.map(convert))
+  );
 }

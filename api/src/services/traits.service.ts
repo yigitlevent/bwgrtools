@@ -1,5 +1,5 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetTraits(rulesets: dat.RulesetId[]): Promise<Trait[]> {
@@ -19,13 +19,8 @@ export async function GetTraits(rulesets: dat.RulesetId[]): Promise<Trait[]> {
     return r;
   };
 
-  const log = new Logger("GetTraits Querying");
   const query = `select * from dat."TraitsList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
-  return PgPool.query<dat.TraitsList>(query).then(result => {
-    log.end();
-    const log2 = new Logger("GetTraits Conversion");
-    const res = result.rows.map(convert);
-    log2.end();
-    return res;
-  });
+  return Timed("GetTraits Querying", () => PgPool.query<dat.TraitsList>(query)).then(result =>
+    Timed("GetTraits Conversion", () => result.rows.map(convert))
+  );
 }

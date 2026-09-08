@@ -1,5 +1,5 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetRulesets(): Promise<Ruleset[]> {
@@ -18,13 +18,8 @@ export async function GetRulesets(): Promise<Ruleset[]> {
     return r;
   };
 
-  const log = new Logger("GetRulesets Querying");
   const query = "select * from dat.\"RulesetsList\";";
-  return PgPool.query<dat.RulesetsList>(query).then(result => {
-    log.end();
-    const log2 = new Logger("GetRulesets Conversion");
-    const res = result.rows.map(convert);
-    log2.end();
-    return res;
-  });
+  return Timed("GetRulesets Querying", () => PgPool.query<dat.RulesetsList>(query)).then(result =>
+    Timed("GetRulesets Conversion", () => result.rows.map(convert))
+  );
 }

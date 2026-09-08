@@ -2,6 +2,7 @@ import { Stepper, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
+import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerAttributeStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
@@ -10,6 +11,7 @@ import { useCharacterBurnerResourceStore } from "../../../hooks/featureStores/Ch
 import { useCharacterBurnerSkillStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
 import { useCharacterBurnerStatStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerStat";
 import { useCharacterBurnerTraitStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
+import { RecordGet } from "../../../utils/RecordGet";
 import { DrawerBox } from "../../Shared/DrawerBox";
 import { StepIcon } from "../../Shared/StepIcon";
 
@@ -81,6 +83,7 @@ const ChecklistSteps: { label: string; description: string[]; }[] = [
 ];
 
 export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Element {
+  const ruleset = useRulesetStore();
   const { stock, concept, name, beliefs, instincts } = useCharacterBurnerBasicsStore();
   const { lifepaths, getEitherPool, getMentalPool, getPhysicalPool } = useCharacterBurnerLifepathStore();
   const { stats } = useCharacterBurnerStatStore();
@@ -91,8 +94,6 @@ export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Eleme
   const { special, questions, limits } = useCharacterBurnerMiscStore();
 
   const location = useLocation();
-
-  // TODO: also check special lifepath and skill stuff
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -107,8 +108,21 @@ export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Eleme
       !(stock[1] === "Orc" && special.stock.brutalLifeTraits.length < lifepaths.length - 5)
       && !(stock[1] === "Great Wolf" && special.stock.huntingGround === undefined);
 
+    // every variable-age lifepath needs its age chosen, every companion-lifepath-granting
+    // lifepath needs its companion's lifepath chosen, and every "Any Skill"/"Any Wise"/subskill
+    // placeholder skill needs its actual subskill(s) chosen -- mirrors SpecialLifepaths.tsx / SpecialSkills.tsx
+    const variableAgeFulfilled = lifepaths.every(lp => !Array.isArray(lp.years) || (lp.id !== null && RecordGet(special.variableAge, lp.id) !== undefined));
+    const companionLifepathFulfilled = lifepaths.every(lp => !lp.companion?.givesSkills || RecordGet(special.companionLifepath, lp.companion.name) !== undefined);
+    const specialSkillsFulfilled = lifepaths.every(lp => (lp.skills ?? []).every(skillId => {
+      const rulesetSkill = ruleset.getSkill(skillId);
+      if (rulesetSkill.name !== "Any Skill" && rulesetSkill.name !== "Any Wise" && rulesetSkill.subskillIds === undefined) return true;
+      return (RecordGet(special.chosenSubskills, skillId) ?? []).length > 0;
+    }));
+
+    const specialLifepathAndSkillFulfilled = variableAgeFulfilled && companionLifepathFulfilled && specialSkillsFulfilled;
+
     if (concept === "") setActiveStep(0);
-    else if (lifepaths.length === 0) setActiveStep(1);
+    else if (lifepaths.length === 0 || !specialLifepathAndSkillFulfilled) setActiveStep(1);
     else if (!stockSpecificFulfilled) setActiveStep(2);
     else if (remainingStatPoints !== 0) setActiveStep(3);
     else if (remainingSkillPoints !== 0) setActiveStep(4);
@@ -118,7 +132,7 @@ export function Checklist({ expanded }: { expanded: boolean; }): React.JSX.Eleme
     else if ((beliefs.filter(v => v.belief !== "").length !== limits.beliefs || instincts.filter(v => v.instinct !== "").length !== limits.instincts)) setActiveStep(8);
     else if (name === "") setActiveStep(9);
     else setActiveStep(10);
-  }, [beliefs, concept, instincts, lifepaths, limits, name, questions, special, stock, stats, attributes, skills, traits, resources,
+  }, [beliefs, concept, instincts, lifepaths, limits, name, questions, special, stock, stats, attributes, skills, traits, resources, ruleset,
     getEitherPool, getMentalPool, getPhysicalPool, getResourcePools, getSkillPools, getTraitPools]);
 
   return (

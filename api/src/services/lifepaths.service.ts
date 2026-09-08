@@ -1,11 +1,9 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetLifepaths(rulesets: dat.RulesetId[]): Promise<Lifepath[]> {
-  const convert = (l: dat.LifepathsList[], lr: dat.LifepathRequirementBlock[], lri: dat.LifepathRequirementBlockItem[]): Lifepath[] => {
-    const log = new Logger("GetLifepaths Conversion");
-
+  const convert = (l: dat.LifepathsList[], lr: dat.LifepathRequirementBlock[], lri: dat.LifepathRequirementBlockItem[]): Lifepath[] => Timed("GetLifepaths Conversion", () => {
     const r: Lifepath[] = l.map(v => {
       const lp: Lifepath = {
         rulesets: v.rulesets,
@@ -121,21 +119,15 @@ export async function GetLifepaths(rulesets: dat.RulesetId[]): Promise<Lifepath[
       return lp;
     });
 
-    log.end();
     return r;
-  };
+  });
 
-  const log = new Logger("GetLifepaths Querying");
   const query1 = `select * from dat."LifepathsList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
   const query2 = "select * from dat.\"LifepathRequirementBlock\";";
   const query3 = "select * from dat.\"LifepathRequirementBlockItem\";";
-  return Promise.all([
+  return Timed("GetLifepaths Querying", () => Promise.all([
     PgPool.query<dat.LifepathsList>(query1),
     PgPool.query<dat.LifepathRequirementBlock>(query2),
     PgPool.query<dat.LifepathRequirementBlockItem>(query3)
-  ]).then(result => {
-    log.end();
-    const res = convert(result[0].rows, result[1].rows, result[2].rows);
-    return res;
-  });
+  ])).then(result => convert(result[0].rows, result[1].rows, result[2].rows));
 }

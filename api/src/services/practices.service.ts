@@ -1,5 +1,5 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetPractices(): Promise<Practice[]> {
@@ -27,14 +27,7 @@ export async function GetPractices(): Promise<Practice[]> {
     else throw new Error("shall not happen");
   };
 
-  const log = new Logger("GetPractices Querying");
   const query = "select * from dat.\"PracticeList\";";
-  return PgPool.query<dat.PracticeList>(query)
-    .then(result => {
-      log.end();
-      const log2 = new Logger("GetPractices Conversion");
-      const res = result.rows.map(convert);
-      log2.end();
-      return res;
-    });
+  return Timed("GetPractices Querying", () => PgPool.query<dat.PracticeList>(query))
+    .then(result => Timed("GetPractices Conversion", () => result.rows.map(convert)));
 }

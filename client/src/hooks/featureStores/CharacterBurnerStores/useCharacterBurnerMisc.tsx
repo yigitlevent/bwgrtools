@@ -71,6 +71,10 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         const { stock } = useCharacterBurnerBasicsStore.getState();
         const { hasTraitOpenByName } = useCharacterBurnerTraitStore.getState();
 
+        // TODO: stock-related ability limits are incomplete. Stat exponent caps are handled below
+        // (Elf/Great Wolf/Troll), but belief count, instinct count, and skill exponent caps have no
+        // trait-based overrides yet -- CharacterStockLimits (shared/@types/character.d.ts) doesn't
+        // even have a `skills` field yet, so that needs a type change too, not just logic here.
         const limits: CharacterStockLimits = {
           beliefs: 3, // TODO: trait-based belief limit
           instincts: 3, // TODO: trait-based instinct limit
@@ -85,6 +89,21 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
           attributes: 9
         };
 
+        if (stock[1] === "Elf") {
+          if (hasTraitOpenByName("First Born")) limits.stats.Perception = { min: 1, max: 9 };
+        }
+        else if (stock[1] === "Great Wolf") {
+          if (hasTraitOpenByName("Great Lupine Form")) limits.stats.Agility = { min: 1, max: 6 };
+        }
+        else if (stock[1] === "Troll") {
+          if (hasTraitOpenByName("Massive Stature")) {
+            limits.stats.Power = { min: 4, max: 9 };
+            limits.stats.Forte = { min: 4, max: 9 };
+            limits.stats.Agility = { min: 1, max: 5 };
+            limits.stats.Speed = { min: 1, max: 5 };
+          }
+        }
+
         set(produce<CharacterBurnerMiscState>(state => {
           state.special = {
             stock: { brutalLifeTraits: [], huntingGround: undefined },
@@ -95,22 +114,6 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
           };
           state.questions = [];
           state.traitEffects = [];
-
-          if (stock[1] === "Elf") {
-            if (hasTraitOpenByName("First Born")) state.limits.stats.Perception = { min: 1, max: 9 };
-          }
-          else if (stock[1] === "Great Wolf") {
-            if (hasTraitOpenByName("Great Lupine Form")) state.limits.stats.Agility = { min: 1, max: 6 };
-          }
-          else if (stock[1] === "Troll") {
-            if (hasTraitOpenByName("Massive Stature")) {
-              state.limits.stats.Power = { min: 4, max: 9 };
-              state.limits.stats.Forte = { min: 4, max: 9 };
-              state.limits.stats.Agility = { min: 1, max: 5 };
-              state.limits.stats.Speed = { min: 1, max: 5 };
-            }
-          }
-
           state.limits = limits;
         }));
 
@@ -241,18 +244,25 @@ export const useCharacterBurnerMiscStore = create<CharacterBurnerMiscState>()(
         set(produce<CharacterBurnerMiscState>(state => {
           state.traitEffects = [];
 
-          // EXTRA BELIEF/INSTINCT TRAITS
-          // TODO: call-on trait effects
-
-          // CALL-ON
-          // TODO: call-on trait effects
-
-          // GENERAL DIE
-          // TODO: die trait effects
+          // TODO: The ruleset has ~544 Call-on/Die traits and ~125 Monstrous traits; there's no
+          // generic rule for deriving their mechanical effect from type/category alone, so each one
+          // needs its own case added here as it's needed, following the pattern below (Tough).
+          // This also needs to cover traits that grant free resources (e.g. a trait that grants a
+          // free reputation/relationship), not just numeric calculation effects like Tough's --
+          // that's a new kind of CharacterTraitEffect (or a separate resource-granting mechanism,
+          // see the "auto resources from traits list" TODO in useCharacterBurnerResource.tsx).
+          // Go through traits stock by stock rather than trying to do all ~670 at once:
+          //   - Dwarf traits
+          //   - Elf traits (including Dark Elf)
+          //   - Human traits
+          //   - Orc traits
+          //   - Roden traits
+          //   - Great Wolf traits
+          //   - Troll traits
+          //   - General call-on traits
+          //   - General die traits
+          //   - Monstrous traits
           if (hasTraitOpenByName("Tough")) state.traitEffects.push({ roundUp: "Mortal Wound" });
-
-          // GENERAL MONSTROUS
-          // TODO: monstrous trait effects
         }));
       },
 

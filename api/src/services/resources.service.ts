@@ -1,11 +1,9 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetResources(rulesets: dat.RulesetId[]): Promise<Resource[]> {
-  const convert = (re: dat.ResourcesList[], rmd: dat.ResourceMagicDetailsList[], rmo: dat.ResourceMagicObstaclesList[]): Resource[] => {
-    const log = new Logger("GetResources Conversion");
-
+  const convert = (re: dat.ResourcesList[], rmd: dat.ResourceMagicDetailsList[], rmo: dat.ResourceMagicObstaclesList[]): Resource[] => Timed("GetResources Conversion", () => {
     const r: Resource[] = re.map(v => {
       const res: Resource = {
         rulesets: v.rulesets,
@@ -74,21 +72,15 @@ export async function GetResources(rulesets: dat.RulesetId[]): Promise<Resource[
       return res;
     });
 
-    log.end();
     return r;
-  };
+  });
 
-  const log = new Logger("GetResources Querying");
   const query1 = `select * from dat."ResourcesList" where "rulesets"::text[] && ARRAY['${rulesets.join("','")}'];`;
   const query2 = "select * from dat.\"ResourceMagicDetailsList\";";
   const query3 = "select * from dat.\"ResourceMagicObstaclesList\";";
-  return Promise.all([
+  return Timed("GetResources Querying", () => Promise.all([
     PgPool.query<dat.ResourcesList>(query1),
     PgPool.query<dat.ResourceMagicDetailsList>(query2),
     PgPool.query<dat.ResourceMagicObstaclesList>(query3)
-  ]).then(result => {
-    log.end();
-    const res = convert(result[0].rows, result[1].rows, result[2].rows);
-    return res;
-  });
+  ])).then(result => convert(result[0].rows, result[1].rows, result[2].rows));
 }

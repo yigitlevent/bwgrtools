@@ -1,11 +1,9 @@
 import { PgPool } from "../../../shared/db/utils/pgPool";
-import { Logger } from "../utils/logger";
+import { Timed } from "../utils/logger";
 
 
 export async function GetFightActions(): Promise<FightAction[]> {
-  const convert = (a: dat.FightActionsList[], at: dat.FightActionTestList[], ar: dat.FightActionResolutionList[]): FightAction[] => {
-    const log = new Logger("GetFightActions Conversion");
-
+  const convert = (a: dat.FightActionsList[], at: dat.FightActionTestList[], ar: dat.FightActionResolutionList[]): FightAction[] => Timed("GetFightActions Conversion", () => {
     const r: FightAction[] = a.map(v => {
       const act: FightAction = {
         id: v.id,
@@ -60,21 +58,15 @@ export async function GetFightActions(): Promise<FightAction[]> {
       return act;
     });
 
-    log.end();
     return r;
-  };
+  });
 
-  const log = new Logger("GetFightActions Querying");
   const query1 = "select * from dat.\"FightActionsList\";";
   const query2 = "select * from dat.\"FightActionTestList\";";
   const query3 = "select * from dat.\"FightActionResolutionList\";";
-  return Promise.all([
+  return Timed("GetFightActions Querying", () => Promise.all([
     PgPool.query<dat.FightActionsList>(query1),
     PgPool.query<dat.FightActionTestList>(query2),
     PgPool.query<dat.FightActionResolutionList>(query3)
-  ]).then(result => {
-    log.end();
-    const res = convert(result[0].rows, result[1].rows, result[2].rows);
-    return res;
-  });
+  ])).then(result => convert(result[0].rows, result[1].rows, result[2].rows));
 }
