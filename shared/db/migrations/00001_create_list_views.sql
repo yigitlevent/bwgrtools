@@ -6,7 +6,6 @@ SELECT
   r."isOfficial",
   r."isPublic",
   r."isExpansion",
-  r."userId" AS "user",
   ARRAY (
     SELECT
       re."expansionId"

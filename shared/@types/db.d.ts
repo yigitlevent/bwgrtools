@@ -565,7 +565,6 @@ declare namespace dat {
     isOfficial: boolean;
     isPublic: boolean;
     name: string;
-    userId: string | null;
   }
   interface RulesetExpansion {
     expansionId: dat.RulesetId;
@@ -594,7 +593,6 @@ declare namespace dat {
     isOfficial: boolean | null;
     isPublic: boolean | null;
     name: string | null;
-    user: string | null;
   }
   interface RulesetStock {
     rulesetId: dat.RulesetId;
@@ -800,40 +798,5 @@ declare namespace meta {
     executedAt: Date | null;
     id: meta.MigrationId;
     name: string;
-  }
-}
-declare namespace usr {
-  interface RateLimit {
-    count: number;
-    expiresAt: Date;
-    key: string;
-  }
-  interface User {
-    active: boolean;
-    createdAt: Date;
-    deletedAt: Date | null;
-    email: string;
-    failedSignInAttempts: number;
-    id: usr.UserId;
-    lastSigninAt: Date | null;
-    lockedUntil: Date | null;
-    password: string;
-    updatedAt: Date;
-  }
-  interface UserAccess {
-    createdAt: Date;
-    deletedAt: Date | null;
-    id: usr.UserAccessId;
-    userAccessTypeId: usr.UserAccessTypeId;
-    userId: usr.UserId;
-  }
-  interface UserAccessType {
-    id: usr.UserAccessTypeId;
-    name: string;
-  }
-  interface UserSession {
-    expire: Date;
-    sess: unknown;
-    sid: string;
   }
 }

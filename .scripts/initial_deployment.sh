@@ -45,9 +45,6 @@ read -rp "pgAdmin login email (must be a real, non-reserved domain — not .loca
 read -rp "Deploy user's SSH public key (paste the full ed25519 line): " DEPLOY_PUBKEY
 [[ -n "$DEPLOY_PUBKEY" ]] || die "SSH public key cannot be empty."
 
-API_SECRET=$(node -e "console.log(require('crypto').randomBytes(48).toString('hex'))" 2>/dev/null \
-  || openssl rand -hex 48)
-
 echo
 info "Domain:    $DOMAIN"
 info "DB user:   bwgrtools"
@@ -229,15 +226,13 @@ fi
 section "3.1 Environment variables"
 ENV_FILE=/opt/bwgrtools/.env
 cat > "$ENV_FILE" <<EOF
-# Environment — must be "prod" for secure sessions and SSL DB connections
+# Environment — must be "prod" for SSL DB connections
 VITE_ENV=prod
 
 # API
 API_PORT=3001
 API_INTERNAL_URL=http://127.0.0.1:3001
-API_SECRET=$API_SECRET
 CLIENT_URL=https://$DOMAIN/bwgrtools
-SIGNIN_LOCKOUT_THRESHOLD=5
 
 # Database
 DB_USER=bwgrtools
@@ -398,8 +393,5 @@ cat <<'SUMMARY'
 
 SUMMARY
 echo -e "${RESET}"
-info "API_SECRET has been written to /opt/bwgrtools/.env (mode 600)."
-info "Generated API_SECRET: $API_SECRET"
-warn "Save the API_SECRET above if you need it elsewhere."
 info "pgAdmin is available at https://$DOMAIN/pgadmin"
 info "pgAdmin login: $PGADMIN_EMAIL / (the password you entered)"

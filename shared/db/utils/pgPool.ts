@@ -1,15 +1,11 @@
 import Pg from "pg";
 
 import { Env } from "../../utils/env";
-import { CreateLogger } from "../../utils/logger";
 
 import type { PoolConfig } from "pg";
 
 
 export type Queryable = Pg.Pool | Pg.PoolClient;
-
-
-const Log = CreateLogger("pgpool");
 
 
 const Max = process.env.PGPOOL_MAX ? parseInt(process.env.PGPOOL_MAX) : 10;
@@ -37,7 +33,7 @@ function CreatePgPool(): Pg.Pool {
 export const PgPool = CreatePgPool();
 
 PgPool.on("error", (err, client) => {
-  Log.error(err, "unexpected error on idle Postgres client");
+  console.error(err, "unexpected error on idle Postgres client");
   client.release(err);
 });
 

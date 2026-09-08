@@ -93,10 +93,8 @@ CREATE TABLE
     "isOfficial" BOOLEAN NOT NULL,
     "isPublic" BOOLEAN NOT NULL,
     "isExpansion" BOOLEAN NOT NULL,
-    "userId" UUID,
     PRIMARY KEY ("id"),
-    UNIQUE ("id"),
-    FOREIGN KEY ("userId") REFERENCES usr."User" ("id") MATCH SIMPLE ON UPDATE RESTRICT ON DELETE RESTRICT NOT VALID
+    UNIQUE ("id")
   );
 
 CREATE TABLE
@@ -795,8 +793,6 @@ CREATE TABLE
     "resource" INTEGER NOT NULL,
     PRIMARY KEY ("id")
   );
-
-CREATE INDEX IF NOT EXISTS "IDX_Ruleset_userId" ON dat."Ruleset" ("userId");
 
 CREATE INDEX IF NOT EXISTS "IDX_RulesetExpansion_expansionId" ON dat."RulesetExpansion" ("expansionId");
 

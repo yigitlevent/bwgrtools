@@ -21,24 +21,6 @@ async function Fetch<Response>(method: "GET" | "POST", endpoint: string, body: o
   throw new Error(`Request to ${method}/${endpoint} failed with status ${String(response.status)}`);
 }
 
-interface EmailPasswordBody { email: string; password: string; }
-
-export async function RequestSignUp(body: EmailPasswordBody): Promise<{ user: UserSession; }> {
-  return Fetch("POST", "/user/signup", body);
-}
-
-export async function RequestSignIn(body: EmailPasswordBody): Promise<{ user: UserSession; }> {
-  return Fetch("POST", "/user/signin", body);
-}
-
-export async function RequestSignOut(): Promise<null> {
-  return Fetch("POST", "/user/signout", null);
-}
-
-export async function RequestAuth(): Promise<{ user: UserSession; }> {
-  return Fetch("POST", "/user/auth", null);
-}
-
 export async function RequestRulesetsList(signal?: AbortSignal): Promise<RulesetsResponse> {
   return Fetch("GET", "/ruleset/list", null, signal);
 }

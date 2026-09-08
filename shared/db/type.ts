@@ -14,7 +14,7 @@ void (async () => {
       connection: { user: Env.dbUser, password: Env.dbPass, host: Env.dbHost, port: Env.dbPort, database: Env.dbName },
       globalOptionality: "required",
       schemaAsNamespace: true,
-      schemas: ["meta", "usr", "dat"],
+      schemas: ["meta", "dat"],
       typeOverrides: {
         "dat.AbilitiesList.abilityTypeId": "dat.AbilityTypeId",
         "dat.AbilitiesList.id": "dat.AbilityId",
@@ -281,13 +281,7 @@ void (async () => {
         "dat.TraitsList.stockId": "dat.StockId",
         "dat.TraitsList.typeId": "dat.TraitTypeId",
         "dat.UnitModifier.id": "dat.UnitModifierId",
-        "meta.Migration.id": "meta.MigrationId",
-        "usr.User.id": "usr.UserId",
-        "usr.UserAccess.id": "usr.UserAccessId",
-        "usr.UserAccess.userAccessTypeId": "usr.UserAccessTypeId",
-        "usr.UserAccess.userId": "usr.UserId",
-        "usr.UserAccessType.id": "usr.UserAccessTypeId",
-        "usr.UserSession.sess": "unknown"
+        "meta.Migration.id": "meta.MigrationId"
       }
     })
     .fetchDatabase()

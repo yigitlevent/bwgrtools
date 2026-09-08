@@ -203,7 +203,6 @@ interface Ruleset {
   isPublic: boolean | null;
   isExpansion: boolean | null;
   expansionIds?: dat.RulesetId[];
-  user?: string;
 }
 
 interface Setting {

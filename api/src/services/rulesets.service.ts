@@ -13,7 +13,6 @@ export async function GetRulesets(): Promise<Ruleset[]> {
     };
 
     if (v.expansionIds && v.expansionIds.length > 0) r.expansionIds = v.expansionIds;
-    if (v.user !== null) r.user = v.user;
 
     return r;
   };
