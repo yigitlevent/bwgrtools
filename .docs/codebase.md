@@ -43,7 +43,7 @@ npm run build            # api: tsc --build · client: tsc && vite build
   - `shared/@types/` — ambient `.d.ts` files (`declare namespace`, no imports needed): `bwgr.d.ts` (Ability, Skill, Trait, Lifepath, Resource, Ruleset, Stock, Setting, DoWAction, FightAction, RaCAction, SpellFacets/AltSpellFacets, Practice, Question, and the `RulesetResponse`/`RulesetsResponse` API contract), `character.d.ts` (Character Burner-specific shapes — `CharacterAttribute`/`Skill`/`Trait`/`Resource`, `CharacterSpecial`, `CharacterStockLimits`, `CharacterBurnerExportSnapshot`), `db.d.ts` (auto-generated row types), `env.d.ts` (`Env`/`ClientEnv`/`ApiEnv`), `id.d.ts` (branded id types per schema, `Nominal<>` pattern).
   - `shared/db/` — `migrate.ts`/`reset.ts`/`type.ts` DB tooling scripts, `_initial/0_reset.sql`, `migrations/` (numbered SQL files), and `utils/pgPool.ts` (the `Queryable`/`PgPool` wrapper, `WithTransaction`, `CheckDbPool`). Reachable from `api/` and `shared/`'s own tooling; not imported by `client/`.
   - `shared/utils/` — `env.ts`, shared by `api/` (and imported directly rather than split into client-safe/server-only halves).
-- **api/** — Fastify REST API (no WebSockets). Handles ruleset data (`bwgr.route.ts`) over plain HTTP under an `/api` prefix — no auth, no sessions. Helmet, CORS, and cookie plugins are registered in `api/src/index.ts`, along with a global error handler and graceful SIGINT/SIGTERM shutdown.
+- **api/** — Fastify REST API (no WebSockets). Handles ruleset data (`bwgr.route.ts`) over plain HTTP under an `/api` prefix — no auth, no sessions. Helmet, CORS, and rate-limit plugins are registered in `api/src/index.ts`, along with a global error handler and graceful SIGINT/SIGTERM shutdown.
 - **client/** — Vite + React frontend. Mantine UI, Zustand state, a thin `Fetch` wrapper for REST calls — no WebSocket client. Routed tools live under `components/Tools/`; app chrome (top bar, ruleset selector, tool picker) lives under `components/Menu/`.
 
 ### Database
@@ -60,12 +60,12 @@ Migrations live in `shared/db/migrations/`. After adding or changing a migration
 
 ### API Request Pattern
 
-The client fetches the full ruleset dataset in two calls, both handled by `ruleset.controller.ts`: `GET /ruleset/list` (`GetRulesetsList`) to populate the ruleset selector, then `POST /ruleset/data` (`GetRulesetsData`) once a ruleset is chosen, which aggregates every `api/src/services/*.service.ts` query (stocks, skills, traits, lifepaths, spell facets, DoW/RaC/fight actions, practices, questions, resources, abilities, settings) into one `RulesetResponse` payload. There is no auth — every endpoint is public.
+The client fetches the full ruleset dataset in two calls, both handled by `ruleset.controller.ts`: `GET /ruleset/list` (`GetRulesetsList`, backed by `rulesets.service.ts`) to populate the ruleset selector, then `POST /ruleset/data` (`GetRulesetsData`) once a ruleset is chosen, which aggregates every other `api/src/services/*.service.ts` query (stocks, skills, traits, lifepaths, spell facets — base and `.alt` for the alternate magic system — DoW/RaC/fight actions, practices, questions, resources, abilities, settings) into one `RulesetResponse` payload. There is no auth — every endpoint is public.
 
 ### Client State
 
 - `hooks/apiStores/` holds the app-wide Zustand store: `useRulesetStore` (fetches and holds the entire ruleset dataset, both as arrays and `*ById` `Map`s, plus by-name/by-id lookup helpers).
-- `hooks/featureStores/` holds one Zustand store per tool: `CharacterBurnerStores/` splits the Character Burner into `useCharacterBurnerBasics`/`Stat`/`Skill`/`Trait`/`Attribute`/`Lifepath`/`Resource`/`Misc` (plus `recomputeCharacter.ts`, a plain recompute helper, not a store), and each planner tool (`useDuelOfWitsPlannerStore`, `useFightPlannerStore`, `useRangeAndCoverPlannerStore`, `usePracticePlannerStore`, `useLifepathRandomizerStore`) has its own store.
+- `hooks/featureStores/` holds one Zustand store per tool: `CharacterBurnerStores/` splits the Character Burner into `useCharacterBurnerBasics`/`Stat`/`Skill`/`Trait`/`Attribute`/`Lifepath`/`Resource`/`Limits`/`Special` (plus helpers like `recomputeCharacter.ts`, not stores), and each planner tool (`useDuelOfWitsPlannerStore`, `useFightPlannerStore`, `useRangeAndCoverPlannerStore`, `usePracticePlannerStore`, `useLifepathRandomizerStore`) has its own store.
 - `logic/` holds pure Burning Wheel rules math kept separate from the stores: `attributeFormulas.ts` (derived-stat formulas, e.g. Mortal Wound, Reflexes) and `resourceCost.ts` (resource cost/modifier calculation for the Character Burner's Resources section).
 
 ### Tools (client/src/components/Tools/)
