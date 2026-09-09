@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 
 import { App } from "./components/App";
+import { ErrorBoundary } from "./components/Shared/ErrorBoundary";
 import { DarkTheme } from "./theme/theme";
 
 import "./theme/cursors.css";
@@ -20,9 +21,11 @@ createRoot(RootElement)
   .render(
     <StrictMode>
       <MantineProvider defaultColorScheme="dark" theme={DarkTheme}>
-        <BrowserRouter basename={import.meta.env.BASE_URL}>
-          <App />
-        </BrowserRouter>
+        <ErrorBoundary>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
+            <App />
+          </BrowserRouter>
+        </ErrorBoundary>
       </MantineProvider>
     </StrictMode>
   );
