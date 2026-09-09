@@ -131,7 +131,7 @@ export function PracticePlanner(): React.JSX.Element {
         />
       </Box>
 
-      <PracticePlannerTimetable />
+      <PracticePlannerTimetable setNotification={setNotification} />
       <PracticePlannerTimetableSummary />
       <PracticePlannerCells setNotification={setNotification} />
     </Fragment>

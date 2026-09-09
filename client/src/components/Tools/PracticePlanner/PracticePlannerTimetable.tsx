@@ -5,7 +5,7 @@ import { PracticePlannerCellIcon } from "./PracticePlannerCellIcon";
 import { usePracticePlannerStore } from "../../../hooks/featureStores/usePracticePlannerStore";
 
 
-export function PracticePlannerTimetable(): React.JSX.Element {
+export function PracticePlannerTimetable({ setNotification }: { setNotification: React.Dispatch<React.SetStateAction<React.JSX.Element | null>>; }): React.JSX.Element {
   const { days, hours, cells, changeDays, changeHours, addCells } = usePracticePlannerStore();
 
   return (
@@ -18,7 +18,7 @@ export function PracticePlannerTimetable(): React.JSX.Element {
           inputMode="numeric"
           pattern="[0-9]*"
           value={days}
-          onChange={e => { changeDays(e.target.value); }}
+          onChange={e => { changeDays(e.target.value, setNotification); }}
           variant="filled"
         />
 
@@ -27,7 +27,7 @@ export function PracticePlannerTimetable(): React.JSX.Element {
           inputMode="numeric"
           pattern="[0-9]*"
           value={hours}
-          onChange={e => { changeHours(e.target.value); }}
+          onChange={e => { changeHours(e.target.value, setNotification); }}
           variant="filled"
         />
 

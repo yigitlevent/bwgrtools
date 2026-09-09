@@ -1,12 +1,46 @@
-import { ActionIcon, Box, Divider, Paper, Stack, Text } from "@mantine/core";
+import { ActionIcon, Box, Button, Divider, Group, Paper, Popover, Stack, Text } from "@mantine/core";
 import { CirclePlus, CircleMinus, Trash2 } from "lucide-react";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import { PracticePlannerCellIcon } from "./PracticePlannerCellIcon";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { usePracticePlannerStore } from "../../../hooks/featureStores/usePracticePlannerStore";
 
 import type { PracticeCell, PracticePlaced } from "../../../hooks/featureStores/usePracticePlannerStore";
+
+
+function DeleteButton({ confirmText, onDelete }: { confirmText: string; onDelete: () => void; }): React.JSX.Element {
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <Popover opened={confirming} onChange={setConfirming} withArrow position="bottom" width={260}>
+      <Popover.Target>
+        <ActionIcon size="sm" variant="subtle" style={{ float: "right" }} onClick={() => { setConfirming(true); }}><Trash2 size={16} /></ActionIcon>
+      </Popover.Target>
+
+      <Popover.Dropdown>
+        <Stack gap="xs">
+          <Text size="sm">{confirmText}</Text>
+
+          <Group justify="flex-end" gap="xs">
+            <Button variant="subtle" size="xs" onClick={() => { setConfirming(false); }}>Cancel</Button>
+
+            <Button
+              color="red"
+              size="xs"
+              onClick={() => {
+                onDelete();
+                setConfirming(false);
+              }}
+            >
+              Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Popover.Dropdown>
+    </Popover>
+  );
+}
 
 
 function Placed({ placed, practiceIndex, cellIndex }: { placed: PracticePlaced; practiceIndex: number; cellIndex: number; }): React.JSX.Element {
@@ -36,7 +70,7 @@ function PracticePlannerCell({ cell, cellIndex, setNotification }: { cell: Pract
           Day
           {" "}
           {cellIndex + 1}
-          <ActionIcon size="sm" variant="subtle" style={{ float: "right" }} onClick={() => { deleteCell(cellIndex); }}><Trash2 size={16} /></ActionIcon>
+          <DeleteCellButton onDelete={() => { deleteCell(cellIndex); }} />
           <ActionIcon size="sm" variant="subtle" style={{ float: "right" }} onClick={() => { changeCellHour(cellIndex, -1, cells, setNotification); }}><CircleMinus size={16} /></ActionIcon>
           <ActionIcon size="sm" variant="subtle" style={{ float: "right" }} onClick={() => { changeCellHour(cellIndex, 1, cells, setNotification); }}><CirclePlus size={16} /></ActionIcon>
         </Text>
