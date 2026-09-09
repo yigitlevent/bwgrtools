@@ -52,70 +52,83 @@ export async function GetLifepaths(rulesets: dat.RulesetId[]): Promise<Lifepath[
 
       const reqBlocks = lr.filter(a => a.lifepathId === v.id);
       if (reqBlocks.length > 0) {
-        lp.requirements = reqBlocks.map(vrb => {
-          const rb: LifepathRequirementBlock = {
-            logicType: [vrb.logicTypeId, vrb.logicType] as NamedTuple<dat.LogicTypeId>,
-            mustFulfill: vrb.mustFulfill,
-            fulfillmentAmount: vrb.fulfillmentAmount,
-            items: []
-          };
+        const requirements = reqBlocks
+          .map(vrb => {
+            const rb: LifepathRequirementBlock = {
+              logicType: [vrb.logicTypeId, vrb.logicType] as NamedTuple<dat.LogicTypeId>,
+              mustFulfill: vrb.mustFulfill,
+              fulfillmentAmount: vrb.fulfillmentAmount,
+              items: []
+            };
 
-          const items: LifepathRequirementItem[] = lri
-            .filter(a => a.requirementId === vrb.id)
-            .map(vrbi => {
-              const rbi = {
-                logicType: [vrbi.requirementTypeId, vrbi.requirementType] as NamedTuple<dat.RequirementItemTypeId>
-              };
-
-              if (vrbi.requirementType === "UNIQUE") return { ...rbi, isUnique: true };
-              else if (vrbi.requirementType === "SETTINGENTRY") return { ...rbi, isSettingEntry: true };
-              else if (vrbi.requirementType === "LPINDEX") {
-                // Was `if (vrbi.min)`, which silently ignored a legitimate min of 0 and fell through to max.
-                if (vrbi.min !== null) return { ...rbi, minLpIndex: vrbi.min };
-                if (vrbi.max === null) throw new Error("max value must be set for LPINDEX requirement type");
-                return { ...rbi, maxLpIndex: vrbi.max };
-              }
-              else if (vrbi.requirementType === "YEARS") {
-                // Was `if (vrbi.min)`, which silently ignored a legitimate min of 0 (e.g. "born this lifepath") and fell through to max.
-                if (vrbi.min !== null) return { ...rbi, minYears: vrbi.min };
-                if (vrbi.max === null) throw new Error("max value must be set for YEARS requirement type");
-                return { ...rbi, maxYears: vrbi.max };
-              }
-              else if (vrbi.requirementType === "FEMALE") return { ...rbi, gender: "Female" };
-              else if (vrbi.requirementType === "MALE") return { ...rbi, gender: "Male" };
-              else if (vrbi.requirementType === "OLDESTBY") {
-                if (vrbi.max === null) throw new Error("max value must be set for OLDESTBY requirement type");
-                return { ...rbi, oldestBy: vrbi.max };
-              }
-              else if (vrbi.requirementType === "ATTRIBUTE" && vrbi.attributeId !== null && vrbi.attribute !== null) {
-                const atr: LifepathRequirementItem = {
-                  ...rbi,
-                  attribute: [vrbi.attributeId, vrbi.attribute] as NamedTuple<dat.AbilityId>,
-                  forCompanion: vrbi.forCompanion
+            const items: LifepathRequirementItem[] = lri
+              .filter(a => a.requirementId === vrb.id)
+              // A requirement item referencing a lifepath/setting/skill/trait outside the currently
+              // active rulesets can't ever be fulfilled, so it shouldn't reach the client. Items with
+              // no rulesets array (flags, attributes) are ruleset-agnostic and always kept.
+              .filter(a => a.rulesets === null || a.rulesets.some(r => rulesets.includes(r)))
+              .map(vrbi => {
+                const rbi = {
+                  logicType: [vrbi.requirementTypeId, vrbi.requirementType] as NamedTuple<dat.RequirementItemTypeId>
                 };
-                if (vrbi.min !== null) atr.min = vrbi.min;
-                if (vrbi.max !== null) atr.max = vrbi.max;
-                return atr;
-              }
-              else if (vrbi.requirementType === "SKILL" && vrbi.skillId !== null && vrbi.skill !== null) {
-                return { ...rbi, skill: [vrbi.skillId, vrbi.skill], forCompanion: vrbi.forCompanion };
-              }
-              else if (vrbi.requirementType === "TRAIT" && vrbi.traitId !== null && vrbi.trait !== null) {
-                return { ...rbi, trait: [vrbi.traitId, vrbi.trait], forCompanion: vrbi.forCompanion };
-              }
-              else if (vrbi.requirementType === "LIFEPATH" && vrbi.lifepathId !== null && vrbi.lifepath !== null) {
-                return { ...rbi, lifepath: [vrbi.lifepathId, vrbi.lifepath], forCompanion: vrbi.forCompanion };
-              }
-              else if (vrbi.requirementType === "SETTING" && vrbi.settingId !== null && vrbi.setting !== null) {
-                return { ...rbi, setting: [vrbi.settingId, vrbi.setting], forCompanion: vrbi.forCompanion };
-              }
-              else throw new Error(`unidentified requirement block item type: ${vrbi.requirementType ?? "null"}`);
-            });
 
-          rb.items = items;
+                if (vrbi.requirementType === "UNIQUE") return { ...rbi, isUnique: true };
+                else if (vrbi.requirementType === "SETTINGENTRY") return { ...rbi, isSettingEntry: true };
+                else if (vrbi.requirementType === "LPINDEX") {
+                  // Was `if (vrbi.min)`, which silently ignored a legitimate min of 0 and fell through to max.
+                  if (vrbi.min !== null) return { ...rbi, minLpIndex: vrbi.min };
+                  if (vrbi.max === null) throw new Error("max value must be set for LPINDEX requirement type");
+                  return { ...rbi, maxLpIndex: vrbi.max };
+                }
+                else if (vrbi.requirementType === "YEARS") {
+                  // Was `if (vrbi.min)`, which silently ignored a legitimate min of 0 (e.g. "born this lifepath") and fell through to max.
+                  if (vrbi.min !== null) return { ...rbi, minYears: vrbi.min };
+                  if (vrbi.max === null) throw new Error("max value must be set for YEARS requirement type");
+                  return { ...rbi, maxYears: vrbi.max };
+                }
+                else if (vrbi.requirementType === "FEMALE") return { ...rbi, gender: "Female" };
+                else if (vrbi.requirementType === "MALE") return { ...rbi, gender: "Male" };
+                else if (vrbi.requirementType === "OLDESTBY") {
+                  if (vrbi.max === null) throw new Error("max value must be set for OLDESTBY requirement type");
+                  return { ...rbi, oldestBy: vrbi.max };
+                }
+                else if (vrbi.requirementType === "ATTRIBUTE" && vrbi.attributeId !== null && vrbi.attribute !== null) {
+                  const atr: LifepathRequirementItem = {
+                    ...rbi,
+                    attribute: [vrbi.attributeId, vrbi.attribute] as NamedTuple<dat.AbilityId>,
+                    forCompanion: vrbi.forCompanion
+                  };
+                  if (vrbi.min !== null) atr.min = vrbi.min;
+                  if (vrbi.max !== null) atr.max = vrbi.max;
+                  return atr;
+                }
+                else if (vrbi.requirementType === "SKILL" && vrbi.skillId !== null && vrbi.skill !== null) {
+                  return { ...rbi, skill: [vrbi.skillId, vrbi.skill], forCompanion: vrbi.forCompanion };
+                }
+                else if (vrbi.requirementType === "TRAIT" && vrbi.traitId !== null && vrbi.trait !== null) {
+                  return { ...rbi, trait: [vrbi.traitId, vrbi.trait], forCompanion: vrbi.forCompanion };
+                }
+                else if (vrbi.requirementType === "LIFEPATH" && vrbi.lifepathId !== null && vrbi.lifepath !== null) {
+                  return { ...rbi, lifepath: [vrbi.lifepathId, vrbi.lifepath], forCompanion: vrbi.forCompanion };
+                }
+                else if (vrbi.requirementType === "SETTING" && vrbi.settingId !== null && vrbi.setting !== null) {
+                  return { ...rbi, setting: [vrbi.settingId, vrbi.setting], forCompanion: vrbi.forCompanion };
+                }
+                else throw new Error(`unidentified requirement block item type: ${vrbi.requirementType ?? "null"}`);
+              });
 
-          return rb;
-        });
+            rb.items = items;
+
+            return rb;
+          })
+          // A block that lost all its items to the ruleset filter above can never be evaluated
+          // meaningfully, so drop it entirely rather than showing an empty "must be true" block.
+          .filter(rb => rb.items.length > 0);
+
+        // Every block may have been dropped above (e.g. a lifepath's only requirement was a NOT
+        // block whose single item is out-of-ruleset) -- leave requirements unset rather than [],
+        // matching how the client distinguishes "no requirements" from "has requirements".
+        if (requirements.length > 0) lp.requirements = requirements;
       }
 
       return lp;

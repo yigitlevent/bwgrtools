@@ -1,7 +1,6 @@
 {
   "watch": ["dist"],
   "ext": "js",
-  "signal": "SIGINT",
-  "killSignal": "SIGKILL",
+  "signal": "SIGTERM",
   "delay": 500
 }

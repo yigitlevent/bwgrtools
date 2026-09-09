@@ -14,12 +14,13 @@ import type { FastifyError } from "fastify";
 const App = Fastify({
   logger: {
     level: process.env.LOG_LEVEL ?? "info"
-  }
+  },
+  forceCloseConnections: true
 });
 
 App.register(fastifyHelmet);
 App.register(fastifyCors, CorsConfig);
-App.register(fastifyRateLimit, { max: 10, timeWindow: "1 minute" });
+App.register(fastifyRateLimit, { max: 1000, timeWindow: "1 minute" });
 
 App.register(BwgrRoutes, { prefix: "/api" });
 

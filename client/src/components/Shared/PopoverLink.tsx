@@ -1,6 +1,8 @@
 import { Anchor, Box, Divider, Grid, Group, Popover, Text } from "@mantine/core";
 import { memo } from "react";
 
+import { LifepathBox } from "../Tools/LifepathLists/LifepathBox";
+
 
 function GetSkillRestrictionString(skill: Skill): string {
   if (skill.restriction?.onlyStock !== undefined) {
@@ -111,7 +113,7 @@ function TraitPop({ trait }: { trait: Trait; }): React.JSX.Element {
   );
 }
 
-export const PopoverLink = memo(({ data, noColor, hasComma }: { data: Skill | Trait; noColor?: boolean; hasComma?: boolean; }): React.JSX.Element => {
+export const PopoverLink = memo(({ data, noColor, hasComma }: { data: Skill | Trait | Lifepath; noColor?: boolean; hasComma?: boolean; }): React.JSX.Element => {
   return (
     <Box style={{ cursor: "var(--cursor-pointer)", width: "max-content", display: "inline-block" }}>
       <Popover withArrow position="bottom-start">
@@ -126,7 +128,7 @@ export const PopoverLink = memo(({ data, noColor, hasComma }: { data: Skill | Tr
         </Popover.Target>
 
         <Popover.Dropdown style={{ maxWidth: "400px" }}>
-          {"flags" in data ? <SkillPop skill={data} /> : <TraitPop trait={data} />}
+          {"pools" in data ? <LifepathBox lifepath={data} noBorder /> : "tool" in data ? <SkillPop skill={data} /> : <TraitPop trait={data} />}
         </Popover.Dropdown>
       </Popover>
     </Box>

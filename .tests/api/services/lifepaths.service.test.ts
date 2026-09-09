@@ -43,10 +43,14 @@ function BaseRow(overrides: Partial<dat.LifepathsList> = {}): dat.LifepathsList 
 }
 
 function MockQueryResults(lifepaths: dat.LifepathsList[], reqBlocks: dat.LifepathRequirementBlock[] = [], reqItems: dat.LifepathRequirementBlockItem[] = []): void {
+  // The real view always returns a rulesets array (or null for ruleset-agnostic items), but fixtures
+  // above only set it when a test cares about ruleset filtering -- default it here to keep those terse.
+  const reqItemsWithRulesets = reqItems.map(item => ({ ...item, rulesets: item.rulesets ?? null }));
+
   vi.mocked(PgPool.query)
     .mockResolvedValueOnce({ rows: lifepaths } as never)
     .mockResolvedValueOnce({ rows: reqBlocks } as never)
-    .mockResolvedValueOnce({ rows: reqItems } as never);
+    .mockResolvedValueOnce({ rows: reqItemsWithRulesets } as never);
 }
 
 describe("GetLifepaths", () => {

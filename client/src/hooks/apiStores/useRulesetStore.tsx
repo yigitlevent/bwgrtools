@@ -161,7 +161,7 @@ export const useRulesetStore = create<RulesetStore>()(
 
               set(produce<RulesetStore>(state => {
                 state.rulesets = response.rulesets;
-                state.chosenRulesets = [firstRulesetId];
+                state.chosenRulesets = [firstRulesetId, ...firstRuleset.expansionIds ?? []];
               }));
 
               setFetchState("fetch-data");

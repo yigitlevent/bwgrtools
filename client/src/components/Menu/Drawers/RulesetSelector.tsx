@@ -36,8 +36,12 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
   };
 
   const reset = (): void => {
-    const defaultRuleset = rulesets.find(v => v.isExpansion !== true && v.id !== null)?.id;
-    setPending(defaultRuleset !== undefined && defaultRuleset !== null ? [defaultRuleset] : []);
+    const defaultRuleset = rulesets.find(v => v.isExpansion !== true && v.id !== null);
+    if (defaultRuleset?.id === undefined || defaultRuleset.id === null) {
+      setPending([]);
+      return;
+    }
+    setPending([defaultRuleset.id, ...defaultRuleset.expansionIds ?? []]);
   };
 
   const commitApply = (): void => {

@@ -15,12 +15,14 @@ export function LifepathLists({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
   const { stocks, settings, lifepaths } = ruleset;
 
   const searchableLifepaths = useMemo((): SearchableLifepath[] => {
-    return lifepaths.map(lifepath => ({
-      ...lifepath,
-      leadnames: (lifepath.leads ?? []).map(id => ruleset.getSetting(id).name ?? "").join(", "),
-      skillnames: (lifepath.skills ?? []).map(id => ruleset.getSkill(id).name ?? "").join(", "),
-      traitnames: (lifepath.traits ?? []).map(id => ruleset.getTrait(id).name ?? "").join(", ")
-    }));
+    return lifepaths
+      .map(lifepath => ({
+        ...lifepath,
+        leadnames: (lifepath.leads ?? []).map(id => ruleset.getSetting(id).name ?? "").join(", "),
+        skillnames: (lifepath.skills ?? []).map(id => ruleset.getSkill(id).name ?? "").join(", "),
+        traitnames: (lifepath.traits ?? []).map(id => ruleset.getTrait(id).name ?? "").join(", ")
+      }))
+      .sort((a, b) => Number(a.id) - Number(b.id));
   }, [lifepaths, ruleset]);
 
   const { searchValues, setFilter, filteredList, isPending } =
