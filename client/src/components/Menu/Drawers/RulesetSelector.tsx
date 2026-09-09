@@ -1,15 +1,25 @@
-import { NavLink, Stack, Tooltip } from "@mantine/core";
+import { Drawer, NavLink, Stack, Tooltip } from "@mantine/core";
 import { Check, CircleCheck, X } from "lucide-react";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
-import { DrawerBox } from "../../Shared/DrawerBox";
+import { useDrawerStore } from "../../../hooks/useDrawerStore";
 
 
 export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX.Element {
   const { rulesets, checkRulesets, checkExactRulesets, toggleDataset } = useRulesetStore();
+  const { toggleDrawer } = useDrawerStore();
 
   return (
-    <DrawerBox title="Datasets" expanded={expanded}>
+    <Drawer
+      title="Datasets"
+      position="right"
+      opened={expanded}
+      onClose={() => { toggleDrawer(); }}
+      size="500px"
+      withCloseButton
+      closeOnEscape
+      closeOnClickOutside
+    >
       {rulesets.filter(ruleset => !ruleset.isExpansion && ruleset.id).map((ruleset, i) => {
         const rulesetId = ruleset.id;
         if (!rulesetId) return null;
@@ -51,6 +61,6 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
           </Stack>
         );
       })}
-    </DrawerBox>
+    </Drawer>
   );
 }
