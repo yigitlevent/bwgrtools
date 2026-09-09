@@ -1,4 +1,5 @@
-import { Grid, Group, Title, Text, Paper } from "@mantine/core";
+import { Grid, Group, Title, Text, Paper, Tooltip } from "@mantine/core";
+import { Info } from "lucide-react";
 import { Fragment } from "react";
 
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
@@ -23,7 +24,18 @@ export function Stats(): React.JSX.Element {
   return (
     <Grid columns={6} align="center" mt="lg" mb="xl">
       <Grid.Col span={6}>
-        <Title order={4}>Stats</Title>
+        <Group gap={4}>
+          <Title order={4}>Stats</Title>
+
+          <Tooltip
+            multiline
+            w={320}
+            color="gray"
+            label="Click a stat's letter to cycle its shade (Black/Grey/White - White is easiest, Black is hardest); click the number to raise its exponent, right-click (or press and hold) to lower it."
+          >
+            <Info size={14} />
+          </Tooltip>
+        </Group>
       </Grid.Col>
 
       <Grid.Col span={6}>

@@ -43,7 +43,18 @@ export function Attributes(): React.JSX.Element {
   return (
     <Grid columns={6} align="center" gap="xl" mb="xl">
       <Grid.Col span={6}>
-        <Title order={4}>Attributes</Title>
+        <Group gap={4}>
+          <Title order={4}>Attributes</Title>
+
+          <Tooltip
+            multiline
+            w={320}
+            color="gray"
+            label="Attributes are derived from your stats, lifepaths, and traits. The letter is the attribute's shade (Black/Grey/White); click it to shift shade where allowed. The number (exponent) is calculated automatically."
+          >
+            <Info size={14} />
+          </Tooltip>
+        </Group>
       </Grid.Col>
 
       <Fragment>
