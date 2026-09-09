@@ -1,10 +1,54 @@
-import { ActionIcon, Accordion, Button, Divider, Grid, Radio, TextInput, Title, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Accordion, Button, Divider, Grid, Group, Popover, Radio, Stack, TextInput, Title, Text, Tooltip } from "@mantine/core";
 import { Lock, Trash2 } from "lucide-react";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
 import { useCharacterBurnerResourceStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerResource";
 
+
+function DeleteResourceButton({ name, onDelete }: { name: string; onDelete: () => void; }): React.JSX.Element {
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <Popover opened={confirming} onChange={setConfirming} withArrow position="bottom" width={260}>
+      <Popover.Target>
+        <ActionIcon
+          variant="subtle"
+          aria-label={`Remove ${name}`}
+          onClick={e => { e.stopPropagation(); setConfirming(true); }}
+        >
+          <Trash2 size={18} />
+        </ActionIcon>
+      </Popover.Target>
+
+      <Popover.Dropdown onClick={e => { e.stopPropagation(); }}>
+        <Stack gap="xs">
+          <Text size="sm">
+            Remove
+            {" "}
+            <Text span fw={700}>{name}</Text>
+            ? This cannot be undone.
+          </Text>
+
+          <Group justify="flex-end" gap="xs">
+            <Button variant="subtle" size="xs" onClick={() => { setConfirming(false); }}>Cancel</Button>
+
+            <Button
+              color="red"
+              size="xs"
+              onClick={() => {
+                onDelete();
+                setConfirming(false);
+              }}
+            >
+              Remove
+            </Button>
+          </Group>
+        </Stack>
+      </Popover.Dropdown>
+    </Popover>
+  );
+}
 
 export function Resources({ openModal }: { openModal: (name: CharacterBurnerModals) => void; }): React.JSX.Element {
   const ruleset = useRulesetStore();
@@ -47,9 +91,7 @@ export function Resources({ openModal }: { openModal: (name: CharacterBurnerModa
                         <Lock size={18} />
                       </Tooltip>
                     ) : (
-                      <ActionIcon variant="subtle" onClick={e => { e.stopPropagation(); removeResource(resourceKey); }}>
-                        <Trash2 size={18} />
-                      </ActionIcon>
+                      <DeleteResourceButton name={resource.name} onDelete={() => { removeResource(resourceKey); }} />
                     )}
                   >
                     <Text size="lg">

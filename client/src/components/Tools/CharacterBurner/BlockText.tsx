@@ -1,5 +1,6 @@
-import { ActionIcon, Checkbox, Grid, Text } from "@mantine/core";
+import { ActionIcon, Button, Checkbox, Grid, Group, Popover, Stack, Text } from "@mantine/core";
 import { Trash2 } from "lucide-react";
+import { useState } from "react";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { PopoverLink } from "../../Shared/PopoverLink";
@@ -18,6 +19,8 @@ interface BlockAbilityPopoverProps {
 }
 
 function BlockAbilityPopover({ data, checkbox, deleteCallback }: BlockAbilityPopoverProps): React.JSX.Element {
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
   return (
     <Grid>
       {checkbox ? (
@@ -34,9 +37,44 @@ function BlockAbilityPopover({ data, checkbox, deleteCallback }: BlockAbilityPop
       </Text>
 
       {deleteCallback ? (
-        <ActionIcon variant="subtle" onClick={deleteCallback} style={{ padding: 0, margin: "0 0 2px 6px" }}>
-          <Trash2 size={18} />
-        </ActionIcon>
+        <Popover opened={confirmingDelete} onChange={setConfirmingDelete} withArrow position="bottom" width={260}>
+          <Popover.Target>
+            <ActionIcon
+              variant="subtle"
+              aria-label={`Remove ${data.name ?? ""}`}
+              onClick={() => { setConfirmingDelete(true); }}
+              style={{ padding: 0, margin: "0 0 2px 6px" }}
+            >
+              <Trash2 size={18} />
+            </ActionIcon>
+          </Popover.Target>
+
+          <Popover.Dropdown>
+            <Stack gap="xs">
+              <Text size="sm">
+                Remove
+                {" "}
+                <Text span fw={700}>{data.name}</Text>
+                ? This cannot be undone.
+              </Text>
+
+              <Group justify="flex-end" gap="xs">
+                <Button variant="subtle" size="xs" onClick={() => { setConfirmingDelete(false); }}>Cancel</Button>
+
+                <Button
+                  color="red"
+                  size="xs"
+                  onClick={() => {
+                    deleteCallback();
+                    setConfirmingDelete(false);
+                  }}
+                >
+                  Remove
+                </Button>
+              </Group>
+            </Stack>
+          </Popover.Dropdown>
+        </Popover>
       ) : null}
     </Grid>
   );
