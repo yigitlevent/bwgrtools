@@ -1,10 +1,44 @@
-import { Box, Button, Grid, Stack, Text, Title } from "@mantine/core";
+import { Box, Button, Grid, Group, Popover, Stack, Text, Title } from "@mantine/core";
+import { useState } from "react";
 
 import { useFightPlannerStore } from "../../../hooks/featureStores/useFightPlannerStore";
 import { GetActionResolutionString } from "../../../utils/GetActionResolutionString";
 
 import type { FightActionExtended } from "../../../hooks/featureStores/useFightPlannerStore";
 
+
+function DeleteActionButton({ onDelete }: { onDelete: () => void; }): React.JSX.Element {
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <Popover opened={confirming} onChange={setConfirming} withArrow position="top" width={260}>
+      <Popover.Target>
+        <Button size="lg" style={{ width: "100%", padding: "16px 8px", marginTop: "8px" }} onClick={() => { setConfirming(true); }}>Delete</Button>
+      </Popover.Target>
+
+      <Popover.Dropdown>
+        <Stack gap="xs">
+          <Text size="sm">Delete this action? This cannot be undone.</Text>
+
+          <Group justify="flex-end" gap="xs">
+            <Button variant="subtle" size="xs" onClick={() => { setConfirming(false); }}>Cancel</Button>
+
+            <Button
+              color="red"
+              size="xs"
+              onClick={() => {
+                onDelete();
+                setConfirming(false);
+              }}
+            >
+              Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Popover.Dropdown>
+    </Popover>
+  );
+}
 
 export function FightPlannerActionDetails({ action, volleyIndex, actionIndex }: { action: FightActionExtended; volleyIndex: number; actionIndex: number; }): React.JSX.Element {
   const { deleteAction, toggleActionVisibility } = useFightPlannerStore();
@@ -70,8 +104,13 @@ export function FightPlannerActionDetails({ action, volleyIndex, actionIndex }: 
       ) : null}
 
       <Grid>
-        <Button size="lg" style={{ width: "50%", padding: "16px 8px", marginTop: "8px" }} onClick={() => { toggleActionVisibility(volleyIndex, actionIndex); }}>Hide</Button>
-        <Button size="lg" style={{ width: "50%", padding: "16px 8px", marginTop: "8px" }} onClick={() => { deleteAction(volleyIndex, actionIndex); }}>Delete</Button>
+        <Box style={{ width: "50%" }}>
+          <Button size="lg" style={{ width: "100%", padding: "16px 8px", marginTop: "8px" }} onClick={() => { toggleActionVisibility(volleyIndex, actionIndex); }}>Hide</Button>
+        </Box>
+
+        <Box style={{ width: "50%" }}>
+          <DeleteActionButton onDelete={() => { deleteAction(volleyIndex, actionIndex); }} />
+        </Box>
       </Grid>
     </Stack>
   );
