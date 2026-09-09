@@ -1,4 +1,4 @@
-import { Button, Divider, Grid, Text, Title } from "@mantine/core";
+import { Button, Divider, Grid, Text, Title, Tooltip } from "@mantine/core";
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from "lucide-react";
 import { Fragment } from "react";
 
@@ -49,8 +49,17 @@ export function DiceRollerResult({ result, shade, isDoubleObstacle, isOpenEnded,
                 </Text>
               </Fragment>
 
-              {!isOpenEnded && result.dice.includes(6) && !result.usedFate ? <Button variant="outline" size="md" onClick={() => { rerollSixes(result.dice, true); }} mt="24px">Reroll sixes using Fate</Button> : null}
-              {isOpenEnded && result.failures > 0 && !result.usedFate ? <Button variant="outline" size="md" onClick={() => { rerollFailure(result.dice); }} mt="6px">Reroll a single failure using Fate</Button> : null}
+              {!isOpenEnded && result.dice.includes(6) && !result.usedFate ? (
+                <Tooltip multiline w={320} color="gray" label="Spend a Fate point to reroll all 6s in this pool, even though Open Ended is off.">
+                  <Button variant="outline" size="md" onClick={() => { rerollSixes(result.dice, true); }} mt="24px">Reroll sixes using Fate</Button>
+                </Tooltip>
+              ) : null}
+
+              {isOpenEnded && result.failures > 0 && !result.usedFate ? (
+                <Tooltip multiline w={320} color="gray" label="Spend a Fate point to reroll one failed die from this pool.">
+                  <Button variant="outline" size="md" onClick={() => { rerollFailure(result.dice); }} mt="6px">Reroll a single failure using Fate</Button>
+                </Tooltip>
+              ) : null}
             </Grid.Col>
 
             <Grid.Col span={{ base: 3, sm: 1 }}>
