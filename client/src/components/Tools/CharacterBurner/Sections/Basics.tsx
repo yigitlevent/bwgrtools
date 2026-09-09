@@ -1,4 +1,5 @@
-import { Button, Grid, Select, Textarea, TextInput } from "@mantine/core";
+import { Alert, Button, Grid, Modal, Select, Textarea, TextInput } from "@mantine/core";
+import { useState } from "react";
 
 import { useRulesetStore } from "../../../../hooks/apiStores/useRulesetStore";
 import { BuildCharacterBurnerSnapshot } from "../../../../hooks/featureStores/CharacterBurnerStores/characterBurnerSnapshot";
@@ -15,6 +16,10 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
   const { getAge, lifepaths } = useCharacterBurnerLifepathStore();
   const { getStride } = useCharacterBurnerAttributeStore();
   const { traits } = useCharacterBurnerTraitStore();
+
+  const [pendingStock, setPendingStock] = useState<Stock | null>(null);
+
+  const hasProgress = name !== "" || concept !== "" || lifepaths.length > 0;
 
   const lifepathsText = lifepaths.map(v => v.name).join(", ");
 
@@ -90,7 +95,9 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
           data={ruleset.stocks.map(v => ({ value: v.id?.toString() ?? "", label: v.name ?? "" }))}
           onChange={v => {
             const found = ruleset.stocks.find(s => s.id?.toString() === v);
-            if (found?.id) setStockAndReset([found.id, found.name ?? ""]);
+            if (!found?.id) return;
+            if (hasProgress) setPendingStock(found);
+            else setStockAndReset([found.id, found.name ?? ""]);
           }}
           allowDeselect={false}
         />
@@ -142,6 +149,35 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
       <Grid.Col span={{ base: 6, sm: 2 }}>
         <Button variant="outline" size="md" onClick={exportChar} fullWidth>Export</Button>
       </Grid.Col>
+
+      <Modal opened={pendingStock !== null} onClose={() => { setPendingStock(null); }} size="600px">
+        <Grid columns={1} gap="md">
+          <Grid.Col span={1}>
+            <Alert color="yellow">Changing stock resets the whole character - name, concept, lifepaths, stats, skills, traits, beliefs, and instincts. This cannot be undone.</Alert>
+          </Grid.Col>
+
+          <Grid.Col span={1}>
+            <Grid columns={2} gap="md">
+              <Grid.Col span={1}>
+                <Button variant="outline" size="md" onClick={() => { setPendingStock(null); }} fullWidth>Cancel</Button>
+              </Grid.Col>
+
+              <Grid.Col span={1}>
+                <Button
+                  size="md"
+                  onClick={() => {
+                    if (pendingStock?.id) setStockAndReset([pendingStock.id, pendingStock.name ?? ""]);
+                    setPendingStock(null);
+                  }}
+                  fullWidth
+                >
+                  Change Stock
+                </Button>
+              </Grid.Col>
+            </Grid>
+          </Grid.Col>
+        </Grid>
+      </Modal>
     </Grid>
   );
 }
