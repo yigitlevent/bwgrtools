@@ -1,6 +1,6 @@
 import { ActionIcon, Button, Card, Divider, Grid, Paper, Select, Title } from "@mantine/core";
 import { Eye } from "lucide-react";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 
 import { DuelOfWitsActionDetails } from "./DuelOfWitsActionDetails";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
@@ -11,6 +11,10 @@ export function DuelOfWitsPlanner(): React.JSX.Element {
   const { dowActions } = useRulesetStore();
 
   const { actions, selectedAction, addAction, changeSelectedAction, toggleActionVisibility } = useDuelOfWitsPlannerStore();
+
+  const sortedActionNames = useMemo(() => {
+    return [...dowActions].map(v => v.name).sort((a, b) => a.localeCompare(b));
+  }, [dowActions]);
 
   return (
     <Fragment>
@@ -37,8 +41,9 @@ export function DuelOfWitsPlanner(): React.JSX.Element {
                     <Select
                       value={selectedAction[volleyIndex]}
                       onChange={v => { if (v) changeSelectedAction(v, volleyIndex); }}
-                      data={dowActions.map(v => v.name)}
+                      data={sortedActionNames}
                       allowDeselect={false}
+                      searchable
                     />
 
                     <Button size="lg" fullWidth style={{ padding: "16px", margin: "16px 0 8px" }} onClick={() => { addAction(dowActions, volleyIndex, selectedAction[volleyIndex]); }}>Add Action</Button>
