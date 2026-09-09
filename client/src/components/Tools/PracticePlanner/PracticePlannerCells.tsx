@@ -55,7 +55,7 @@ function Placed({ placed, practiceIndex, cellIndex }: { placed: PracticePlaced; 
     <Paper shadow="sm" style={{ padding: "2px 4px" }}>
       <Text style={{ display: "inline", marginRight: "8px" }}>{placed.name}</Text>
       <Text size="xs">{text}</Text>
-      <ActionIcon size="sm" variant="subtle" style={{ float: "right" }} onClick={() => { deletePractice(cellIndex, practiceIndex); }}><Trash2 size={16} /></ActionIcon>
+      <DeleteButton confirmText="Delete this practice?" onDelete={() => { deletePractice(cellIndex, practiceIndex); }} />
     </Paper>
   );
 }
@@ -70,7 +70,7 @@ function PracticePlannerCell({ cell, cellIndex, setNotification }: { cell: Pract
           Day
           {" "}
           {cellIndex + 1}
-          <DeleteCellButton onDelete={() => { deleteCell(cellIndex); }} />
+          <DeleteButton confirmText="Delete this day? Any practices placed in it will be lost." onDelete={() => { deleteCell(cellIndex); }} />
           <ActionIcon size="sm" variant="subtle" style={{ float: "right" }} onClick={() => { changeCellHour(cellIndex, -1, cells, setNotification); }}><CircleMinus size={16} /></ActionIcon>
           <ActionIcon size="sm" variant="subtle" style={{ float: "right" }} onClick={() => { changeCellHour(cellIndex, 1, cells, setNotification); }}><CirclePlus size={16} /></ActionIcon>
         </Text>
