@@ -243,17 +243,16 @@ describe("useCharacterBurnerResourceStore", () => {
       expect(useCharacterBurnerResourceStore.getState().resources["family-heirloom"]).toBeUndefined();
     });
 
-    it("BUG: also no-ops when the resource's type id is the legitimate value 0, since the guard `if (!resource.type[0]) return` treats id 0 as falsy/missing", () => {
-      // dat.ResourceTypeId 0 is a valid id (Nominal<number, ...> has no reserved sentinel), but
-      // setFamilyHeirloomResource's guard can't distinguish "type id is 0" from "type id is null" --
-      // so a resource whose real resourceTypeId happens to be 0 is silently dropped instead of set,
-      // the same falsy-zero-id class of bug also seen in addGeneralTrait and refreshQuestions.
-      // Documented here as observed behavior, not fixed.
+    it("sets the family heirloom resource when its type id is the legitimate value 0", () => {
+      // dat.ResourceTypeId 0 is a valid id (Nominal<number, ...> has no reserved sentinel) --
+      // setFamilyHeirloomResource's guard checks `=== null`, not falsiness, so it's not confused
+      // with a missing type id.
       const resource = { ...useRulesetStore.getState().getResource(ResourceIds.Heirloom), type: [ResourceTypeIds.ZeroId, "Property"] as [dat.ResourceTypeId, string] };
 
       useCharacterBurnerResourceStore.getState().setFamilyHeirloomResource(TraitIds.FamilyHeirloomGranter, resource, 10);
 
-      expect(useCharacterBurnerResourceStore.getState().resources["family-heirloom"]).toBeUndefined();
+      expect(useCharacterBurnerResourceStore.getState().resources["family-heirloom"]).toBeDefined();
+      expect(useCharacterBurnerResourceStore.getState().resources["family-heirloom"]?.type[0]).toBe(ResourceTypeIds.ZeroId);
     });
 
     it("clears the family heirloom resource", () => {
@@ -363,6 +362,29 @@ describe("useCharacterBurnerResourceStore", () => {
       expect(useCharacterBurnerResourceStore.getState().resources["lesson-of-one"]).toBeUndefined();
     });
 
+    it("does nothing when the stock's Reputation resource has no resourceTypeId", () => {
+      const renamed: Trait = { ...useRulesetStore.getState().getTrait(TraitIds.Stoic), name: "Lesson of One" };
+      const reputation = useRulesetStore.getState().getResource(ResourceIds.Reputation);
+      const typelessReputation: Resource = { ...reputation, type: [null as unknown as dat.ResourceTypeId, "Reputation"] };
+      useRulesetStore.setState({
+        traits: useRulesetStore.getState().traits.map(t => t.id === TraitIds.Stoic ? renamed : t),
+        traitsById: new Map(useRulesetStore.getState().traitsById).set(TraitIds.Stoic, renamed),
+        resources: useRulesetStore.getState().resources.map(r => r.id === ResourceIds.Reputation ? typelessReputation : r),
+        resourcesById: new Map(useRulesetStore.getState().resourcesById).set(ResourceIds.Reputation, typelessReputation)
+      });
+      setCharTraits([{ id: TraitIds.Stoic, name: "Lesson of One", type: "General", isOpen: true }]);
+      useCharacterBurnerResourceStore.setState({
+        resources: {
+          "rel": { id: ResourceIds.Relation, name: "Mentor", type: [ResourceTypeIds.Relationship, "Relationship"], modifiers: [], cost: 10, description: "" }
+        }
+      });
+      useCharacterBurnerSpecialStore.setState({ special: { ...useCharacterBurnerSpecialStore.getState().special, lessonOfOneRelationship: "rel" } });
+      useCharacterBurnerBasicsStore.setState({ stock: [StockIds.Dwarf, "Dwarf"] });
+
+      expect(() => useCharacterBurnerResourceStore.getState().updateLessonOfOne()).not.toThrow();
+      expect(useCharacterBurnerResourceStore.getState().resources["lesson-of-one"]).toBeUndefined();
+    });
+
     it("falls back to the first cost row when no cost row's label matches the tier", () => {
       const renamed: Trait = { ...useRulesetStore.getState().getTrait(TraitIds.Stoic), name: "Lesson of One" };
       const reputation = useRulesetStore.getState().getResource(ResourceIds.Reputation);
@@ -387,11 +409,7 @@ describe("useCharacterBurnerResourceStore", () => {
       expect(useCharacterBurnerResourceStore.getState().resources["lesson-of-one"]?.cost).toBe(7);
     });
 
-    it("does nothing when the 'Lesson of One' trait resolves with a falsy (0) id", () => {
-      // BUG-adjacent (documented, not fixed): `if (!trait.id) return;` treats a legitimate TraitId
-      // of 0 the same as missing, silently no-oping instead of granting the resource -- the same
-      // falsy-zero-id pattern seen elsewhere in this store family (see addGeneralTrait,
-      // refreshQuestions, setFamilyHeirloomResource).
+    it("grants the resource when the 'Lesson of One' trait resolves with the legitimate id 0", () => {
       const zeroId = 0 as dat.TraitId;
       const renamed: Trait = { ...useRulesetStore.getState().getTrait(TraitIds.Stoic), id: zeroId, name: "Lesson of One" };
       useRulesetStore.setState({
@@ -409,6 +427,27 @@ describe("useCharacterBurnerResourceStore", () => {
 
       useCharacterBurnerResourceStore.getState().updateLessonOfOne();
 
+      const lesson = useCharacterBurnerResourceStore.getState().resources["lesson-of-one"];
+      expect(lesson).toBeDefined();
+      expect(lesson?.sourceTraitId).toBe(zeroId);
+    });
+
+    it("does nothing when the 'Lesson of One' trait resolves with a null id", () => {
+      const renamed: Trait = { ...useRulesetStore.getState().getTrait(TraitIds.Stoic), id: null, name: "Lesson of One" };
+      useRulesetStore.setState({
+        traits: useRulesetStore.getState().traits.map(t => t.id === TraitIds.Stoic ? renamed : t),
+        traitsById: new Map([...useRulesetStore.getState().traitsById].filter(([id]) => id !== TraitIds.Stoic))
+      });
+      setCharTraits([{ id: TraitIds.Stoic, name: "Lesson of One", type: "General", isOpen: true }]);
+      useCharacterBurnerResourceStore.setState({
+        resources: {
+          "rel": { id: ResourceIds.Relation, name: "Mentor", type: [ResourceTypeIds.Relationship, "Relationship"], modifiers: [], cost: 10, description: "" }
+        }
+      });
+      useCharacterBurnerSpecialStore.setState({ special: { ...useCharacterBurnerSpecialStore.getState().special, lessonOfOneRelationship: "rel" } });
+      useCharacterBurnerBasicsStore.setState({ stock: [StockIds.Dwarf, "Dwarf"] });
+
+      expect(() => useCharacterBurnerResourceStore.getState().updateLessonOfOne()).not.toThrow();
       expect(useCharacterBurnerResourceStore.getState().resources["lesson-of-one"]).toBeUndefined();
     });
 

@@ -212,18 +212,13 @@ describe("useCharacterBurnerSpecialStore", () => {
       expect(useCharacterBurnerTraitStore.getState().traits.find(TraitIds.FamilyHeirloomGranter)).toBeDefined();
     });
 
-    it("BUG: does not add a trait whose id is 0, since addGeneralTrait's guard `if (!trait.id) return` treats id 0 as falsy/missing", () => {
-      // Faithful's fixture id is 0 (a real, valid trait id -- 0 is a legitimate id value per
-      // dat.TraitId's `Nominal<number, ...>` typing). useCharacterBurnerTrait.tsx's addGeneralTrait
-      // guards with `if (!trait.id) return;`, which incorrectly treats id 0 the same as a missing
-      // (null) id, silently dropping the trait instead of adding it. Documented here as observed
-      // behavior, not fixed.
+    it("adds a trait whose real id is 0 (both modifyFeyBloodTrait's and addGeneralTrait's guards check `=== null`/`!== undefined`, not falsiness)", () => {
+      // Faithful's fixture id is 0 -- a real, valid trait id (0 is a legitimate value for
+      // dat.TraitId's `Nominal<number, ...>` typing, which has no reserved sentinel).
       const faithful = useRulesetStore.getState().getTrait(TraitIds.Faithful);
       useCharacterBurnerSpecialStore.getState().modifyFeyBloodTrait(faithful);
 
-      expect(useCharacterBurnerTraitStore.getState().traits.find(TraitIds.Faithful)).toBeUndefined();
-      // The special.feyBloodTrait bookkeeping is set regardless, since that assignment doesn't share
-      // addGeneralTrait's guard -- so special/trait state can drift out of sync when id is 0.
+      expect(useCharacterBurnerTraitStore.getState().traits.find(TraitIds.Faithful)).toBeDefined();
       expect(useCharacterBurnerSpecialStore.getState().special.feyBloodTrait).toBe(TraitIds.Faithful);
     });
 
@@ -399,16 +394,12 @@ describe("useCharacterBurnerSpecialStore", () => {
       expect(names).toContain("TWO_ATTR");
     });
 
-    it("BUG: drops a question whose real id is 0, since the guard `if (!v.id || ...) return false` treats id 0 as falsy/missing", () => {
-      // dat.QuestionId 0 is a legitimate id (Nominal<number, ...> has no reserved sentinel value), but
-      // refreshQuestions's `!v.id` check can't distinguish "id is 0" from "id is null/undefined" --
-      // so a question with a real id of 0 is silently excluded from the character's question list
-      // entirely, the same falsy-zero-id class of bug also seen in addGeneralTrait. Documented here as
-      // observed behavior, not fixed.
+    it("includes a question whose real id is 0 (the guard checks `=== null`, not falsiness)", () => {
+      // dat.QuestionId 0 is a legitimate id (Nominal<number, ...> has no reserved sentinel value).
       expect(QuestionIds.ZeroId).toBe(0);
       useCharacterBurnerSpecialStore.getState().refreshQuestions();
       const names = useCharacterBurnerSpecialStore.getState().questions.map(q => q.name);
-      expect(names).not.toContain("ZEROID");
+      expect(names).toContain("ZEROID");
     });
   });
 

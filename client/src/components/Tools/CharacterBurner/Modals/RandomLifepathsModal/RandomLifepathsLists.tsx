@@ -8,11 +8,11 @@ import { PopoverLink } from "../../../../Shared/PopoverLink";
 export function RandomLifepathsLists({ chosenLifepaths }: { chosenLifepaths: Lifepath[]; }): React.JSX.Element {
   const { getSkill, getTrait } = useRulesetStore();
 
-  const mandatorySkills = new UniqueArray(chosenLifepaths.map(lp => lp.skills ? [getSkill(lp.skills[0])] : []).flat());
-  const lifepathSkills = new UniqueArray(chosenLifepaths.map(lp => lp.skills ? lp.skills.filter(skillId => !mandatorySkills.has(skillId)).map(getSkill) : []).flat());
+  const mandatorySkills = new UniqueArray(chosenLifepaths.map(lp => lp.skills !== undefined ? [getSkill(lp.skills[0])] : []).flat());
+  const lifepathSkills = new UniqueArray(chosenLifepaths.map(lp => lp.skills !== undefined ? lp.skills.filter(skillId => !mandatorySkills.has(skillId)).map(getSkill) : []).flat());
 
-  const mandatoryTraits = new UniqueArray(chosenLifepaths.map(lp => lp.traits ? [getTrait(lp.traits[0])] : []).flat());
-  const lifepathTraits = new UniqueArray(chosenLifepaths.map(lp => lp.traits ? lp.traits.filter(traitId => !mandatoryTraits.has(traitId)).map(getTrait) : []).flat());
+  const mandatoryTraits = new UniqueArray(chosenLifepaths.map(lp => lp.traits !== undefined ? [getTrait(lp.traits[0])] : []).flat());
+  const lifepathTraits = new UniqueArray(chosenLifepaths.map(lp => lp.traits !== undefined ? lp.traits.filter(traitId => !mandatoryTraits.has(traitId)).map(getTrait) : []).flat());
 
   return (
     <Grid columns={1} gap="xs">

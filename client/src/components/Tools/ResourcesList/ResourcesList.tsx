@@ -34,7 +34,7 @@ export function ResourcesList({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
             label="Stock"
             variant="filled"
             value={searchValues.filters.stock}
-            onChange={v => { if (v) setFilter([{ key: "stock", value: v }]); }}
+            onChange={v => { if (v !== null) setFilter([{ key: "stock", value: v }]); }}
             data={["Any", ...stocks.map(v => v.name ?? "")]}
             allowDeselect={false}
           />
@@ -45,7 +45,7 @@ export function ResourcesList({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
             label="Type"
             variant="filled"
             value={searchValues.filters.type}
-            onChange={v => { if (v) setFilter([{ key: "type", value: v }]); }}
+            onChange={v => { if (v !== null) setFilter([{ key: "type", value: v }]); }}
             data={["Any", ...resourceTypes]}
             allowDeselect={false}
           />

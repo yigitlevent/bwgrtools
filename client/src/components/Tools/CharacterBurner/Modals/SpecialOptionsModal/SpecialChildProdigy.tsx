@@ -35,8 +35,8 @@ export function SpecialChildProdigy(): React.JSX.Element {
           value={mode}
           data={[{ value: "stat", label: "+3D Stat" }, { value: "skill", label: "Shade-Shift Skill" }]}
           onChange={v => {
-            if (v === "stat") modifyChildProdigyStat(statOptions[0] ? Number(statOptions[0].value) as dat.AbilityId : undefined);
-            else if (v === "skill") modifyChildProdigyShiftedSkill(skillOptions[0] ? Number(skillOptions[0].value) as dat.SkillId : undefined);
+            if (v === "stat") modifyChildProdigyStat(statOptions.length > 0 ? Number(statOptions[0].value) as dat.AbilityId : undefined);
+            else if (v === "skill") modifyChildProdigyShiftedSkill(skillOptions.length > 0 ? Number(skillOptions[0].value) as dat.SkillId : undefined);
           }}
           size="sm"
         />
@@ -48,7 +48,7 @@ export function SpecialChildProdigy(): React.JSX.Element {
             label="Chosen Stat"
             value={special.childProdigyStat?.toString() ?? null}
             data={statOptions}
-            onChange={v => { modifyChildProdigyStat(v ? Number(v) as dat.AbilityId : undefined); }}
+            onChange={v => { modifyChildProdigyStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
             allowDeselect={false}
             size="sm"
           />
@@ -61,7 +61,7 @@ export function SpecialChildProdigy(): React.JSX.Element {
             label="Chosen Skill"
             value={special.childProdigyShiftedSkill?.toString() ?? null}
             data={skillOptions}
-            onChange={v => { modifyChildProdigyShiftedSkill(v ? Number(v) as dat.SkillId : undefined); }}
+            onChange={v => { modifyChildProdigyShiftedSkill(v !== null ? Number(v) as dat.SkillId : undefined); }}
             allowDeselect={false}
             size="sm"
           />

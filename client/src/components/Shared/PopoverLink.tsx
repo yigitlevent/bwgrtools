@@ -3,9 +3,9 @@ import { memo } from "react";
 
 
 function GetSkillRestrictionString(skill: Skill): string {
-  if (skill.restriction?.onlyStock) {
-    const attribute = (skill.restriction.onlyWithAbility) ? ` with ${skill.restriction.onlyWithAbility[1]} ` : " ";
-    const type = (skill.restriction.onlyAtBurn) ? " in character burning" : "";
+  if (skill.restriction?.onlyStock !== undefined) {
+    const attribute = (skill.restriction.onlyWithAbility !== undefined) ? ` with ${skill.restriction.onlyWithAbility[1]} ` : " ";
+    const type = (skill.restriction.onlyAtBurn === true) ? " in character burning" : "";
     return `${skill.restriction.onlyStock[1]}${attribute}only${type}.`;
   }
 
@@ -20,7 +20,7 @@ function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
         <Divider />
       </Grid.Col>
 
-      {skill.roots ? (
+      {skill.roots !== undefined ? (
         <Grid.Col span={{ base: 2, md: 1 }}>
           <Group gap={4} justify="start">
             <Text fw={700}>Root:</Text>
@@ -40,7 +40,7 @@ function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
         <Group gap={4} justify="start">
           <Text fw={700}>Tools:</Text>
           <Text>{skill.tool.tool}</Text>
-          <Text>{skill.tool.description ? `(${skill.tool.description})` : ""}</Text>
+          <Text>{skill.tool.description !== undefined && skill.tool.description.length > 0 ? `(${skill.tool.description})` : ""}</Text>
         </Group>
       </Grid.Col>
 
@@ -51,7 +51,7 @@ function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
         </Group>
       </Grid.Col>
 
-      {skill.description ? (
+      {skill.description !== undefined && skill.description.length > 0 ? (
         <Grid.Col span={2}>
           <Divider mb={4} />
           {skill.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
@@ -85,7 +85,7 @@ function TraitPop({ trait }: { trait: Trait; }): React.JSX.Element {
         </Grid.Col>
       ) : null}
 
-      {trait.stock ? (
+      {trait.stock !== undefined ? (
         <Grid.Col span={{ base: 3, md: 1 }}>
           <Group gap={4} justify="start">
             <Text fw={700}>Stock:</Text>
@@ -101,7 +101,7 @@ function TraitPop({ trait }: { trait: Trait; }): React.JSX.Element {
         </Grid.Col>
       )}
 
-      {trait.description ? (
+      {trait.description !== undefined && trait.description.length > 0 ? (
         <Grid.Col span={2}>
           <Divider mb={4} />
           {trait.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
@@ -117,11 +117,11 @@ export const PopoverLink = memo(({ data, noColor, hasComma }: { data: Skill | Tr
       <Popover withArrow position="bottom-start">
         <Popover.Target>
           <Box>
-            <Anchor underline="hover" c={noColor ? "var(--mantine-color-text)" : undefined} style={{ cursor: "var(--cursor-pointer)" }}>
+            <Anchor underline="hover" c={noColor === true ? "var(--mantine-color-text)" : undefined} style={{ cursor: "var(--cursor-pointer)" }}>
               {data.name}
             </Anchor>
 
-            {hasComma ? <Box mr={4} style={{ display: "inline-block" }}>,</Box> : null}
+            {hasComma === true ? <Box mr={4} style={{ display: "inline-block" }}>,</Box> : null}
           </Box>
         </Popover.Target>
 

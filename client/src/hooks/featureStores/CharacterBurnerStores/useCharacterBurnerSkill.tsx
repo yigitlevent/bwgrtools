@@ -58,9 +58,9 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         const { general, lifepath } = getSkillPools();
         const skill = skills.find(skillId);
 
-        if (skill) {
+        if (skill !== undefined) {
           const rulesetSkill = getSkill(skill.id);
-          const openState = rulesetSkill.flags.isMagical || rulesetSkill.flags.isTraining ? "double" : "yes";
+          const openState = rulesetSkill.flags.isMagical === true || rulesetSkill.flags.isTraining === true ? "double" : "yes";
 
           let newIsOpen = skill.isOpen;
           let newAdvancement = skill.advancement;
@@ -83,9 +83,9 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
       modifySkillExponent: (skillId: dat.SkillId, decrease?: boolean): void => {
         const skill = get().skills.find(skillId);
 
-        if (skill && skill.isOpen !== "no") {
+        if (skill !== undefined && skill.isOpen !== "no") {
           set(produce<CharacterBurnerSkillState>(state => {
-            if (decrease) {
+            if (decrease === true) {
               const hasGeneralSpending = skill.advancement.general > 0;
               const hasLifepathSpending = skill.advancement.lifepath > 0;
 
@@ -103,8 +103,8 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
       },
 
       addGeneralSkill: (skill: Skill): void => {
-        if (!skill.id) return;
-        const charSkill: CharacterSkill = { id: skill.id, name: skill.name ?? "", isOpen: "no", type: "General", isSpecial: skill.subskillIds ? true : false, advancement: { general: 0, lifepath: 0 } };
+        if (skill.id === null) return;
+        const charSkill: CharacterSkill = { id: skill.id, name: skill.name ?? "", isOpen: "no", type: "General", isSpecial: skill.subskillIds !== undefined ? true : false, advancement: { general: 0, lifepath: 0 } };
         set(produce<CharacterBurnerSkillState>(state => { state.skills = new UniqueArray(state.skills.add(charSkill).items); }));
       },
 
@@ -129,7 +129,7 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
           pool: "generalSkillPool" | "lifepathSkillPool", isMultiplied: boolean, halfFromPrev: boolean
         ): number => {
           const base = isMultiplied ? (lp.pools[pool] ?? 0) * GetLifepathYears(lp, special.variableAge) : (lp.pools[pool] ?? 0);
-          const fromPrev = halfFromPrev && prevLp ? Math.floor((prevLp.pools[pool] ?? 0) / 2) : 0;
+          const fromPrev = halfFromPrev && prevLp !== undefined ? Math.floor((prevLp.pools[pool] ?? 0) / 2) : 0;
           return base + fromPrev;
         };
 
@@ -139,9 +139,9 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         const occurrenceScale = (occurrence: number): number => occurrence >= 4 ? 0 : occurrence === 3 ? 0.5 : 1;
 
         const gpTotal = lps.reduce((pv, cv, i) =>
-          pv + Math.floor(resolvePool(cv, lps[i - 1], "generalSkillPool", !!cv.flags.isGSPMultipliedByYear, !!cv.flags.getHalfGSPFromPrevLP) * occurrenceScale(occurrences[i])), 0);
+          pv + Math.floor(resolvePool(cv, lps[i - 1], "generalSkillPool", cv.flags.isGSPMultipliedByYear === true, cv.flags.getHalfGSPFromPrevLP === true) * occurrenceScale(occurrences[i])), 0);
         const lpTotal = lps.reduce((pv, cv, i) =>
-          pv + Math.floor(resolvePool(cv, lps[i - 1], "lifepathSkillPool", !!cv.flags.isLSPMultipliedByYear, !!cv.flags.getHalfLSPFromPrevLP) * occurrenceScale(occurrences[i])), 0);
+          pv + Math.floor(resolvePool(cv, lps[i - 1], "lifepathSkillPool", cv.flags.isLSPMultipliedByYear === true, cv.flags.getHalfLSPFromPrevLP === true) * occurrenceScale(occurrences[i])), 0);
 
         let gpRemaining = gpTotal;
         let lpRemaining = lpTotal;
@@ -179,11 +179,11 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
         let shade: Shade = "B";
         let exponent = 0;
 
-        if (charSkill && hasSkillOpen(skillId)) {
+        if (charSkill !== undefined && hasSkillOpen(skillId)) {
           const rulesetSkill = ruleset.getSkill(skillId);
           const skillRoots = rulesetSkill.roots;
 
-          if (skillRoots) {
+          if (skillRoots !== undefined) {
             const rootShades = skillRoots.map(s => {
               if (hasAttribute(s[0])) return getAttribute(s).shade;
               else return getStat(s[1]).shade;
@@ -238,15 +238,15 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
           const occurrence = occurrences[lpIndex];
           const mandatoryIndex = occurrence <= 2 ? occurrence - 1 : -1;
 
-          return lp.skills ? lp.skills.map((sk: dat.SkillId, i: number) => {
+          return lp.skills !== undefined ? lp.skills.map((sk: dat.SkillId, i: number) => {
             const skill = getSkill(sk);
             const isMandatory = (i === mandatoryIndex);
             const entry: CharacterSkill = {
               id: skill.id ?? sk,
               name: skill.name ?? "",
               type: isMandatory ? "Mandatory" : "Lifepath",
-              isSpecial: skill.subskillIds ? true : false,
-              isOpen: isMandatory ? skill.flags.isMagical || skill.flags.isTraining ? "double" : "yes" : "no",
+              isSpecial: skill.subskillIds !== undefined ? true : false,
+              isOpen: isMandatory ? (skill.flags.isMagical === true || skill.flags.isTraining === true ? "double" : "yes") : "no",
               advancement: { general: 0, lifepath: 0 }
             };
             return entry;
@@ -255,7 +255,7 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
 
         // companion-granted skills (Special Options: companion lifepath selection)
         lifepaths.forEach(lp => {
-          if (!lp.companion?.givesSkills) return;
+          if (lp.companion?.givesSkills !== true) return;
           const companionLifepathId = RecordGet(special.companionLifepath, lp.companion.name);
           if (companionLifepathId === undefined) return;
           const companionSkills = RecordGet(special.companionSkills, companionLifepathId);
@@ -267,7 +267,7 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
               id: skill.id ?? sk,
               name: skill.name ?? "",
               type: "Lifepath",
-              isSpecial: skill.subskillIds ? true : false,
+              isSpecial: skill.subskillIds !== undefined ? true : false,
               isOpen: "no",
               advancement: { general: 0, lifepath: 0 }
             };

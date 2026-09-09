@@ -48,7 +48,7 @@ export function HuntingGround(): React.JSX.Element {
           </Grid.Col>
 
           <Grid.Col span={2}>
-            {special.stock.huntingGround ? <Text>{special.stock.huntingGround}</Text> : <Fragment>—</Fragment>}
+            {special.stock.huntingGround !== undefined ? <Text>{special.stock.huntingGround}</Text> : <Fragment>—</Fragment>}
             <Button variant="outline" size="sm" onClick={() => { rollTerritory(); }} disabled={special.stock.huntingGround !== undefined}>Roll</Button>
           </Grid.Col>
         </Fragment>

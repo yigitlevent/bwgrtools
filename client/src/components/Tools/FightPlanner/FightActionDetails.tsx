@@ -47,7 +47,7 @@ export function FightPlannerActionDetails({ action, volleyIndex, actionIndex }: 
     <Stack gap={0} style={{ width: "100%" }}>
       <Title order={5} mb="8px">{action.name}</Title>
 
-      {action.tests ? (
+      {action.tests !== undefined ? (
         <Box mb="10px">
           <b>Tests:</b>
           <Text size="sm">{[...action.tests.abilities, ...action.tests.skills].map(v => v[1]).join(", ")}</Text>
@@ -59,7 +59,7 @@ export function FightPlannerActionDetails({ action, volleyIndex, actionIndex }: 
         <Text size="sm">{action.group[1]}</Text>
       </Box>
 
-      {action.restrictions ? (
+      {action.restrictions !== null && action.restrictions !== undefined && action.restrictions.length > 0 ? (
         <Box mb="10px">
           <b>Restrictions:</b>
 
@@ -69,7 +69,7 @@ export function FightPlannerActionDetails({ action, volleyIndex, actionIndex }: 
         </Box>
       ) : null}
 
-      {action.effect ? (
+      {action.effect !== null && action.effect !== undefined && action.effect.length > 0 ? (
         <Box mb="10px">
           <b>Effect:</b>
 
@@ -79,7 +79,7 @@ export function FightPlannerActionDetails({ action, volleyIndex, actionIndex }: 
         </Box>
       ) : null}
 
-      {action.special ? (
+      {action.special !== null && action.special !== undefined && action.special.length > 0 ? (
         <Box mb="10px">
           <b>Special:</b>
 
@@ -89,14 +89,14 @@ export function FightPlannerActionDetails({ action, volleyIndex, actionIndex }: 
         </Box>
       ) : null}
 
-      {action.actionCost ? (
+      {action.actionCost !== null && action.actionCost !== undefined ? (
         <Box mb="10px">
           <b>Action Cost:</b>
           <Text size="sm">{action.actionCost}</Text>
         </Box>
       ) : null}
 
-      {action.resolutions ? (
+      {action.resolutions !== undefined ? (
         <Box mb="10px">
           <b>Resolution:</b>
           {action.resolutions.map((v, i) => <Text size="sm" key={i}>{GetActionResolutionString(v)}</Text>)}

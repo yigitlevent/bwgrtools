@@ -37,7 +37,7 @@ export function SpecialResourceGrants(): React.JSX.Element {
                   label="Chosen Resource"
                   value={RecordGet(special.chosenResourceType, trait.id)?.toString() ?? null}
                   data={candidates.map(r => ({ value: (r.type[0] ?? "").toString(), label: r.type[1] }))}
-                  onChange={v => { if (v) modifyChosenResourceType(trait.id, Number(v) as dat.ResourceTypeId); }}
+                  onChange={v => { if (v !== null) modifyChosenResourceType(trait.id, Number(v) as dat.ResourceTypeId); }}
                   allowDeselect={false}
                   size="sm"
                 />

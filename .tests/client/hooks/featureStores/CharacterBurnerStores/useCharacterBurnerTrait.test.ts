@@ -86,6 +86,13 @@ describe("useCharacterBurnerTraitStore", () => {
       expect(useCharacterBurnerTraitStore.getState().traits.length).toBe(0);
     });
 
+    it("adds a trait whose real id is 0 (the guard checks `=== null`, not falsiness)", () => {
+      const zeroId = 0 as dat.TraitId;
+      useCharacterBurnerTraitStore.getState().addGeneralTrait({ rulesets: null, id: zeroId, name: "Zero", category: [1 as dat.TraitCategoryId, "General"], type: [0 as dat.TraitTypeId, "Character"], cost: 1 });
+
+      expect(useCharacterBurnerTraitStore.getState().traits.find(zeroId)).toEqual({ id: zeroId, name: "Zero", isOpen: false, type: "General" });
+    });
+
     it("falls back to an empty name when the ruleset trait has a null name", () => {
       useCharacterBurnerTraitStore.getState().addGeneralTrait({ rulesets: null, id: TraitIds.Stoic, name: null, category: [1 as dat.TraitCategoryId, "General"], type: [0 as dat.TraitTypeId, "Character"], cost: 2 });
 
@@ -330,6 +337,19 @@ describe("useCharacterBurnerTraitStore", () => {
 
       const dwarvenBeard = useCharacterBurnerTraitStore.getState().traits.find(TraitIds.DwarvenBeard);
       expect(dwarvenBeard).toMatchObject({ type: "Common", isOpen: true });
+    });
+
+    it("auto-adds a Common trait whose real id is 0 (the filter/guard check `!== null`, not falsiness)", () => {
+      const commonFaithful: Trait = { ...useRulesetStore.getState().getTrait(TraitIds.Faithful), category: [2 as dat.TraitCategoryId, "Common"], stock: [StockIds.Dwarf, "Dwarf"] };
+      useRulesetStore.setState({
+        traits: useRulesetStore.getState().traits.map(t => t.id === TraitIds.Faithful ? commonFaithful : t),
+        traitsById: new Map(useRulesetStore.getState().traitsById).set(TraitIds.Faithful, commonFaithful)
+      });
+      useCharacterBurnerLifepathStore.setState({ lifepaths: [] });
+
+      useCharacterBurnerTraitStore.getState().updateTraits();
+
+      expect(useCharacterBurnerTraitStore.getState().traits.find(TraitIds.Faithful)).toMatchObject({ type: "Common", isOpen: true });
     });
 
     it("does not duplicate a Common trait already present as a lifepath trait", () => {

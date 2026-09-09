@@ -189,6 +189,17 @@ export const baseRules = {
 };
 
 export const tsRules = {
+  "@typescript-eslint/strict-boolean-expressions": ["error", {
+    allowAny: false,
+    allowNullableBoolean: false,
+    allowNullableEnum: false,
+    allowNullableNumber: false,
+    allowNullableObject: false,
+    allowNullableString: false,
+    allowNumber: false,
+    allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing: false,
+    allowString: false
+  }],
   "@typescript-eslint/no-dynamic-delete": "off",
   "@typescript-eslint/no-explicit-any": "error",
   "@typescript-eslint/no-inferrable-types": "error",

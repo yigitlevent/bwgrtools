@@ -7,8 +7,8 @@ import { GetObstacleString } from "../../../utils/GetMagicalObstacleString";
 export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.JSX.Element => {
   const getAreaOfEffectDetails = (aoeDetails: { unit?: [id: dat.DistanceUnitId | null, name: string | null]; modifier?: [id: dat.UnitModifierId | null, name: string | null]; }): string => {
     const texts = [];
-    if (aoeDetails.unit) { texts.push(aoeDetails.unit[1]); }
-    if (aoeDetails.modifier) { texts.push(aoeDetails.modifier[1]); }
+    if (aoeDetails.unit !== undefined) { texts.push(aoeDetails.unit[1]); }
+    if (aoeDetails.modifier !== undefined) { texts.push(aoeDetails.modifier[1]); }
     return ` (${texts.join(", ")})`;
   };
 
@@ -19,7 +19,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
       return (
         <Fragment>
           <Text>{`${String(cost)}${cost > 1 ? "rps" : "rp"}`}</Text>
-          {res[1] && <Text>{`— ${res[1]}`}</Text>}
+          {res[1] !== null && res[1].length > 0 && <Text>{`— ${res[1]}`}</Text>}
         </Fragment>
       );
     }
@@ -27,7 +27,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
       return (
         <Fragment>
           <Text>{`${String(res[0])}${res[0] > 1 ? "rps" : "rp"}`}</Text>
-          {res[2] && <Text>{`— ${res[2]}`}</Text>}
+          {res[2].length > 0 && <Text>{`— ${res[2]}`}</Text>}
           <Text>{res[1] ? "(per)" : ""}</Text>
         </Fragment>
       );
@@ -45,8 +45,8 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
           <Text style={{ float: "right" }}>{resource.type[1]}</Text>
         </Grid.Col>
 
-        <Grid.Col span={resource.magical ? 1 : 3}>
-          {resource.variableCost ? (
+        <Grid.Col span={resource.magical !== undefined ? 1 : 3}>
+          {resource.variableCost === true ? (
             <Group gap={4} justify="start">
               <Text fw={700}>Resources:</Text>
               <Text>variable</Text>
@@ -57,7 +57,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
             <Group gap={4} justify="start">
               <Text fw={700}>Resources:</Text>
               <Text>{`${String(resource.costs[0][0])}${resource.costs[0][0] > 1 ? "rps" : "rp"}`}</Text>
-              {resource.costs[0][1] && <Text>{`— ${resource.costs[0][1]}`}</Text>}
+              {resource.costs[0][1].length > 0 && <Text>{`— ${resource.costs[0][1]}`}</Text>}
             </Group>
           ) : null}
 
@@ -68,7 +68,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
               {resource.costs.map((res, i) => (
                 <Group key={i} gap={4} justify="start">
                   <Text>{`${String(res[0])}${res[0] > 1 ? "rps" : "rp"}`}</Text>
-                  {res[1] && <Text>{`— ${res[1]}`}</Text>}
+                  {res[1].length > 0 && <Text>{`— ${res[1]}`}</Text>}
                 </Group>
               ))}
             </Stack>
@@ -76,7 +76,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
         </Grid.Col>
 
         {resource.modifiers.length > 0 ? (
-          <Grid.Col span={resource.magical ? 1 : 3}>
+          <Grid.Col span={resource.magical !== undefined ? 1 : 3}>
             <Text fw={700}>Resource Modifiers:</Text>
 
             {resource.modifiers.map((res, i) => (
@@ -87,20 +87,20 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
           </Grid.Col>
         ) : null}
 
-        {resource.magical ? (
+        {resource.magical !== undefined ? (
           <Grid.Col span={1}>
             <Group gap={4} justify="start">
               <Text fw={700}>Actions:</Text>
 
               <Text>
-                {resource.magical.doActionsMultiply ? "x" : ""}
+                {resource.magical.doActionsMultiply === true ? "x" : ""}
                 {resource.magical.actions}
               </Text>
             </Group>
           </Grid.Col>
         ) : null}
 
-        {resource.magical?.obstacleDetails ? (
+        {resource.magical?.obstacleDetails !== undefined ? (
           <Grid.Col span={3}>
             <Group gap={4} justify="start">
               <Text fw={700}>Obstacles:</Text>
@@ -109,7 +109,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
           </Grid.Col>
         ) : null}
 
-        {resource.magical ? (
+        {resource.magical !== undefined ? (
           <Fragment>
             <Grid.Col span={3}><Divider /></Grid.Col>
 
@@ -140,7 +140,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
 
                 <Text>
                   {resource.magical.areaOfEffect[1]}
-                  {resource.magical.areaOfEffectDetails?.unit || resource.magical.areaOfEffectDetails?.modifier ? getAreaOfEffectDetails(resource.magical.areaOfEffectDetails) : ""}
+                  {resource.magical.areaOfEffectDetails?.unit !== undefined || resource.magical.areaOfEffectDetails?.modifier !== undefined ? getAreaOfEffectDetails(resource.magical.areaOfEffectDetails) : ""}
                 </Text>
               </Group>
             </Grid.Col>
@@ -154,13 +154,13 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
           </Fragment>
         ) : null}
 
-        {resource.description ? (
+        {resource.description !== undefined && resource.description.length > 0 ? (
           <Fragment>
             <Grid.Col span={3}><Divider /></Grid.Col>
 
             <Grid.Col span={3}>
               {resource.description.split("<br>").map((v, i) => {
-                if (resource.magical && i === 0) return <Text key={i} fw={600}>{v}</Text>;
+                if (resource.magical !== undefined && i === 0) return <Text key={i} fw={600}>{v}</Text>;
                 return <Text key={i}>{v}</Text>;
               })}
             </Grid.Col>

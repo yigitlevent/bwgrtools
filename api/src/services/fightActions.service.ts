@@ -12,12 +12,12 @@ export async function GetFightActions(): Promise<FightAction[]> {
         flags: {}
       };
 
-      if (v.effect) act.effect = v.effect;
-      if (v.restrictions) act.restrictions = v.restrictions;
-      if (v.special) act.special = v.special;
-      if (v.testExtra) act.testExtra = v.testExtra;
-      if (v.actionCost) act.actionCost = v.actionCost;
-      if (v.countsAsNoAction) act.flags.countsAsNoAction = v.countsAsNoAction;
+      if (v.effect !== null) act.effect = v.effect;
+      if (v.restrictions !== null) act.restrictions = v.restrictions;
+      if (v.special !== null) act.special = v.special;
+      if (v.testExtra !== null) act.testExtra = v.testExtra;
+      if (v.actionCost !== null) act.actionCost = v.actionCost;
+      if (v.countsAsNoAction !== null) act.flags.countsAsNoAction = v.countsAsNoAction;
 
       const t = at.filter(t => t.actionId === v.id);
       if (t.length > 0) {
@@ -27,8 +27,8 @@ export async function GetFightActions(): Promise<FightAction[]> {
         };
 
         t.forEach(test => {
-          if (test.ability && test.abilityId !== null) act.tests?.abilities.push([test.abilityId, test.ability]);
-          if (test.skill && test.skillId !== null) act.tests?.skills.push([test.skillId, test.skill]);
+          if (test.ability !== null && test.abilityId !== null) act.tests?.abilities.push([test.abilityId, test.ability]);
+          if (test.skill !== null && test.skillId !== null) act.tests?.skills.push([test.skillId, test.skill]);
         });
       }
 
@@ -42,14 +42,14 @@ export async function GetFightActions(): Promise<FightAction[]> {
             type: [res.resolutionTypeId!, res.resolutionType!]
           };
 
-          if (res.isAgainstSkill) actionRes.isAgainstSkill = res.isAgainstSkill;
-          if (res.obstacle) actionRes.obstacle = res.obstacle;
-          if (res.opposingModifier) actionRes.opposingModifier = res.opposingModifier;
+          if (res.isAgainstSkill !== null) actionRes.isAgainstSkill = res.isAgainstSkill;
+          if (res.obstacle !== null) actionRes.obstacle = res.obstacle;
+          if (res.opposingModifier !== null) actionRes.opposingModifier = res.opposingModifier;
 
           if (res.skillId !== null) actionRes.skill = [res.skillId, res.skill!];
           if (res.abilityId !== null) actionRes.ability = [res.abilityId, res.ability!];
-          if (res.opposingSkillId !== null && res.opposingSkill) actionRes.opposingSkill = [res.opposingSkillId, res.opposingSkill];
-          if (res.opposingAbilityId !== null && res.opposingAbility) actionRes.opposingAbility = [res.opposingAbilityId, res.opposingAbility];
+          if (res.opposingSkillId !== null && res.opposingSkill !== null) actionRes.opposingSkill = [res.opposingSkillId, res.opposingSkill];
+          if (res.opposingAbilityId !== null && res.opposingAbility !== null) actionRes.opposingAbility = [res.opposingAbilityId, res.opposingAbility];
 
           act.resolutions?.push(actionRes);
         });

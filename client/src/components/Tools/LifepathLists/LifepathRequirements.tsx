@@ -5,30 +5,30 @@ import { GetOrdinalSuffix } from "../../../utils/GetOrdinalSuffix";
 
 
 function ResolveRequirementBlockItem(item: LifepathRequirementItem): string {
-  const subject = item.forCompanion ? "Companion of this character" : "Character";
+  const subject = item.forCompanion === true ? "Companion of this character" : "Character";
 
-  if (item.isUnique) return "This lifepath cannot be selected twice.";
-  else if (item.isSettingEntry) return "If character leads into this setting, this lifepath must be chosen as the first one in this setting.";
+  if (item.isUnique === true) return "This lifepath cannot be selected twice.";
+  else if (item.isSettingEntry === true) return "If character leads into this setting, this lifepath must be chosen as the first one in this setting.";
   else if (item.minLpIndex !== undefined) return `This can be selected as the ${GetOrdinalSuffix(item.minLpIndex)} lifepath or higher.`;
   else if (item.maxLpIndex !== undefined) return `This can be selected as the ${GetOrdinalSuffix(item.maxLpIndex)} lifepath or lower.`;
   else if (item.minYears !== undefined) return `Character must be at least ${item.minYears.toString()} years old.`;
   else if (item.maxYears !== undefined) return `Character must be at most ${item.maxYears.toString()} years old.`;
-  else if (item.gender) return `Character must be a ${item.gender.toLowerCase()}.`;
+  else if (item.gender !== undefined) return `Character must be a ${item.gender.toLowerCase()}.`;
   else if (item.oldestBy !== undefined) return `Character must be oldest in the party by ${item.oldestBy.toString()}.`;
-  else if (item.attribute) {
-    if (item.min) return `${subject} must have at least a ${item.min.toString()} of ${item.attribute[1]} attribute.`;
-    else if (item.max) return `${subject} must have at most a ${item.max.toString()} of ${item.attribute[1]} attribute.`;
+  else if (item.attribute !== undefined) {
+    if (item.min !== undefined) return `${subject} must have at least a ${item.min.toString()} of ${item.attribute[1]} attribute.`;
+    else if (item.max !== undefined) return `${subject} must have at most a ${item.max.toString()} of ${item.attribute[1]} attribute.`;
     else return `${subject} must have ${item.attribute[1]} attribute.`;
   }
-  else if (item.skill) return `${subject} must have ${item.skill[1]} skill.`;
-  else if (item.trait) return `${subject} must have ${item.trait[1]} trait.`;
-  else if (item.lifepath) return `${subject} must have ${item.lifepath[1]} lifepath.`;
-  else if (item.setting) return `${subject} must have ${item.setting[1]} setting.`;
+  else if (item.skill !== undefined) return `${subject} must have ${item.skill[1]} skill.`;
+  else if (item.trait !== undefined) return `${subject} must have ${item.trait[1]} trait.`;
+  else if (item.lifepath !== undefined) return `${subject} must have ${item.lifepath[1]} lifepath.`;
+  else if (item.setting !== undefined) return `${subject} must have ${item.setting[1]} setting.`;
   else throw new Error("Unidentified requirement block item");
 }
 
 function BlockTitle(logicType: string | null, fulfillmentAmount: number | null): string {
-  const fa = fulfillmentAmount && fulfillmentAmount > 1 ? ` ${fulfillmentAmount.toString()} times` : "";
+  const fa = fulfillmentAmount !== null && fulfillmentAmount > 1 ? ` ${fulfillmentAmount.toString()} times` : "";
 
   switch (logicType) {
     case "AND":
@@ -43,7 +43,7 @@ function BlockTitle(logicType: string | null, fulfillmentAmount: number | null):
 }
 
 function ResolveRequirementBlocks(requirementBlocks: LifepathRequirementBlock[]): React.JSX.Element {
-  const parentLogic = requirementBlocks.every(v => v.mustFulfill) ? "AND" : "OR";
+  const parentLogic = requirementBlocks.every(v => v.mustFulfill === true) ? "AND" : "OR";
 
   const hasOneBlock = requirementBlocks.length === 1;
 
@@ -68,8 +68,8 @@ export const LifepathRequirements = memo(({ lifepath }: { lifepath: Lifepath; })
   return (
     <Box>
       <Text fw={700}>Requirements:</Text>
-      {lifepath.requirements ? <Text component="div" size="xs">{ResolveRequirementBlocks(lifepath.requirements)}</Text> : null}
-      {lifepath.requirementsText ? lifepath.requirementsText.split("<br>").map((text, textIndex) => <Text key={textIndex} size="sm">{text}</Text>) : null}
+      {lifepath.requirements !== undefined ? <Text component="div" size="xs">{ResolveRequirementBlocks(lifepath.requirements)}</Text> : null}
+      {lifepath.requirementsText !== undefined && lifepath.requirementsText.length > 0 ? lifepath.requirementsText.split("<br>").map((text, textIndex) => <Text key={textIndex} size="sm">{text}</Text>) : null}
     </Box>
   );
 });

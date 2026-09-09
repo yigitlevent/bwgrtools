@@ -66,7 +66,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
       shiftAttributeShade: (attributeId: dat.AbilityId): void => {
         set(produce<CharacterBurnerAttributeState>(state => {
           const charAttribute = state.attributes.find(attributeId);
-          if (charAttribute) {
+          if (charAttribute !== undefined) {
             charAttribute.shadeShifted = !charAttribute.shadeShifted;
             state.attributes = new UniqueArray(state.attributes.add(charAttribute).items);
           }
@@ -240,7 +240,7 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
         // than inside each formula in attributeFormulas.ts.
         return {
           shade: prevAttributeState !== undefined ? prevAttributeState.shadeShifted ? "B" : "G" : newAttributeState.shade,
-          exponent: newAttributeState.exponent - (prevAttributeState?.shadeShifted ? 5 : 0)
+          exponent: newAttributeState.exponent - (prevAttributeState?.shadeShifted === true ? 5 : 0)
         };
       },
 

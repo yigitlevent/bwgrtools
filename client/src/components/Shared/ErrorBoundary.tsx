@@ -33,7 +33,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   };
 
   public render(): ReactNode {
-    if (!this.state.error) return this.props.children;
+    if (this.state.error === null) return this.props.children;
 
     return (
       <Center style={{ height: "100svh" }}>

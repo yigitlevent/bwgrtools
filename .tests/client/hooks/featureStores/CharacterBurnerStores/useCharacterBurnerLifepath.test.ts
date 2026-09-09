@@ -156,15 +156,11 @@ describe("useCharacterBurnerLifepathStore", () => {
       useCharacterBurnerLifepathStore.setState({ lifepaths: [bornDwarf, bornDwarf, bornDwarf] });
 
       // age accumulates leads too, but since all share setting there's no lead bump; age = 48.
-      // NOTE (surprising, verified real behavior of useCharacterBurnerBasics.getAgePool): its bracket
-      // selection is `agePool.filter(a => age > a.minAge).reduce((pv, cv) => pv.minAge < cv.minAge ?
-      // pv : cv)` -- among brackets the age qualifies for, this always keeps the LOWEST minAge one,
-      // not the highest/closest one as "age bracket" would suggest. At age 48 both the minAge:0 and
-      // minAge:25 Dwarf brackets qualify (48 > 0 and 48 > 25), so the reduce picks minAge:0
-      // (mentalPool 7), not the more specific minAge:25 bracket (mentalPool 10). Only 1st/2nd
+      // At age 48 both the minAge:0 and minAge:25 Dwarf brackets qualify (48 > 0 and 48 > 25);
+      // getAgePool picks the more specific minAge:25 bracket (mentalPool 10). Only 1st/2nd
       // occurrences' mentalStatPool (3 each) count toward the lifepath pool, 3rd is zeroed:
-      // 7 + 3 + 3 = 13.
-      expect(useCharacterBurnerLifepathStore.getState().getMentalPool().total).toBe(13);
+      // 10 + 3 + 3 = 16.
+      expect(useCharacterBurnerLifepathStore.getState().getMentalPool().total).toBe(16);
     });
 
     it("zeroes a lifepath's physical/either stat pool contribution entirely on the 3rd+ occurrence", () => {
@@ -172,8 +168,8 @@ describe("useCharacterBurnerLifepathStore", () => {
       useCharacterBurnerLifepathStore.setState({ lifepaths: [bornDwarf, bornDwarf, bornDwarf] });
 
       // Same LoDR rule as mental (see the test above): only 1st/2nd occurrences count.
-      // physicalStatPool 3 each -> 14 (age-0 bracket, per the same bracket-selection bug) + 3 + 3 = 20.
-      expect(useCharacterBurnerLifepathStore.getState().getPhysicalPool().total).toBe(20);
+      // physicalStatPool 3 each -> 18 (minAge:25 bracket, age 48) + 3 + 3 = 24.
+      expect(useCharacterBurnerLifepathStore.getState().getPhysicalPool().total).toBe(24);
       // eitherStatPool 2 each -> 2 + 2 = 4 (no stock contribution to the either pool).
       expect(useCharacterBurnerLifepathStore.getState().getEitherPool().total).toBe(4);
     });

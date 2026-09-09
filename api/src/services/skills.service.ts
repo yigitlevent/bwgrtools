@@ -22,10 +22,10 @@ export async function GetSkills(rulesets: dat.RulesetId[]): Promise<Skill[]> {
     };
 
     if (v.stockId !== null && v.stock !== null) r.stock = [v.stockId, v.stock];
-    if (v.rootIds && v.rootIds.length > 0) r.roots = v.rootIds.map((rootId, index) => [rootId, (v.roots ?? [])[index]]);
+    if (v.rootIds !== null && v.rootIds.length > 0) r.roots = v.rootIds.map((rootId, index) => [rootId, (v.roots ?? [])[index]]);
     if (v.toolDescription !== null) r.tool.description = v.toolDescription;
     if (v.description !== null) r.description = v.description;
-    if (v.subskillIds && v.subskillIds.length > 0) r.subskillIds = v.subskillIds;
+    if (v.subskillIds !== null && v.subskillIds.length > 0) r.subskillIds = v.subskillIds;
     if (v.restrictionOnlyStockId !== null && v.restrictionOnlyStock !== null) {
       r.restriction = { onlyStock: [v.restrictionOnlyStockId, v.restrictionOnlyStock] };
       if (v.restrictionWhenBurning !== null) r.restriction.onlyAtBurn = v.restrictionWhenBurning;

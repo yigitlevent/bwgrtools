@@ -54,34 +54,37 @@ export function SpecialSkills(): React.JSX.Element {
 
         if (skill.name === "Any Skill") {
           subskills = ruleset.skills.filter(s =>
-            s.id
+            s.id !== null
             && !isTakenElsewhere(s.id)
-            && (s.stock === stock || (s.restriction?.onlyStock ? s.restriction.onlyStock[0] === stock[0] ? true : false : true))
-            && (s.restriction?.onlyWithAbility ? hasAttribute(s.restriction.onlyWithAbility[0]) ? true : false : true)
-            && !s.flags.dontList
+            && (s.stock === stock || (s.restriction?.onlyStock !== undefined ? s.restriction.onlyStock[0] === stock[0] : true))
+            && (s.restriction?.onlyWithAbility !== undefined ? hasAttribute(s.restriction.onlyWithAbility[0]) : true)
+            && s.flags.dontList !== true
           );
         }
         else if (skill.name === "Any Wise") {
           subskills = ruleset.skills.filter(s =>
-            s.id
+            s.id !== null
             && !isTakenElsewhere(s.id)
-            && (s.stock === stock || (s.restriction?.onlyStock ? s.restriction.onlyStock[0] === stock[0] ? true : false : true))
-            && (s.restriction?.onlyWithAbility ? hasAttribute(s.restriction.onlyWithAbility[0]) ? true : false : true)
+            && (s.stock === stock || (s.restriction?.onlyStock !== undefined ? s.restriction.onlyStock[0] === stock[0] : true))
+            && (s.restriction?.onlyWithAbility !== undefined ? hasAttribute(s.restriction.onlyWithAbility[0]) : true)
             && s.category[1] === "Wise"
-            && !s.flags.dontList
+            && s.flags.dontList !== true
           );
         }
-        else if (subskillIds) {
+        else if (subskillIds !== undefined) {
           subskills = ruleset.skills.filter(s =>
-            s.id
+            s.id !== null
             && !isTakenElsewhere(s.id)
             && subskillIds.includes(s.id)
-            && (s.stock === stock || (s.restriction?.onlyStock ? s.restriction.onlyStock[0] === stock[0] ? true : false : true))
-            && (s.restriction?.onlyWithAbility ? hasAttribute(s.restriction.onlyWithAbility[0]) ? true : false : true)
+            && (s.stock === stock || (s.restriction?.onlyStock !== undefined ? s.restriction.onlyStock[0] === stock[0] : true))
+            && (s.restriction?.onlyWithAbility !== undefined ? hasAttribute(s.restriction.onlyWithAbility[0]) : true)
           );
         }
 
-        const sortedSubskills = subskills.sort((a, b) => a.category[1].localeCompare(b.category[1]) || (a.name ?? "").localeCompare(b.name ?? ""));
+        const sortedSubskills = subskills.sort((a, b) => {
+          const categoryComparison = a.category[1].localeCompare(b.category[1]);
+          return categoryComparison !== 0 ? categoryComparison : (a.name ?? "").localeCompare(b.name ?? "");
+        });
         const subskillData = sortedSubskills.map(s => ({ value: s.id?.toString() ?? "", label: s.name ?? "" }));
 
         return (
@@ -107,7 +110,7 @@ export function SpecialSkills(): React.JSX.Element {
                   label="Chosen Skill"
                   value={special.chosenSubskills[charSkillId][0]?.toString() ?? null}
                   data={subskillData}
-                  onChange={v => { modifySkillSubskills(charSkillId, v ? [Number(v) as dat.SkillId] : null, canSelectMultiple); }}
+                  onChange={v => { modifySkillSubskills(charSkillId, v !== null ? [Number(v) as dat.SkillId] : null, canSelectMultiple); }}
                 />
               ) : null}
             </Grid.Col>

@@ -54,8 +54,8 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
         // getHalfRPFromPrevLP: this lifepath grants (in addition to its own RP) half of the
         // immediately preceding lifepath's own RP, rounded down -- e.g. Hostage.
         const resolveRps = (lp: Lifepath, prevLp: Lifepath | undefined): number => {
-          const base = lp.flags.isRPMultipliedByYear ? (lp.pools.resourcePoints ?? 0) * GetLifepathYears(lp, special.variableAge) : (lp.pools.resourcePoints ?? 0);
-          const fromPrev = lp.flags.getHalfRPFromPrevLP && prevLp ? Math.floor((prevLp.pools.resourcePoints ?? 0) / 2) : 0;
+          const base = lp.flags.isRPMultipliedByYear === true ? (lp.pools.resourcePoints ?? 0) * GetLifepathYears(lp, special.variableAge) : (lp.pools.resourcePoints ?? 0);
+          const fromPrev = lp.flags.getHalfRPFromPrevLP === true && prevLp !== undefined ? Math.floor((prevLp.pools.resourcePoints ?? 0) / 2) : 0;
           return base + fromPrev;
         };
 
@@ -102,7 +102,7 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
       },
 
       setFamilyHeirloomResource: (traitId: dat.TraitId, resource: Resource, cost: number): void => {
-        if (!resource.type[0]) return;
+        if (resource.type[0] === null) return;
         const resourceTypeId = resource.type[0];
 
         set(produce<CharacterBurnerResourceState>(state => {
@@ -144,11 +144,14 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
           }
 
           const rulesetReputation = ruleset.resources.find(r => r.stock[0] === stock[0] && r.type[1] === "Reputation");
-          if (!rulesetReputation?.type[0]) return;
+
+          if (rulesetReputation === undefined) return;
+          if (rulesetReputation.type[0] === null) return;
+
           const cost = rulesetReputation.costs.find(c => c[1].startsWith(`${tierCost.toString()}D`))?.[0] ?? rulesetReputation.costs[0][0];
 
           const trait = ruleset.getTrait("Lesson of One");
-          if (!trait.id) return;
+          if (trait.id === null) return;
 
           draft.resources["lesson-of-one"] = {
             id: rulesetReputation.id,
@@ -181,7 +184,7 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
           traits.filter(trait => trait.isOpen).forEach(trait => {
             const rulesetTrait = ruleset.getTrait(trait.id);
             const grants = rulesetTrait.grantsResources;
-            if (!grants || grants.length === 0) return;
+            if (grants === undefined || grants.length === 0) return;
 
             // Servant of the Citadel / Sworn to Protect: the trait's resource grant is conditional on
             // a qualifying Belief(+Instinct) the burner can't verify -- gated on a player self-report.

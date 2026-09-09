@@ -23,7 +23,7 @@ export function DiceRollerResult({ result, shade, isDoubleObstacle, isOpenEnded,
 
   return (
     <Fragment>
-      {result ? (
+      {result !== undefined ? (
         <Fragment>
           <Divider label="Result" mt="10px" />
 

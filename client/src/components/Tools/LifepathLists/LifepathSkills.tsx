@@ -13,7 +13,7 @@ export const LifepathSkills = memo(({ lifepath }: { lifepath: Lifepath; }): Reac
 
   const generalSkill = useMemo(() => getSkill("General"), [getSkill]);
 
-  const lifepathSkills = useMemo(() => lifepath.skills ? lifepath.skills.map(skillId => getSkill(skillId)) : undefined, [lifepath.skills, getSkill]);
+  const lifepathSkills = useMemo(() => lifepath.skills !== undefined ? lifepath.skills.map(skillId => getSkill(skillId)) : undefined, [lifepath.skills, getSkill]);
 
   return (
     <Box>
@@ -39,7 +39,7 @@ export const LifepathSkills = memo(({ lifepath }: { lifepath: Lifepath; }): Reac
         </Text>
       ) : null}
 
-      {hasLifepathSkill && lifepathSkills ? lifepathSkills.map((skill, i) =>
+      {hasLifepathSkill && lifepathSkills !== undefined ? lifepathSkills.map((skill, i) =>
         <PopoverLink key={skill.id} data={skill} hasComma={i < lifepathSkills.length - 1} />
       ) : null}
     </Box>

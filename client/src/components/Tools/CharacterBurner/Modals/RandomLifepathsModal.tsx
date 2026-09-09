@@ -55,11 +55,12 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
     const chosenStock = ruleset.stocks.find(v => v.id === stock) ?? ruleset.stocks[RandomNumber(0, ruleset.stocks.length - 1)];
     setNewStock(chosenStock);
 
-    if (!chosenStock.id) return;
+    if (chosenStock.id === null) return;
     const chosenStockId = chosenStock.id;
 
-    const possibleSettings = ruleset.settings.filter(setting => (chosenStock.settingIds ?? []).includes(setting.id ?? -1 as dat.SettingId) && !setting.isSubsetting);
-    const chosenSetting = ruleset.settings[ruleset.settings.findIndex(v => v.id === setting)] || possibleSettings[RandomNumber(0, possibleSettings.length - 1)];
+    const possibleSettings = ruleset.settings.filter(setting => (chosenStock.settingIds ?? []).includes(setting.id ?? -1 as dat.SettingId) && setting.isSubsetting !== true);
+    const settingIndex = ruleset.settings.findIndex(v => v.id === setting);
+    const chosenSetting = settingIndex !== -1 ? ruleset.settings[settingIndex] : possibleSettings[RandomNumber(0, possibleSettings.length - 1)];
 
     const chosenGender = gender === "Random" ? (RandomNumber(0, 1) === 0 ? "Male" : "Female") : gender;
     setNewGender(chosenGender);
@@ -125,7 +126,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
   }, [gender, maxLeads, maxLifepaths, minLifepaths, modifyVariableAge, noDuplicates, ruleset.lifepaths, ruleset.settings, ruleset.stocks, setting, stock]);
 
   const transferCharacter = useCallback(() => {
-    if (newStock?.id) {
+    if (newStock !== undefined && newStock.id !== null) {
       // setStockAndReset resets useCharacterBurnerSpecialStore (including special.variableAge), wiping the
       // values createRandom already applied for live preview purposes - so they're re-applied here,
       // after the reset, using the same values that were rolled.
@@ -151,7 +152,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
             label="Stock"
             variant="filled"
             value={stock.toString()}
-            onChange={v => { if (v) changeStock(v === "Random" ? "Random" : Number(v) as dat.StockId); }}
+            onChange={v => { if (v !== null) changeStock(v === "Random" ? "Random" : Number(v) as dat.StockId); }}
             data={["Random", ...ruleset.stocks.map(v => ({ value: v.id?.toString() ?? "", label: v.name ?? "" }))]}
             allowDeselect={false}
           />
@@ -162,7 +163,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
             label="Gender"
             variant="filled"
             value={gender}
-            onChange={v => { if (v) changeGender(v); }}
+            onChange={v => { if (v !== null) changeGender(v); }}
             data={["Random", "Male", "Female"]}
             allowDeselect={false}
           />

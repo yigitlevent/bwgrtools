@@ -5,11 +5,11 @@ export class Logger {
   constructor(name: string, forceShow?: boolean) {
     this.label = `[${new Date().toISOString()}] ${name}`;
     this.forceShow = forceShow;
-    if (this.forceShow /* || IsDev */) console.time(this.label);
+    if (this.forceShow === true /* || IsDev */) console.time(this.label);
   }
 
   end(): void {
-    if (this.forceShow /* || IsDev */) console.timeEnd(this.label);
+    if (this.forceShow === true /* || IsDev */) console.timeEnd(this.label);
   }
 }
 

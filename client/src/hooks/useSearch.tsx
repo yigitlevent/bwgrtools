@@ -35,13 +35,13 @@ export function useSearch<T>(mainList: List<T>, filterKeys: string[], initialFil
 
     Object.keys(filters).forEach(filterKey => {
       const filterValue = urlParams.get(filterKey);
-      if (filterValue) filters[filterKey] = filterValue;
-      else if (initialFilterValues) filters[filterKey] = initialFilterValues[filterKey];
+      if (filterValue !== null && filterValue !== "") filters[filterKey] = filterValue;
+      else if (initialFilterValues !== undefined) filters[filterKey] = initialFilterValues[filterKey];
     });
 
     return {
       text: s ?? "",
-      fields: sf ? sf.split(",") : ["Name"],
+      fields: (sf !== null && sf !== "") ? sf.split(",") : ["Name"],
       filters
     };
   }, [initialFilterValues, urlParams]);
@@ -81,7 +81,7 @@ export function useSearch<T>(mainList: List<T>, filterKeys: string[], initialFil
       if (filterValue !== "Any") {
         result = result.filter(v => {
           const itemValue = (v as never)[filterKey] as unknown[] | undefined;
-          if (itemValue && itemValue.length > 0) return itemValue[1] === searchValues.filters[filterKey];
+          if (itemValue !== undefined && itemValue.length > 0) return itemValue[1] === searchValues.filters[filterKey];
           return false;
         });
       }
@@ -104,7 +104,7 @@ export function useSearch<T>(mainList: List<T>, filterKeys: string[], initialFil
 
   const search = useCallback(async () => {
     await new Promise(resolve => {
-      const result = (searchValues.text.length >= MinSearchTextLength && fuse) ? fuse.search(searchValues.text).map(x => x.item) : filteredByFilters;
+      const result = (searchValues.text.length >= MinSearchTextLength && fuse !== undefined) ? fuse.search(searchValues.text).map(x => x.item) : filteredByFilters;
 
       setFilteredList(result);
       setIsPending(false);

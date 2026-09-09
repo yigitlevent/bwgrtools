@@ -111,7 +111,7 @@ export function Checklist(): React.JSX.Element {
     // lifepath needs its companion's lifepath chosen, and every "Any Skill"/"Any Wise"/subskill
     // placeholder skill needs its actual subskill(s) chosen -- mirrors SpecialLifepaths.tsx / SpecialSkills.tsx
     const variableAgeFulfilled = lifepaths.every(lp => !Array.isArray(lp.years) || (lp.id !== null && RecordGet(special.variableAge, lp.id) !== undefined));
-    const companionLifepathFulfilled = lifepaths.every(lp => !lp.companion?.givesSkills || RecordGet(special.companionLifepath, lp.companion.name) !== undefined);
+    const companionLifepathFulfilled = lifepaths.every(lp => lp.companion?.givesSkills !== true || RecordGet(special.companionLifepath, lp.companion.name) !== undefined);
     const specialSkillsFulfilled = lifepaths.every(lp => (lp.skills ?? []).every(skillId => {
       const rulesetSkill = ruleset.getSkill(skillId);
       if (rulesetSkill.name !== "Any Skill" && rulesetSkill.name !== "Any Wise" && rulesetSkill.subskillIds === undefined) return true;

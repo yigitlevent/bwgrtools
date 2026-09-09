@@ -13,7 +13,10 @@ export function FightPlanner(): React.JSX.Element {
   const { actions, selectedAction, addAction, changeSelectedAction, toggleActionVisibility } = useFightPlannerStore();
 
   const groupedActionData = useMemo(() => {
-    const sorted = [...fightActions].sort((a, b) => a.group[1].localeCompare(b.group[1]) || (a.name ?? "").localeCompare(b.name ?? ""));
+    const sorted = [...fightActions].sort((a, b) => {
+      const groupComparison = a.group[1].localeCompare(b.group[1]);
+      return groupComparison !== 0 ? groupComparison : (a.name ?? "").localeCompare(b.name ?? "");
+    });
     const groups = new Map<string, string[]>();
     sorted.forEach(v => {
       const groupName = v.group[1];
@@ -52,7 +55,7 @@ export function FightPlanner(): React.JSX.Element {
               <Select
                 value={selectedAction[volleyIndex]}
                 data={groupedActionData}
-                onChange={v => { if (v) changeSelectedAction(v, volleyIndex); }}
+                onChange={v => { if (v !== null) changeSelectedAction(v, volleyIndex); }}
                 allowDeselect={false}
                 searchable
               />

@@ -347,6 +347,14 @@ describe("useCharacterBurnerSkillStore", () => {
       expect(useCharacterBurnerSkillStore.getState().skills.length).toBe(0);
     });
 
+    it("adds a skill whose real id is 0 (the guard checks `=== null`, not falsiness)", () => {
+      const zeroId = 0 as dat.SkillId;
+      const rulesetSkill = { ...useRulesetStore.getState().getSkill(SkillIds.Doctrine), id: zeroId };
+      useCharacterBurnerSkillStore.getState().addGeneralSkill(rulesetSkill);
+
+      expect(useCharacterBurnerSkillStore.getState().skills.find(zeroId)).toBeDefined();
+    });
+
     it("falls back to an empty name when the ruleset skill has a null name", () => {
       const rulesetSkill = { ...useRulesetStore.getState().getSkill(SkillIds.Doctrine), name: null };
       useCharacterBurnerSkillStore.getState().addGeneralSkill(rulesetSkill);

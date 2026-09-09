@@ -25,7 +25,7 @@ export const useRangeAndCoverPlannerStore = create<RangeAndCoverPlannerState>()(
 
       addAction: (actions: RaCAction[], volleyIndex: number, actionName: undefined | string) => {
         const actionMaybe = actions.find(v => v.name === actionName);
-        if (!actionMaybe) return;
+        if (actionMaybe === undefined) return;
         const action: RaCActionExtended = { ...actionMaybe, open: false, visible: true };
         set(produce<RangeAndCoverPlannerState>(state => {
           const newActions = state.actions;
@@ -53,7 +53,7 @@ export const useRangeAndCoverPlannerStore = create<RangeAndCoverPlannerState>()(
         set(produce<RangeAndCoverPlannerState>(state => {
           const newActions = state.actions;
           state.actions = newActions.map((v, i) => {
-            if (v && i === volleyIndex) { return { ...v, open: !v.open }; }
+            if (v !== undefined && i === volleyIndex) { return { ...v, open: !v.open }; }
             return v;
           }) as [RaCActionExtended, RaCActionExtended, RaCActionExtended];
         }));
@@ -62,7 +62,7 @@ export const useRangeAndCoverPlannerStore = create<RangeAndCoverPlannerState>()(
         set(produce<RangeAndCoverPlannerState>(state => {
           const newActions = state.actions;
           state.actions = newActions.map((v, i) => {
-            if (v && i === volleyIndex) { return { ...v, visible: !v.visible }; }
+            if (v !== undefined && i === volleyIndex) { return { ...v, visible: !v.visible }; }
             return v;
           }) as [RaCActionExtended, RaCActionExtended, RaCActionExtended];
         }));

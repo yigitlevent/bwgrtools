@@ -125,7 +125,7 @@ export function Resources({ openModal }: { openModal: (name: CharacterBurnerModa
                         </Grid.Col>
                       ) : null}
 
-                      {isLocked && rulesetResource && rulesetResource.costs.length > 1 ? (
+                      {isLocked && rulesetResource !== undefined && rulesetResource.costs.length > 1 ? (
                         <Grid.Col span={2}>
                           <Title order={6}>
                             Tier (first
@@ -137,7 +137,7 @@ export function Resources({ openModal }: { openModal: (name: CharacterBurnerModa
 
                           <Radio.Group value={resource.cost.toString()} onChange={v => { upgradeResourceCost(resourceKey, parseInt(v)); }}>
                             {rulesetResource.costs.map((v, ii) => {
-                              if (!v[1]) return null;
+                              if (v[1] === "") return null;
                               const disabled = v[0] < (resource.minCost ?? 0);
                               return <Radio key={ii} disabled={disabled} label={`${v[1]} (${v[0].toString()}rps)`} value={v[0].toString()} />;
                             })}

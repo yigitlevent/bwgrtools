@@ -9,7 +9,7 @@ export function BackCanvas({ constants }: { constants: MagicWheelConstants; }): 
   const drawCircles = useCallback((): void => {
     const context = canvasRef.current?.getContext("2d");
 
-    if (context) {
+    if (context !== undefined && context !== null) {
       context.clearRect(0, 0, constants.canvasSize, constants.canvasSize);
 
       context.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--mantine-color-dark-8");

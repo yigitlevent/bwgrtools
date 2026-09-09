@@ -9,7 +9,7 @@ interface ControllerErrorOptions {
 
 export function HandleControllerError(request: FastifyRequest, reply: FastifyReply, e: unknown, options: ControllerErrorOptions = {}): void {
   const { logMessage, status = 500, error = "internal error" } = options;
-  if (logMessage) request.log.error(e, logMessage);
+  if (logMessage !== undefined) request.log.error(e, logMessage);
   else request.log.error(e);
   reply.code(status).send({ error });
 }

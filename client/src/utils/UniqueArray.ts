@@ -17,7 +17,7 @@ export class UniqueArray<K, T> {
 	 * @param newArray - Optional. Array of objects.
 	**/
   constructor(newArray?: UniqueArrayItem<K, T>[]) {
-    if (newArray) {
+    if (newArray !== undefined) {
       const remade: UniqueArrayItem<K, T>[] = JSON.parse(JSON.stringify(newArray)) as UniqueArrayItem<K, T>[];
       remade.forEach(v => this.add(v));
     }

@@ -8,7 +8,7 @@ import type { PoolConfig } from "pg";
 export type Queryable = Pg.Pool | Pg.PoolClient;
 
 
-const Max = process.env.PGPOOL_MAX ? parseInt(process.env.PGPOOL_MAX) : 10;
+const Max = process.env.PGPOOL_MAX !== undefined && process.env.PGPOOL_MAX !== "" ? parseInt(process.env.PGPOOL_MAX) : 10;
 
 // Local/loopback Postgres never has TLS configured (no cert, connection never leaves the box) —
 // only require a verified TLS connection in prod when the DB is actually remote.

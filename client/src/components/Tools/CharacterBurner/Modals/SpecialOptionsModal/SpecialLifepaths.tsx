@@ -16,7 +16,7 @@ export function SpecialLifepaths(): React.JSX.Element {
 
   const getPossibleLifepaths = useCallback(() => {
     return ruleset.lifepaths
-      .filter(lifepath => !lifepath.flags.isBorn && ["City Dweller", "Noble", "Professional Soldier", "Villager"].some(v => (lifepath.setting[1]).includes(v)))
+      .filter(lifepath => lifepath.flags.isBorn !== true && ["City Dweller", "Noble", "Professional Soldier", "Villager"].some(v => (lifepath.setting[1]).includes(v)))
       .sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""))
       .filter((lifepath): lifepath is Lifepath & { id: dat.LifepathId; } => lifepath.id !== null);
   }, [ruleset.lifepaths]);
@@ -27,10 +27,13 @@ export function SpecialLifepaths(): React.JSX.Element {
     <Fragment>
       {lifepaths // variable age
         .map((lifepath, i) => {
-          if (Array.isArray(lifepath.years) && lifepath.id) {
+          if (Array.isArray(lifepath.years) && lifepath.id !== null) {
             const years = lifepath.years;
             const lifepathId = lifepath.id;
-            const chosenYears = special.variableAge[lifepathId];
+            // Checked via `in` rather than truthiness so a resolved value of 0 years is treated as
+            // already-chosen (not re-rolled from scratch on the next +/- click).
+            const hasChosenYears = lifepathId in special.variableAge;
+            const chosenYears: number | undefined = hasChosenYears ? special.variableAge[lifepathId] : undefined;
             return (
               <Fragment key={i}>
                 <Grid.Col span={1}>
@@ -43,8 +46,8 @@ export function SpecialLifepaths(): React.JSX.Element {
 
                 <Grid.Col span={2}>
                   <AbilityButton
-                    onClick={() => { modifyVariableAge(lifepathId, chosenYears ? chosenYears + 1 : 1, years); }}
-                    onContextMenu={() => { modifyVariableAge(lifepathId, chosenYears ? chosenYears - 1 : 1, years); }}
+                    onClick={() => { modifyVariableAge(lifepathId, chosenYears !== undefined ? chosenYears + 1 : 1, years); }}
+                    onContextMenu={() => { modifyVariableAge(lifepathId, chosenYears !== undefined ? chosenYears - 1 : 1, years); }}
                   >
                     {chosenYears}
                   </AbilityButton>
@@ -57,7 +60,7 @@ export function SpecialLifepaths(): React.JSX.Element {
 
       {lifepaths // companion gives skills
         .map((lifepath, i) => {
-          if (lifepath.companion?.givesSkills) {
+          if (lifepath.companion?.givesSkills === true) {
             const companionName = lifepath.companion.name;
 
             return (
@@ -79,7 +82,7 @@ export function SpecialLifepaths(): React.JSX.Element {
                     data={possibleLifepaths.map(lp => ({ value: lp.id.toString(), label: lp.name ?? "" }))}
                     onChange={v => {
                       const found = possibleLifepaths.find(lp => lp.id.toString() === v);
-                      if (found) {
+                      if (found !== undefined) {
                         modifyCompanionLifepath(companionName, found.id);
                         modifyCompanionSkills(found.id, ruleset.getLifepath(found.id).skills);
                       }

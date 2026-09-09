@@ -52,7 +52,7 @@ export function RangeAndCoverActionDetails({ action, volleyIndex }: { action: Ra
         <Text size="sm">{action.group[1]}</Text>
       </Box>
 
-      {action.effect ? (
+      {action.effect !== null && action.effect !== undefined && action.effect.length > 0 ? (
         <Box mb="10px">
           <b>Effect:</b>
 
@@ -62,7 +62,7 @@ export function RangeAndCoverActionDetails({ action, volleyIndex }: { action: Ra
         </Box>
       ) : null}
 
-      {action.specialRestriction ? (
+      {action.specialRestriction !== null && action.specialRestriction !== undefined && action.specialRestriction.length > 0 ? (
         <Box mb="10px">
           <b>Special Restriction:</b>
 
@@ -72,7 +72,7 @@ export function RangeAndCoverActionDetails({ action, volleyIndex }: { action: Ra
         </Box>
       ) : null}
 
-      {action.specialAction ? (
+      {action.specialAction !== null && action.specialAction !== undefined && action.specialAction.length > 0 ? (
         <Box mb="10px">
           <b>Special Action:</b>
 
@@ -82,7 +82,7 @@ export function RangeAndCoverActionDetails({ action, volleyIndex }: { action: Ra
         </Box>
       ) : null}
 
-      {action.however ? (
+      {action.however !== null && action.however !== undefined && action.however.length > 0 ? (
         <Box mb="10px">
           <b>There is a big &quot;however&quot;:</b>
 
@@ -92,7 +92,7 @@ export function RangeAndCoverActionDetails({ action, volleyIndex }: { action: Ra
         </Box>
       ) : null}
 
-      {action.resolutions ? (
+      {action.resolutions !== undefined ? (
         <Box mb="10px">
           <b>Resolution:</b>
 

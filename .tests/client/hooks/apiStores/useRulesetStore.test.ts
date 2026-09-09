@@ -487,9 +487,10 @@ describe("useRulesetStore", () => {
       expect(useRulesetStore.getState().chosenRulesets).toEqual(["core"]);
     });
 
-    it("does not remove the last chosen expansion (falls through to re-adding it instead)", () => {
-      // The removal branch requires length > 1, so toggling the sole chosen expansion doesn't
-      // clear the selection to empty -- it falls through to the "add" branch and re-appends it.
+    it("removes the last chosen expansion, leaving no expansions chosen", () => {
+      // Only the base (non-expansion) ruleset must always have exactly one chosen -- that invariant
+      // is enforced entirely by the non-expansion branch above, which always replaces the selection
+      // with a singleton. Expansions are free to go down to zero.
       useRulesetStore.setState({
         rulesets: [{ id: "exp" as unknown as dat.RulesetId, name: "Exp", isOfficial: true, isPublic: true, isExpansion: true }],
         chosenRulesets: ["exp" as unknown as dat.RulesetId],
@@ -498,7 +499,7 @@ describe("useRulesetStore", () => {
 
       useRulesetStore.getState().toggleDataset("exp" as unknown as dat.RulesetId);
 
-      expect(useRulesetStore.getState().chosenRulesets).toEqual(["exp", "exp"]);
+      expect(useRulesetStore.getState().chosenRulesets).toEqual([]);
     });
 
     it("adds a new expansion to the chosen set", () => {

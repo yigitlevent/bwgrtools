@@ -12,7 +12,7 @@ interface MagicWheelAltFacetControlsProps<T extends OneOfWheelObjects> {
 }
 
 export function FacetControls<T extends OneOfWheelObjects>({ magicWheel, spellFacets, selectedElementCategory, setSelectedElementCategory }: MagicWheelAltFacetControlsProps<T>): React.JSX.Element {
-  const columnCount = selectedElementCategory ? 6 : 5;
+  const columnCount = selectedElementCategory !== undefined ? 6 : 5;
 
   return (
     <Grid columns={columnCount} align="center" justify="center" mt="md">
@@ -21,20 +21,20 @@ export function FacetControls<T extends OneOfWheelObjects>({ magicWheel, spellFa
           label="Area of Effect"
           variant="filled"
           value={magicWheel.areaOfEffectId.toString()}
-          onChange={v => { if (v) magicWheel.setFacet("areaOfEffects", Number(v)); }}
+          onChange={v => { if (v !== null) magicWheel.setFacet("areaOfEffects", Number(v)); }}
           data={Object.values(spellFacets.areaOfEffects).sort((a, b) => Number(a.id) - Number(b.id)).map(v => ({ value: v.id.toString(), label: v.name }))}
           allowDeselect={false}
         />
       </Grid.Col>
 
-      {selectedElementCategory && setSelectedElementCategory && selectedElementCategory in spellFacets ? (
+      {selectedElementCategory !== undefined && setSelectedElementCategory !== undefined && selectedElementCategory in spellFacets ? (
         <Fragment>
           <Grid.Col span={{ base: columnCount, sm: 2, md: 1 }}>
             <Select
               label="Element Category"
               variant="filled"
               value={selectedElementCategory}
-              onChange={v => { if (v) setSelectedElementCategory(v); }}
+              onChange={v => { if (v !== null) setSelectedElementCategory(v); }}
               data={[
                 { value: "primeElements", label: "Prime Elements" },
                 { value: "lowerElements", label: "Lower Elements" },
@@ -49,7 +49,7 @@ export function FacetControls<T extends OneOfWheelObjects>({ magicWheel, spellFa
               label={selectedElementCategory === "higherElements" ? "Higher Element" : selectedElementCategory === "lowerElements" ? "Lower Element" : "Prime Element"}
               variant="filled"
               value={magicWheel.elementId.toString()}
-              onChange={v => { if (v) magicWheel.setFacet(selectedElementCategory as keyof T, Number(v)); }}
+              onChange={v => { if (v !== null) magicWheel.setFacet(selectedElementCategory as keyof T, Number(v)); }}
               data={(Object.values(spellFacets[selectedElementCategory as keyof OneOfWheelObjects]) as { id: string; name: string; }[])
                 .sort((a, b) => Number(a.id) - Number(b.id))
                 .map(v => ({ value: v.id, label: v.name }))}
@@ -63,7 +63,7 @@ export function FacetControls<T extends OneOfWheelObjects>({ magicWheel, spellFa
             label="Element"
             variant="filled"
             value={magicWheel.elementId.toString()}
-            onChange={v => { if (v) magicWheel.setFacet("elements" as keyof T, Number(v)); }}
+            onChange={v => { if (v !== null) magicWheel.setFacet("elements" as keyof T, Number(v)); }}
             data={(Object.values(spellFacets["elements" as keyof OneOfWheelObjects]) as { id: string; name: string; }[])
               .sort((a, b) => Number(a.id) - Number(b.id))
               .map(v => ({ value: v.id, label: v.name }))}
@@ -77,7 +77,7 @@ export function FacetControls<T extends OneOfWheelObjects>({ magicWheel, spellFa
           label="Law"
           variant="filled"
           value={magicWheel.impetusId.toString()}
-          onChange={v => { if (v) magicWheel.setFacet("impetus", Number(v)); }}
+          onChange={v => { if (v !== null) magicWheel.setFacet("impetus", Number(v)); }}
           data={Object.values(spellFacets.impetus).sort((a, b) => Number(a.id) - Number(b.id)).map(v => ({ value: v.id.toString(), label: v.name }))}
           allowDeselect={false}
         />
@@ -88,7 +88,7 @@ export function FacetControls<T extends OneOfWheelObjects>({ magicWheel, spellFa
           label="Duration"
           variant="filled"
           value={magicWheel.durationId.toString()}
-          onChange={v => { if (v) magicWheel.setFacet("duration", Number(v)); }}
+          onChange={v => { if (v !== null) magicWheel.setFacet("duration", Number(v)); }}
           data={Object.values(spellFacets.duration).sort((a, b) => Number(a.id) - Number(b.id)).map(v => ({ value: v.id.toString(), label: v.name }))}
           allowDeselect={false}
         />
@@ -99,7 +99,7 @@ export function FacetControls<T extends OneOfWheelObjects>({ magicWheel, spellFa
           label="Origin"
           variant="filled"
           value={magicWheel.originId.toString()}
-          onChange={v => { if (v) magicWheel.setFacet("origins", Number(v)); }}
+          onChange={v => { if (v !== null) magicWheel.setFacet("origins", Number(v)); }}
           data={Object.values(spellFacets.origins).sort((a, b) => Number(a.id) - Number(b.id)).map(v => ({ value: v.id.toString(), label: v.name }))}
           allowDeselect={false}
         />

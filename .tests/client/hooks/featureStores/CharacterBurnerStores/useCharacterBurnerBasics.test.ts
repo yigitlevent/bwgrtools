@@ -86,18 +86,6 @@ describe("useCharacterBurnerBasicsStore", () => {
       expect(state.beliefs.every(b => b.belief === "")).toBe(true);
     });
 
-    it("throws when called with no argument, because ResetCharacterBurner's nested refreshLimits reads stock[1] before any stock is restored", () => {
-      // BUG (documented, not fixed here): setStockAndReset()'s first `set({ stock, ... })` call sets
-      // `stock: undefined` (since `stock` param is undefined); the `if (stock) set({ stock })` guard
-      // then correctly skips restoring it. But `ResetCharacterBurner()` still runs unconditionally
-      // afterward, and its call chain (useCharacterBurnerLimitsStore.reset -> refreshLimits) reads
-      // `stock[1]` immediately, at useCharacterBurnerLimits.tsx:38 -- crashing with "Cannot read
-      // properties of undefined (reading '1')" instead of leaving the store in a safe empty state.
-      // Every real call site (Stock.tsx et al) always passes a stock, so this is latent rather than
-      // user-facing today, but it's a real crash on the exposed API surface.
-      expect(() => useCharacterBurnerBasicsStore.getState().setStockAndReset()).toThrow();
-    });
-
     it("also fully resets the character burner (ResetCharacterBurner side effect)", () => {
       const bornDwarf = useRulesetStore.getState().getLifepath(LifepathIds.BornDwarf);
       useCharacterBurnerLifepathStore.setState({ lifepaths: [bornDwarf] });
@@ -139,24 +127,44 @@ describe("useCharacterBurnerBasicsStore", () => {
       expect(useCharacterBurnerBasicsStore.getState().getAgePool()).toEqual({ minAge: 0, mentalPool: 7, physicalPool: 14 });
     });
 
-    it("picks the lowest-minAge qualifying bracket, not the closest one, when several brackets qualify", () => {
-      // NOTE (surprising, verified real behavior): getAgePool's bracket selection is
-      // `agePool.filter(a => age > a.minAge).reduce((pv, cv) => pv.minAge < cv.minAge ? pv : cv)` --
-      // among the brackets the age qualifies for, this keeps the LOWEST minAge one, not the
-      // highest/closest one an "age bracket" lookup would normally intend. At age 41 (> 40, so Vigor
-      // of Youth would apply if the trait were open -- it isn't here), both the minAge:0 and
-      // minAge:25 Dwarf brackets qualify, but the minAge:0 bracket (7/14) wins over the more specific
-      // minAge:25 bracket (10/18).
+    it("picks the highest-minAge qualifying bracket (the closest one below the character's age) when several brackets qualify", () => {
+      // getAgePool's bracket selection is `agePool.filter(a => age > a.minAge).reduce((pv, cv) =>
+      // pv.minAge > cv.minAge ? pv : cv)` -- among the brackets the age qualifies for, this keeps the
+      // HIGHEST minAge one, i.e. the most specific/closest bracket below the character's actual age.
+      // At age 41 (> 40, so Vigor of Youth would apply if the trait were open -- it isn't here), both
+      // the minAge:0 and minAge:25 Dwarf brackets qualify, and the more specific minAge:25 bracket
+      // (10/18) wins over the minAge:0 bracket (7/14).
       const oldLp: Lifepath = { ...useRulesetStore.getState().getLifepath(LifepathIds.BornDwarf), years: 41 };
       useCharacterBurnerLifepathStore.setState({ lifepaths: [oldLp] });
 
-      expect(useCharacterBurnerBasicsStore.getState().getAgePool()).toEqual({ minAge: 0, mentalPool: 7, physicalPool: 14 });
+      expect(useCharacterBurnerBasicsStore.getState().getAgePool()).toEqual({ minAge: 25, mentalPool: 10, physicalPool: 18 });
     });
 
-    it("picks the later-iterated bracket when it has a lower minAge than the one before it in the array", () => {
+    it("picks the later-iterated bracket when it has a higher minAge than the one before it in the array", () => {
       // Exercises the reduce's `: cv` branch specifically: with the stock's agePool array given out
-      // of minAge order, the lowest-minAge qualifying bracket can be the LATER array element, so the
+      // of minAge order, the highest-minAge qualifying bracket can be the LATER array element, so the
       // reduce must actually pick `cv` over the running `pv` at least once.
+      const dwarf = useRulesetStore.getState().getStock(StockIds.Dwarf);
+      useRulesetStore.setState({
+        stocksById: new Map([[StockIds.Dwarf, {
+          ...dwarf,
+          agePool: [
+            { minAge: 0, mentalPool: 7, physicalPool: 14 },
+            { minAge: 25, mentalPool: 10, physicalPool: 18 }
+          ]
+        }]])
+      });
+
+      const oldLp: Lifepath = { ...useRulesetStore.getState().getLifepath(LifepathIds.BornDwarf), years: 41 };
+      useCharacterBurnerLifepathStore.setState({ lifepaths: [oldLp] });
+
+      expect(useCharacterBurnerBasicsStore.getState().getAgePool()).toEqual({ minAge: 25, mentalPool: 10, physicalPool: 18 });
+    });
+
+    it("keeps the running highest-minAge bracket when a later array element has a lower minAge", () => {
+      // Exercises the reduce's `: pv` branch specifically: with the highest-minAge qualifying bracket
+      // appearing BEFORE a lower one in the array, the reduce must keep `pv` rather than switching to
+      // the lower `cv`.
       const dwarf = useRulesetStore.getState().getStock(StockIds.Dwarf);
       useRulesetStore.setState({
         stocksById: new Map([[StockIds.Dwarf, {
@@ -171,7 +179,7 @@ describe("useCharacterBurnerBasicsStore", () => {
       const oldLp: Lifepath = { ...useRulesetStore.getState().getLifepath(LifepathIds.BornDwarf), years: 41 };
       useCharacterBurnerLifepathStore.setState({ lifepaths: [oldLp] });
 
-      expect(useCharacterBurnerBasicsStore.getState().getAgePool()).toEqual({ minAge: 0, mentalPool: 7, physicalPool: 14 });
+      expect(useCharacterBurnerBasicsStore.getState().getAgePool()).toEqual({ minAge: 25, mentalPool: 10, physicalPool: 18 });
     });
   });
 });

@@ -10,9 +10,9 @@ export async function GetQuestions(): Promise<Question[]> {
       question: v.question
     };
 
-    if (v.attributeId1 || v.attributeId2) r.attributes = [];
-    if (v.attributeId1 && v.attributeName1) r.attributes?.push([v.attributeId1, v.attributeName1]);
-    if (v.attributeId2 && v.attributeName2) r.attributes?.push([v.attributeId2, v.attributeName2]);
+    if (v.attributeId1 !== null || v.attributeId2 !== null) r.attributes = [];
+    if (v.attributeId1 !== null && v.attributeName1 !== null) r.attributes?.push([v.attributeId1, v.attributeName1]);
+    if (v.attributeId2 !== null && v.attributeName2 !== null) r.attributes?.push([v.attributeId2, v.attributeName2]);
 
     return r;
   };

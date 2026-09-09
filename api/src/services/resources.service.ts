@@ -15,13 +15,13 @@ export async function GetResources(rulesets: dat.RulesetId[]): Promise<Resource[
         modifiers: []
       };
 
-      if (v.variableCost) res.variableCost = true;
-      if (v.description) res.description = v.description;
+      if (v.variableCost === true) res.variableCost = true;
+      if (v.description !== null) res.description = v.description;
       (v.costs ?? []).forEach((c, i) => res.costs.push([c, (v.costDescriptions ?? [])[i]]));
       (v.modifiers ?? []).forEach((c, i) => res.modifiers.push([c, (v.modifierIsPerCosts ?? [])[i], (v.modifierDescriptions ?? [])[i]]));
 
       const mDetails = rmd.find(a => a.resourceId === v.id);
-      if (mDetails) {
+      if (mDetails !== undefined) {
         const mdet: ResourceMagicDetails = {
           origin: [mDetails.originId, mDetails.origin!],
           duration: [mDetails.durationId, mDetails.duration!],
@@ -32,25 +32,26 @@ export async function GetResources(rulesets: dat.RulesetId[]): Promise<Resource[
           doActionsMultiply: mDetails.actionsMultiply
         };
 
-        if (mDetails.areaOfEffectModifierId !== null || mDetails.areaOfEffectModifier || mDetails.areaOfEffectUnitId !== null || mDetails.areaOfEffectUnit) mdet.areaOfEffectDetails = {};
-        if (mdet.areaOfEffectDetails && mDetails.areaOfEffectUnitId !== null && mDetails.areaOfEffectUnit) {
+        if (mDetails.areaOfEffectModifierId !== null || mDetails.areaOfEffectModifier !== null || mDetails.areaOfEffectUnitId !== null || mDetails.areaOfEffectUnit !== null) mdet.areaOfEffectDetails = {};
+        if (mdet.areaOfEffectDetails !== undefined && mDetails.areaOfEffectUnitId !== null && mDetails.areaOfEffectUnit !== null) {
           mdet.areaOfEffectDetails.unit = [mDetails.areaOfEffectUnitId, mDetails.areaOfEffectUnit];
         }
-        if (mdet.areaOfEffectDetails && mDetails.areaOfEffectModifierId !== null && mDetails.areaOfEffectModifier) {
+        if (mdet.areaOfEffectDetails !== undefined && mDetails.areaOfEffectModifierId !== null && mDetails.areaOfEffectModifier !== null) {
           mdet.areaOfEffectDetails.modifier = [mDetails.areaOfEffectModifierId, mDetails.areaOfEffectModifier];
         }
 
-        if (mDetails.element1) mdet.elements.push([mDetails.element1Id, mDetails.element1]);
-        if (mDetails.element2Id !== null && mDetails.element2) mdet.elements.push([mDetails.element2Id, mDetails.element2]);
-        if (mDetails.element3Id !== null && mDetails.element3) mdet.elements.push([mDetails.element3Id, mDetails.element3]);
-        if (mDetails.impetus1) mdet.impetus.push([mDetails.impetus1Id, mDetails.impetus1]);
-        if (mDetails.impetus2Id !== null && mDetails.impetus2) mdet.impetus.push([mDetails.impetus2Id, mDetails.impetus2]);
+        if (mDetails.element1Id !== null && mDetails.element1 !== null) mdet.elements.push([mDetails.element1Id, mDetails.element1]);
+        if (mDetails.element2Id !== null && mDetails.element2 !== null) mdet.elements.push([mDetails.element2Id, mDetails.element2]);
+        if (mDetails.element3Id !== null && mDetails.element3 !== null) mdet.elements.push([mDetails.element3Id, mDetails.element3]);
+        if (mDetails.impetus1Id !== null && mDetails.impetus1 !== null) mdet.impetus.push([mDetails.impetus1Id, mDetails.impetus1]);
+        if (mDetails.impetus2Id !== null && mDetails.impetus2 !== null) mdet.impetus.push([mDetails.impetus2Id, mDetails.impetus2]);
 
         const mObs = rmo.filter(a => a.resourceId === v.id);
         if (mObs.length > 0) {
           mdet.obstacleDetails = mObs.map(mo => {
             const obsDet: ResourceMagicObstacleDetails = {};
-            if (mo.obstacle) obsDet.obstacle = mo.obstacle;
+            // Was `if (mo.obstacle)`, which would silently drop a legitimate obstacle of 0 and fall through to the ability branch.
+            if (mo.obstacle !== null) obsDet.obstacle = mo.obstacle;
             else if (mo.obstacleAbility1Id !== null || mo.obstacleAbility1 !== null || mo.obstacleAbility2Id !== null || mo.obstacleAbility2 !== null) {
               obsDet.abilities = [];
               if (mo.obstacleAbility1Id !== null && mo.obstacleAbility1 !== null) {
@@ -61,7 +62,7 @@ export async function GetResources(rulesets: dat.RulesetId[]): Promise<Resource[
               }
             }
 
-            if (mo.obstacleCaret) obsDet.caret = mo.obstacleCaret;
+            if (mo.obstacleCaret === true) obsDet.caret = mo.obstacleCaret;
             if (mo.description !== null) obsDet.description = mo.description;
             return obsDet;
           });
