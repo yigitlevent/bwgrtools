@@ -290,6 +290,7 @@ declare namespace dat {
     requirementId: dat.LifepathRequirementBlockId | null;
     requirementType: string | null;
     requirementTypeId: dat.RequirementItemTypeId | null;
+    rulesets: dat.RulesetId[] | null;
     setting: string | null;
     settingId: dat.SettingId | null;
     skill: string | null;
@@ -339,7 +340,7 @@ declare namespace dat {
     physicalPool: number | null;
     requirementText: string | null;
     resourcePoints: number | null;
-    rulesets: string[] | null;
+    rulesets: dat.RulesetId[] | null;
     setting: string | null;
     settingId: dat.SettingId | null;
     skillIds: dat.SkillId[] | null;
@@ -550,7 +551,7 @@ declare namespace dat {
     name: string | null;
     resourceType: string | null;
     resourceTypeId: dat.ResourceTypeId | null;
-    rulesets: string[] | null;
+    rulesets: dat.RulesetId[] | null;
     stock: string | null;
     stockId: dat.StockId | null;
     variableCost: boolean | null;
@@ -614,7 +615,7 @@ declare namespace dat {
     isSubsetting: boolean | null;
     name: string | null;
     nameShort: string | null;
-    rulesets: string[] | null;
+    rulesets: dat.RulesetId[] | null;
     stockId: dat.StockId | null;
     stockName: string | null;
   }
@@ -656,7 +657,7 @@ declare namespace dat {
     restrictionWhenBurning: boolean | null;
     rootIds: dat.AbilityId[] | null;
     roots: string[] | null;
-    rulesets: string[] | null;
+    rulesets: dat.RulesetId[] | null;
     stock: string | null;
     stockId: dat.StockId | null;
     subskillIds: dat.SkillId[] | null;
@@ -731,7 +732,7 @@ declare namespace dat {
     id: dat.StockId | null;
     name: string | null;
     namePlural: string | null;
-    rulesets: string[] | null;
+    rulesets: dat.RulesetId[] | null;
     settingIds: dat.SettingId[] | null;
     stride: number | null;
   }
@@ -778,7 +779,7 @@ declare namespace dat {
     grantsResourceMinCosts: number[] | null;
     id: dat.TraitId | null;
     name: string | null;
-    rulesets: string[] | null;
+    rulesets: dat.RulesetId[] | null;
     stock: string | null;
     stockId: dat.StockId | null;
     type: string | null;

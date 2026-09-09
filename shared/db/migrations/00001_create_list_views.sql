@@ -676,3 +676,66 @@ FROM
   dat."Question" a
   LEFT JOIN dat."Ability" att1 ON att1."id" = a."attributeId1"
   LEFT JOIN dat."Ability" att2 ON att2."id" = a."attributeId2";
+
+CREATE OR REPLACE VIEW
+  dat."LifepathRequirementBlockItem" AS
+SELECT
+  lri."requirementId",
+  lri."requirementTypeId",
+  rit."name" AS "requirementType",
+  lri."forCompanion",
+  lri."min",
+  lri."max",
+  lri."settingId",
+  s."name" AS "setting",
+  lri."lifepathId",
+  l."name" AS "lifepath",
+  lri."skillId",
+  sk."name" AS "skill",
+  lri."traitId",
+  t."name" AS "trait",
+  lri."attributeId",
+  a."name" AS "attribute",
+  CASE
+    WHEN lri."settingId" IS NOT NULL THEN ARRAY (
+      SELECT
+        rs."rulesetId"
+      FROM
+        dat."RulesetSetting" rs
+      WHERE
+        rs."settingId" = lri."settingId"
+    )
+    WHEN lri."lifepathId" IS NOT NULL THEN ARRAY (
+      SELECT
+        rl."rulesetId"
+      FROM
+        dat."RulesetLifepath" rl
+      WHERE
+        rl."lifepathId" = lri."lifepathId"
+    )
+    WHEN lri."skillId" IS NOT NULL THEN ARRAY (
+      SELECT
+        rsk."rulesetId"
+      FROM
+        dat."RulesetSkill" rsk
+      WHERE
+        rsk."skillId" = lri."skillId"
+    )
+    WHEN lri."traitId" IS NOT NULL THEN ARRAY (
+      SELECT
+        rt."rulesetId"
+      FROM
+        dat."RulesetTrait" rt
+      WHERE
+        rt."traitId" = lri."traitId"
+    )
+    ELSE NULL
+  END AS "rulesets"
+FROM
+  dat."LifepathRequirementItem" lri
+  LEFT JOIN dat."RequirementItemType" rit ON rit."id" = lri."requirementTypeId"
+  LEFT JOIN dat."Setting" s ON s."id" = lri."settingId"
+  LEFT JOIN dat."Lifepath" l ON l."id" = lri."lifepathId"
+  LEFT JOIN dat."Skill" sk ON sk."id" = lri."skillId"
+  LEFT JOIN dat."Trait" t ON t."id" = lri."traitId"
+  LEFT JOIN dat."Ability" a ON a."id" = lri."attributeId";

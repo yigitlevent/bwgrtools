@@ -1,4 +1,4 @@
-import { Divider, Grid, Paper, Text } from "@mantine/core";
+import { Box, Divider, Grid, Text } from "@mantine/core";
 import { memo, useMemo } from "react";
 
 import { LifepathRequirements } from "./LifepathRequirements";
@@ -7,7 +7,7 @@ import { LifepathTraits } from "./LifepathTraits";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 
 
-export const LifepathBox = memo(({ lifepath }: { lifepath: Lifepath; }): React.JSX.Element => {
+export const LifepathBox = memo(({ lifepath, noBorder }: { lifepath: Lifepath; noBorder?: boolean; }): React.JSX.Element => {
   const { getSetting } = useRulesetStore();
 
   const getYears = (l: Lifepath): string => {
@@ -42,25 +42,30 @@ export const LifepathBox = memo(({ lifepath }: { lifepath: Lifepath; }): React.J
   }, [lifepath.leads, getSetting]);
 
   return (
-    <Paper withBorder px={12} pt={8} pb={12} mr={8} radius={0}>
-      <Grid columns={18}>
-        <Grid.Col span={{ lg: 6, md: 12, sm: 18, base: 18 }}>
-          <Text size="lg">{lifepath.name}</Text>
+    <Box
+      style={noBorder !== undefined ? undefined : {
+        padding: "12px 12px 8px",
+        border: "1px solid var(--mantine-color-gray-8)"
+      }}
+    >
+      <Grid columns={18} gap={0}>
+        <Grid.Col span={noBorder !== undefined ? 9 : { lg: 7, md: 12, sm: 18, base: 18 }}>
+          <Text size="lg" fw={700}>{lifepath.name}</Text>
         </Grid.Col>
 
-        <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
+        <Grid.Col span={noBorder !== undefined ? 3 : { lg: 1, md: 2, sm: 6, base: 6 }}>
           <Text mt={4} size="md">{getYears(lifepath)}</Text>
         </Grid.Col>
 
-        <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
+        <Grid.Col span={noBorder !== undefined ? 3 : { lg: 1, md: 2, sm: 6, base: 6 }}>
           <Text mt={4} size="md">{getResources(lifepath)}</Text>
         </Grid.Col>
 
-        <Grid.Col span={{ lg: 1, md: 2, sm: 6, base: 6 }}>
+        <Grid.Col span={noBorder !== undefined ? 3 : { lg: 2, md: 2, sm: 6, base: 6 }}>
           <Text mt={4} size="md">{getStatPools(lifepath)}</Text>
         </Grid.Col>
 
-        <Grid.Col span={{ lg: 9, md: 18, sm: 18, base: 18 }}>
+        <Grid.Col span={noBorder !== undefined ? 18 : { lg: 7, md: 18, sm: 18, base: 18 }}>
           <Text mt={4} size="md">{leadsText}</Text>
         </Grid.Col>
       </Grid>
@@ -69,6 +74,6 @@ export const LifepathBox = memo(({ lifepath }: { lifepath: Lifepath; }): React.J
       <LifepathSkills lifepath={lifepath} />
       <LifepathTraits lifepath={lifepath} />
       {lifepath.requirements !== undefined ? <LifepathRequirements lifepath={lifepath} /> : null}
-    </Paper>
+    </Box>
   );
 });
