@@ -163,7 +163,10 @@ export const useRulesetStore = create<RulesetStore>()(
 
               setFetchState("fetch-data");
             })
-            .catch((reason: unknown) => { console.error(reason); });
+            .catch((reason: unknown) => {
+              console.error(reason);
+              setFetchState("failed");
+            });
         },
 
         fetchData: () => {
