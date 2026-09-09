@@ -1,18 +1,26 @@
-import { Alert, Box, Divider, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
+import { Alert, Box, Divider, Grid, MultiSelect, Select, Title } from "@mantine/core";
 import { Fragment, useMemo } from "react";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useSearch } from "../../../hooks/useSearch";
 import { PopoverLink } from "../../Shared/PopoverLink";
+import { SearchTextInput } from "../../Shared/SearchTextInput";
 
+
+type SearchableSkill = Skill & { rootnames: string; };
 
 export function SkillLists(): React.JSX.Element {
   const { stocks, skills, skillCategories, skillTypes } = useRulesetStore();
-  const { searchValues, setFilter, filteredList } = useSearch<Skill>(skills, ["stock", "category", "type"]);
+
+  const searchableSkills = useMemo((): SearchableSkill[] => {
+    return skills.map(skill => ({ ...skill, rootnames: (skill.roots ?? []).map(v => v[1]).join(", ") }));
+  }, [skills]);
+
+  const { searchValues, setFilter, filteredList, isPending } = useSearch<SearchableSkill>(searchableSkills, ["stock", "category", "type"]);
 
   const groupedList = useMemo(() => {
     const sorted = [...filteredList].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
-    const groups = new Map<string, Skill[]>();
+    const groups = new Map<string, SearchableSkill[]>();
     sorted.forEach(v => {
       const letter = (v.name ?? "").charAt(0).toUpperCase() || "#";
       const items = groups.get(letter) ?? [];
@@ -61,11 +69,11 @@ export function SkillLists(): React.JSX.Element {
         </Grid.Col>
 
         <Grid.Col span={{ base: 3, sm: 3, md: 2 }}>
-          <TextInput
-            label="Search"
+          <SearchTextInput
             variant="filled"
             value={searchValues.text}
-            onChange={e => { setFilter([{ key: "s", value: e.target.value }]); }}
+            onChange={v => { setFilter([{ key: "s", value: v }]); }}
+            isPending={isPending}
           />
         </Grid.Col>
 
@@ -75,7 +83,12 @@ export function SkillLists(): React.JSX.Element {
             variant="filled"
             value={searchValues.fields}
             onChange={v => { setFilter([{ key: "sf", value: v.join(",") }]); }}
-            data={["Name", "Description"]}
+            data={[
+              { value: "Name", label: "Name" },
+              { value: "Description", label: "Description" },
+              { value: "tool.tool", label: "Tool" },
+              { value: "rootnames", label: "Roots" }
+            ]}
           />
         </Grid.Col>
       </Grid>

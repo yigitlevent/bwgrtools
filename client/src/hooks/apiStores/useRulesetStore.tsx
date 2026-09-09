@@ -75,6 +75,7 @@ interface RulesetStore {
   getPractice: (search: string) => Practice;
 
   toggleDataset: (dataset: dat.RulesetId) => void;
+  applyChosenRulesets: (rulesets: dat.RulesetId[]) => void;
   checkRulesets: (allowed: dat.RulesetId[]) => boolean;
   checkExactRulesets: (allowed: dat.RulesetId[]) => boolean;
 }
@@ -163,7 +164,10 @@ export const useRulesetStore = create<RulesetStore>()(
 
               setFetchState("fetch-data");
             })
-            .catch((reason: unknown) => { console.error(reason); });
+            .catch((reason: unknown) => {
+              console.error(reason);
+              setFetchState("failed");
+            });
         },
 
         fetchData: () => {
@@ -370,6 +374,13 @@ export const useRulesetStore = create<RulesetStore>()(
               state.fetchState = "fetch-data";
               state.chosenRulesets = [...state.chosenRulesets, ruleset];
             }
+          }));
+        },
+
+        applyChosenRulesets: (rulesets: dat.RulesetId[]) => {
+          set(produce<RulesetStore>(state => {
+            state.chosenRulesets = rulesets;
+            state.fetchState = "fetch-data";
           }));
         },
 

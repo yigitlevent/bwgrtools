@@ -13,9 +13,16 @@ import type { UniqueArrayItem } from "../../../../utils/UniqueArray";
 
 function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, CharacterTrait>; remove?: (traitId: dat.TraitId) => void; }): React.JSX.Element {
   const { openTrait } = useCharacterBurnerTraitStore();
-  const { getTrait } = useRulesetStore();
+  const { getTrait, getAbility } = useRulesetStore();
   const { hasSkillOpen } = useCharacterBurnerSkillStore();
   const { hasAttribute } = useCharacterBurnerAttributeStore();
+
+  // Core stats (Will, Perception, Power, Agility, Forte, Speed) are tracked in useCharacterBurnerStatStore,
+  // not useCharacterBurnerAttributeStore, and every character always has all of them.
+  const hasStatOrAttribute = (abilityId: dat.AbilityId): boolean => {
+    const abilityTypeName = getAbility(abilityId).abilityType[1];
+    return abilityTypeName.endsWith("Stat") || hasAttribute(abilityId);
+  };
 
   const rulesetTrait = getTrait(trait.id);
   const callOnTargets = [...(rulesetTrait.callOnSkills ?? []), ...(rulesetTrait.callOnAbilities ?? [])];
@@ -23,7 +30,7 @@ function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, Characte
     trait.isOpen
     && callOnTargets.length > 0
     && !(rulesetTrait.callOnSkills ?? []).some(hasSkillOpen)
-    && !(rulesetTrait.callOnAbilities ?? []).some(hasAttribute);
+    && !(rulesetTrait.callOnAbilities ?? []).some(hasStatOrAttribute);
 
   return (
     <Grid.Col span={{ base: 6, sm: 3, md: 2 }}>

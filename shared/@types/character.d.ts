@@ -128,8 +128,9 @@ interface AbilityPoints {
 }
 
 /**
- * Shape of a character as downloaded via "export" (see Checklist.tsx's exportChar).
- * Export-only: there is currently no matching import/hydrate path anywhere in the client.
+ * Shape of a character as downloaded via Export, uploaded via Import, and used by the
+ * autosave snapshot in characterBurnerAutosave.ts - all three paths share this one shape
+ * via BuildCharacterBurnerSnapshot/HydrateCharacterBurner.
  */
 interface CharacterBurnerExportSnapshot {
   basics: {
@@ -163,4 +164,16 @@ interface CharacterBurnerExportSnapshot {
     questions: CharacterQuestion[];
     limits: CharacterStockLimits;
   };
+}
+
+/**
+ * Shape written to localStorage by the Character Burner's autosave (see
+ * characterBurnerAutosave.ts). Carries the ruleset selection active at save time
+ * alongside the snapshot, so a stale save referencing since-abandoned ruleset ids
+ * can be detected before hydrating it.
+ */
+interface CharacterBurnerAutosavePayload {
+  rulesetIds: dat.RulesetId[];
+  savedAt: string;
+  snapshot: CharacterBurnerExportSnapshot;
 }

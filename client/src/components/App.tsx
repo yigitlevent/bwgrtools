@@ -1,5 +1,5 @@
 import "@mantine/charts/styles.css";
-import { Container, Title, Text, useMantineTheme, Group, Stack, Box } from "@mantine/core";
+import { Container, Title, Text, useMantineTheme, Group, Stack, Box, Loader, Button, Center } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
@@ -28,11 +28,13 @@ import "../theme/overwrite.css";
 
 
 export function App(): React.JSX.Element {
-  const { fetchState, fetchList, fetchData } = useRulesetStore();
+  const { fetchState, fetchList, fetchData, setFetchState } = useRulesetStore();
   const cursorType = useCursorStore(s => s.cursorType);
   const theme = useMantineTheme();
 
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const retry = (): void => { setFetchState("fetch-full"); };
 
   useEffect(() => {
     if (fetchState === "fetch-full") fetchList();
@@ -57,7 +59,14 @@ export function App(): React.JSX.Element {
           </Group>
 
           <Box style={{ height: "calc(100svh - 54px)", minHeight: "calc(100svh - 54px)" }}>
-            {fetchState === "failed" ? <Text>Data fetching failed.</Text> : null}
+            {fetchState === "failed" ? (
+              <Center style={{ height: "100%" }}>
+                <Stack align="center" gap="sm">
+                  <Text>Could not load ruleset data. Check your connection and try again.</Text>
+                  <Button variant="outline" onClick={retry}>Retry</Button>
+                </Stack>
+              </Center>
+            ) : null}
 
             {fetchState === "done" ? (
               <Routes>
@@ -75,7 +84,13 @@ export function App(): React.JSX.Element {
                 <Route path="/fightplanner" element={<FightPlanner />} />
                 <Route path="/characterburner" element={<CharacterBurner />} />
               </Routes>
-            ) : <Text>Loading</Text>}
+            ) : null}
+
+            {fetchState !== "done" && fetchState !== "failed" ? (
+              <Center style={{ height: "100%" }}>
+                <Loader />
+              </Center>
+            ) : null}
           </Box>
         </Stack>
       </Container>

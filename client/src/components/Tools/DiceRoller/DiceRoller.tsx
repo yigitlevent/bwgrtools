@@ -1,4 +1,5 @@
-import { Button, Group, Stack, Switch, Text, Title } from "@mantine/core";
+import { Button, Group, Stack, Switch, Text, Title, Tooltip } from "@mantine/core";
+import { Info } from "lucide-react";
 import { Fragment, useEffect, useState } from "react";
 
 import { DiceRollerProbabilities } from "./DiceRollerProbabilities";
@@ -126,19 +127,41 @@ export function DiceRoller(): React.JSX.Element {
         </Group>
 
         <Stack gap="xs">
-          <Switch
-            label="Is Open Ended"
-            checked={isOpenEnded}
-            onChange={e => { setIsOpenEnded(e.currentTarget.checked); }}
-            size="sm"
-          />
+          <Group gap={4} wrap="nowrap">
+            <Switch
+              label="Is Open Ended"
+              checked={isOpenEnded}
+              onChange={e => { setIsOpenEnded(e.currentTarget.checked); }}
+              size="sm"
+            />
 
-          <Switch
-            label="Is Double Obstacle"
-            checked={isDoubleObstacle}
-            onChange={e => { setIsDoubleObstacle(e.currentTarget.checked); }}
-            size="sm"
-          />
+            <Tooltip
+              multiline
+              w={320}
+              color="gray"
+              label="Sixes explode: any 6 rolled is rerolled and added to the pool, repeating as long as new 6s come up."
+            >
+              <Info size={14} />
+            </Tooltip>
+          </Group>
+
+          <Group gap={4} wrap="nowrap">
+            <Switch
+              label="Is Double Obstacle"
+              checked={isDoubleObstacle}
+              onChange={e => { setIsDoubleObstacle(e.currentTarget.checked); }}
+              size="sm"
+            />
+
+            <Tooltip
+              multiline
+              w={320}
+              color="gray"
+              label="Doubles the effective obstacle needed to succeed, without changing the dice pool rolled (e.g. for tests versus a doubled obstacle)."
+            >
+              <Info size={14} />
+            </Tooltip>
+          </Group>
         </Stack>
 
         <Button variant="outline" size="md" onClick={resolveDiceRoll}>Roll Dice</Button>

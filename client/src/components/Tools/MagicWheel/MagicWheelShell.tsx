@@ -42,14 +42,14 @@ export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, band
     <Fragment>
       <Title order={3}>Magic Wheel</Title>
 
-      {!magicWheel.facetsSet ? (
-        <FacetControls
-          magicWheel={magicWheel}
-          spellFacets={spellFacets}
-          selectedElementCategory={selectedElementCategory}
-          setSelectedElementCategory={setSelectedElementCategory}
-        />
-      ) : isFontLoaded ? (
+      <FacetControls
+        magicWheel={magicWheel}
+        spellFacets={spellFacets}
+        selectedElementCategory={selectedElementCategory}
+        setSelectedElementCategory={setSelectedElementCategory}
+      />
+
+      {isFontLoaded ? (
         <Grid columns={1} align="center" justify="center" mt="md">
           {magicWheel.prayed ? (
             <Button
@@ -85,7 +85,12 @@ export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, band
             >
               <BackCanvas constants={magicWheel.constants} />
 
-              <canvas ref={canvasRef} height={magicWheel.constants.canvasSize} width={magicWheel.constants.canvasSize} style={{ position: "absolute", left: 0, top: 0, zIndex: 102, width: "100%" }}>
+              <canvas
+                ref={canvasRef}
+                height={magicWheel.constants.canvasSize}
+                width={magicWheel.constants.canvasSize}
+                style={{ position: "absolute", left: 0, top: 0, zIndex: 102, width: "100%" }}
+              >
                 Your browser does not support canvas.
               </canvas>
 

@@ -1,41 +1,62 @@
-import { Divider, Stack } from "@mantine/core";
-import { Sparkles, Dices, Shapes, CalendarClock, Fingerprint, Users, Flame, Target, Coins, MessageCircle, Swords } from "lucide-react";
+import { ActionIcon, Menu, Tooltip } from "@mantine/core";
+import { ClipboardList, Sparkles, Dices, Shapes, CalendarClock, Fingerprint, Users, Flame, Target, Coins, MessageCircle, Swords } from "lucide-react";
 import { Fragment } from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { RouteButton } from "./RouteButton";
-import { DrawerBox } from "../../Shared/DrawerBox";
-
-import type { LucideIcon } from "lucide-react";
+import { useDrawerStore } from "../../../hooks/useDrawerStore";
 
 
 export function Tools({ expanded }: { expanded: boolean; }): React.JSX.Element {
-  const items: [string, string, LucideIcon][] = [
-    ["Lifepaths List", "/lifepaths", Fingerprint],
-    ["Skills List", "/skills", Users],
-    ["Traits List", "/traits", Shapes],
-    ["Resources List", "/resources", Coins],
-    ["Practice Planner", "/practiceplanner", CalendarClock],
-    ["Fight Planner", "/fightplanner", Swords],
-    ["Range and Cover Planner", "/racplanner", Target],
-    ["Duel of Wits Planner", "/dowplanner", MessageCircle],
-    ["Dice Roller", "/diceroller", Dices],
-    ["Character Burner", "/characterburner", Flame],
-    ["Magic Wheel", "/magicwheel", Sparkles],
-    ["Magic Wheel Alt", "/magicwheelalt", Sparkles]
+  const { toggleDrawer } = useDrawerStore();
+  const location = useLocation();
+
+  const getProps = (path: string): { size: number; color: string | undefined; } =>
+    ({ size: 20, color: location.pathname === path ? "var(--mantine-primary-color-filled)" : undefined });
+
+  const items: [string, string, React.JSX.Element][] = [
+    ["Lifepaths List", "/lifepaths", <Fingerprint {...getProps("/lifepaths")} />],
+    ["Skills List", "/skills", <Users {...getProps("/skills")} />],
+    ["Traits List", "/traits", <Shapes {...getProps("/traits")} />],
+    ["Resources List", "/resources", <Coins {...getProps("/resources")} />],
+    ["Fight Planner", "/fightplanner", <Swords {...getProps("/fightplanner")} />],
+    ["Range and Cover Planner", "/racplanner", <Target {...getProps("/racplanner")} />],
+    ["Duel of Wits Planner", "/dowplanner", <MessageCircle {...getProps("/dowplanner")} />],
+    ["Dice Roller", "/diceroller", <Dices {...getProps("/diceroller")} />],
+    ["Practice Planner", "/practiceplanner", <CalendarClock {...getProps("/practiceplanner")} />],
+    ["Character Burner", "/characterburner", <Flame {...getProps("/characterburner")} />],
+    ["Magic Wheel", "/magicwheel", <Sparkles {...getProps("/magicwheel")} />],
+    ["Magic Wheel Alt", "/magicwheelalt", <Sparkles {...getProps("/magicwheelalt")} />]
   ];
 
   return (
-    <DrawerBox title="Tools" expanded={expanded}>
-      <Stack gap={0}>
+    <Menu opened={expanded} onClose={() => { toggleDrawer(); }} position="bottom-end" withArrow>
+      <Menu.Target>
+        <Tooltip color="gray" label="Tools">
+          <ActionIcon size="lg" mt={16} p={4} variant="light" onClick={() => { toggleDrawer("Tools"); }} aria-label="Tools">
+            <ClipboardList />
+          </ActionIcon>
+        </Tooltip>
+      </Menu.Target>
+
+      <Menu.Dropdown>
         {items.map((item, i) => {
           return (
             <Fragment key={i}>
-              <RouteButton title={item[0]} route={item[1]} Icon={item[2]} />
-              {[3, 7].includes(i) ? <Divider /> : null}
+              <Menu.Item
+                component={RouterLink}
+                to={item[1]}
+                leftSection={item[2]}
+                onClick={() => { toggleDrawer(); }}
+                fw={location.pathname === item[1] ? 700 : undefined}
+              >
+                {item[0]}
+              </Menu.Item>
+
+              {[3, 6, 9].includes(i) ? <Menu.Divider /> : null}
             </Fragment>
           );
         })}
-      </Stack>
-    </DrawerBox>
+      </Menu.Dropdown>
+    </Menu>
   );
 }

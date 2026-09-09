@@ -21,8 +21,8 @@ interface PracticePlannerState {
     label: string;
   }[];
 
-  changeDays: (value: string) => void;
-  changeHours: (value: string) => void;
+  changeDays: (value: string, setNotification: Dispatch<SetStateAction<React.JSX.Element | null>>) => void;
+  changeHours: (value: string, setNotification: Dispatch<SetStateAction<React.JSX.Element | null>>) => void;
   addCells: (days: number, hours: number) => void;
   deleteCell: (cellIndex: number) => void;
   changeCellHour: (cellIndex: number, change: 1 | -1, cells: PracticeCell[], setNotification: Dispatch<SetStateAction<React.JSX.Element | null>>) => void;
@@ -39,16 +39,30 @@ export const usePracticePlannerStore = create<PracticePlannerState>()(
       cells: [],
       marks: [],
 
-      changeDays: (value: string) => {
+      changeDays: (value: string, setNotification: Dispatch<SetStateAction<React.JSX.Element | null>>) => {
+        const parsed = value === "" ? 0 : parseInt(value);
+        const clamped = Clamp(parsed, 1, 999);
+
         set(produce<PracticePlannerState>(state => {
-          state.days = Clamp(value === "" ? 0 : parseInt(value), 1, 999);
+          state.days = clamped;
         }));
+
+        if (parsed !== clamped) {
+          setNotification(<Notification text={`Number of Days must be between 1 and 999. Set to ${clamped.toString()}.`} severity="warning" onClose={() => { setNotification(null); }} />);
+        }
       },
 
-      changeHours: (value: string) => {
+      changeHours: (value: string, setNotification: Dispatch<SetStateAction<React.JSX.Element | null>>) => {
+        const parsed = value === "" ? 0 : parseInt(value);
+        const clamped = Clamp(parsed, 1, 24);
+
         set(produce<PracticePlannerState>(state => {
-          state.hours = Clamp(value === "" ? 0 : parseInt(value), 1, 24);
+          state.hours = clamped;
         }));
+
+        if (parsed !== clamped) {
+          setNotification(<Notification text={`Hours per Day must be between 1 and 24. Set to ${clamped.toString()}.`} severity="warning" onClose={() => { setNotification(null); }} />);
+        }
       },
 
       addCells: (days: number, hours: number) => {

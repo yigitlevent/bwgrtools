@@ -1,62 +1,34 @@
-import { Button, Divider, Group, Stack, Text, TextInput } from "@mantine/core";
+import { Divider, Grid, Text } from "@mantine/core";
 import { Fragment } from "react";
 
-import { PracticePlannerCellIcon } from "./PracticePlannerCellIcon";
 import { usePracticePlannerStore } from "../../../hooks/featureStores/usePracticePlannerStore";
+
+import type { PracticePlaced } from "../../../hooks/featureStores/usePracticePlannerStore";
 
 
 export function PracticePlannerTimetable(): React.JSX.Element {
-  const { days, hours, cells, changeDays, changeHours, addCells } = usePracticePlannerStore();
+  const { cells } = usePracticePlannerStore();
+
+  const grouped = Object.groupBy(cells.map(cell => cell.placed).flat(), v => v.name) as Record<string, PracticePlaced[]>;
 
   return (
     <Fragment>
-      <Divider label="Timetable" mt="10px" />
+      {cells.length > 0 && cells.some(v => v.placed.length > 0) ? <Divider label="Timetable" mt="10px" /> : null}
 
-      <Group justify="center" gap="md" my="16px" wrap="nowrap">
-        <TextInput
-          label="Number of Days"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          value={days}
-          onChange={e => { changeDays(e.target.value); }}
-          variant="filled"
-        />
-
-        <TextInput
-          label="Hours per Day"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          value={hours}
-          onChange={e => { changeHours(e.target.value); }}
-          variant="filled"
-        />
-
-        <Button variant="outline" onClick={() => { addCells(days, hours); }} style={{ alignSelf: "end" }}>Add Days</Button>
-      </Group>
-
-      <Group wrap="nowrap" justify="flex-start" align="flex-start" style={{ maxWidth: "100%", overflow: "auto", paddingBottom: "16px" }}>
-        {cells.map((cell, cellIndex) => (
-          <Stack key={cellIndex} gap={0} style={{ paddingTop: "32px", marginRight: "-16px" }}>
-            <Text
-              size="xs"
-              style={{ display: "block", transform: "rotate(-90deg)", margin: "0 -48px -8px 8px", height: "20px", width: "60px", transformOrigin: "left center" }}
-            >
-              {cellIndex === 0 || cellIndex === cells.length - 1 || (cellIndex + 1) % 5 === 0 ? `Day ${(cellIndex + 1).toString()}` : ""}
-            </Text>
-
-            {[...Array<number>(cell.maxHours)].map((_, ii) => {
-              const filled = (cell.placed.length > 0 ? cell.placed.map(v => v.hours).reduce((pv, cv) => pv + cv) : 0);
-              return (
-                <PracticePlannerCellIcon
-                  key={ii}
-                  isDayFull={cell.maxHours === filled ? "full" : filled > 0 ? "partial" : "empty"}
-                  isCellFull={ii < filled}
-                />
-              );
-            })}
-          </Stack>
-        ))}
-      </Group>
+      <Grid columns={4} my={16}>
+        {Object.entries(grouped)
+          .map(([k, v]) => {
+            return { name: k, days: v.length, testType: v[0].testType };
+          })
+          .sort((a, b) => a.days - b.days)
+          .map((v, i) => (
+            <Grid.Col span={{ base: 4, sm: 2, md: 1 }} key={i} style={{ flexGrow: 1 }}>
+              <Text fw={700} display="inline-block">{v.name}</Text>
+              <Text ml={4} display="inline-block">{`(${v.testType}): `}</Text>
+              <Text ml={4} display="inline-block">{v.days}</Text>
+            </Grid.Col>
+          ))}
+      </Grid>
     </Fragment>
   );
 }

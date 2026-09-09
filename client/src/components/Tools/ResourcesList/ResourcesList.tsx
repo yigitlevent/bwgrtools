@@ -1,15 +1,16 @@
-import { Alert, Box, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
+import { Alert, Box, Grid, MultiSelect, Select, Title } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Fragment } from "react";
 
 import { ResourceItem } from "./ResourceItem";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useSearch } from "../../../hooks/useSearch";
+import { SearchTextInput } from "../../Shared/SearchTextInput";
 
 
 export function ResourcesList({ scrollRef }: { scrollRef: React.RefObject<HTMLDivElement | null>; }): React.JSX.Element {
   const { stocks, resources, resourceTypes } = useRulesetStore();
-  const { searchValues, setFilter, filteredList } = useSearch<Resource>(resources, ["stock", "type"]);
+  const { searchValues, setFilter, filteredList, isPending } = useSearch<Resource>(resources, ["stock", "type"]);
 
   // react-virtual's useVirtualizer() returns methods (getTotalSize, getVirtualItems, measureElement)
   // the React Compiler can't statically prove are stable, so it skips memoizing this component. None
@@ -51,11 +52,11 @@ export function ResourcesList({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
         </Grid.Col>
 
         <Grid.Col span={{ base: 3, sm: 3, md: 4 }}>
-          <TextInput
-            label="Search"
+          <SearchTextInput
             variant="filled"
             value={searchValues.text}
-            onChange={e => { setFilter([{ key: "s", value: e.target.value }]); }}
+            onChange={v => { setFilter([{ key: "s", value: v }]); }}
+            isPending={isPending}
           />
         </Grid.Col>
 
@@ -65,7 +66,7 @@ export function ResourcesList({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
             variant="filled"
             value={searchValues.fields}
             onChange={v => { setFilter([{ key: "sf", value: v.join(",") }]); }}
-            data={["Name"]}
+            data={["Name", "Description"]}
           />
         </Grid.Col>
       </Grid>

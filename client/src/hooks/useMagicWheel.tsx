@@ -46,7 +46,6 @@ export interface UseMagicWheelReturn<T extends OneOfWheelObjects> {
   areaOfEffectId: dat.SpellAreaOfEffectFacetId;
   setTargetAmounts: (steps?: number, direction?: number) => void;
   setFacet: (facet: keyof T, value: number) => void;
-  confirmFacets: () => void;
   setPrayed: React.Dispatch<React.SetStateAction<boolean>>;
   reset: () => void;
 }
@@ -98,6 +97,9 @@ export function useMagicWheel<T extends OneOfWheelObjects>({ spellFacets, bands,
           break;
       }
     }
+
+    setFacetsSet(true);
+    setIsRotating(true);
   }, [selectedElementCategory, setBands, spellFacets]);
 
   const setTargetAmounts = useCallback((steps?: number, direction?: number) => {
@@ -111,11 +113,6 @@ export function useMagicWheel<T extends OneOfWheelObjects>({ spellFacets, bands,
 
     setBands(revisedBands);
   }, [isAvailable, mapBands, setBands]);
-
-  const confirmFacets = useCallback(() => {
-    setFacetsSet(true);
-    setIsRotating(true);
-  }, []);
 
   const reset = useCallback(() => {
     setAreaOfEffectId(spellFacets.areaOfEffects[0].id);
@@ -215,7 +212,6 @@ export function useMagicWheel<T extends OneOfWheelObjects>({ spellFacets, bands,
     areaOfEffectId,
     setTargetAmounts,
     setFacet,
-    confirmFacets,
     setPrayed,
     reset
   };

@@ -1,4 +1,4 @@
-import { Button, Grid, Select } from "@mantine/core";
+import { Grid, Select } from "@mantine/core";
 import { Fragment } from "react";
 
 import type { ElementCategories, OneOfWheelObjects, UseMagicWheelReturn } from "../../../hooks/useMagicWheel";
@@ -103,16 +103,6 @@ export function FacetControls<T extends OneOfWheelObjects>({ magicWheel, spellFa
           data={Object.values(spellFacets.origins).sort((a, b) => Number(a.id) - Number(b.id)).map(v => ({ value: v.id.toString(), label: v.name }))}
           allowDeselect={false}
         />
-      </Grid.Col>
-
-      <Grid.Col span={columnCount}>
-        <Button
-          variant="outline"
-          onClick={() => { magicWheel.confirmFacets(); }}
-          fullWidth
-        >
-          Bring me the Wheel
-        </Button>
       </Grid.Col>
     </Grid>
   );

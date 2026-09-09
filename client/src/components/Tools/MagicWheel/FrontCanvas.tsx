@@ -11,7 +11,7 @@ export function FrontCanvas({ constants }: { constants: MagicWheelConstants; }):
     if (context) {
       context.clearRect(0, 0, constants.canvasSize, constants.canvasSize);
 
-      context.fillStyle = "rgba(10, 0, 0, 0.33)";
+      context.fillStyle = "rgba(0, 0, 0, 0.66)";
 
       context.beginPath();
       context.moveTo(constants.canvasSize / 2, constants.canvasSize / 2);

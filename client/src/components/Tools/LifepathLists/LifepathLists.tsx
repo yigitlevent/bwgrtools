@@ -1,15 +1,30 @@
-import { Alert, Box, Grid, MultiSelect, Select, TextInput, Title } from "@mantine/core";
+import { Alert, Box, Grid, MultiSelect, Select, Title } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 import { LifepathBox } from "./LifepathBox";
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
 import { useSearch } from "../../../hooks/useSearch";
+import { SearchTextInput } from "../../Shared/SearchTextInput";
 
+
+type SearchableLifepath = Lifepath & { leadnames: string; skillnames: string; traitnames: string; };
 
 export function LifepathLists({ scrollRef }: { scrollRef: React.RefObject<HTMLDivElement | null>; }): React.JSX.Element {
-  const { stocks, settings, lifepaths } = useRulesetStore();
-  const { searchValues, setFilter, filteredList } = useSearch<Lifepath>(lifepaths, ["stock", "setting"], { "stock": stocks[0].name ?? "", "setting": settings[0].name ?? "" });
+  const ruleset = useRulesetStore();
+  const { stocks, settings, lifepaths } = ruleset;
+
+  const searchableLifepaths = useMemo((): SearchableLifepath[] => {
+    return lifepaths.map(lifepath => ({
+      ...lifepath,
+      leadnames: (lifepath.leads ?? []).map(id => ruleset.getSetting(id).name ?? "").join(", "),
+      skillnames: (lifepath.skills ?? []).map(id => ruleset.getSkill(id).name ?? "").join(", "),
+      traitnames: (lifepath.traits ?? []).map(id => ruleset.getTrait(id).name ?? "").join(", ")
+    }));
+  }, [lifepaths, ruleset]);
+
+  const { searchValues, setFilter, filteredList, isPending } =
+    useSearch<SearchableLifepath>(searchableLifepaths, ["stock", "setting"], { "stock": stocks[0].name ?? "", "setting": settings[0].name ?? "" });
 
   const [allowedSettings, setAllowedSettings] = useState(settings.filter(setting => setting.stock[1] === searchValues.filters.stock).map(v => v.name ?? ""));
 
@@ -59,11 +74,11 @@ export function LifepathLists({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
         </Grid.Col>
 
         <Grid.Col span={{ base: 4, sm: 2, md: 4 }}>
-          <TextInput
-            label="Search"
+          <SearchTextInput
             variant="filled"
             value={searchValues.text}
-            onChange={e => { setFilter([{ key: "s", value: e.target.value }]); }}
+            onChange={v => { setFilter([{ key: "s", value: v }]); }}
+            isPending={isPending}
           />
         </Grid.Col>
 
@@ -73,7 +88,12 @@ export function LifepathLists({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
             variant="filled"
             value={searchValues.fields}
             onChange={v => { setFilter([{ key: "sf", value: v.join(",") }]); }}
-            data={["Name"/* , "Leads", "Skills", "Traits" */]}
+            data={[
+              { value: "Name", label: "Name" },
+              { value: "leadnames", label: "Leads" },
+              { value: "skillnames", label: "Skills" },
+              { value: "traitnames", label: "Traits" }
+            ]}
           />
         </Grid.Col>
       </Grid>

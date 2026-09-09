@@ -1,4 +1,5 @@
-import { Button, Grid, Group, Title, Text, Paper } from "@mantine/core";
+import { Button, Grid, Group, Title, Text, Paper, Tooltip } from "@mantine/core";
+import { Info } from "lucide-react";
 import { Fragment } from "react";
 
 import { useCharacterBurnerSkillStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
@@ -69,7 +70,18 @@ export function Skills({ openModal }: { openModal: (name: CharacterBurnerModals)
   return (
     <Grid columns={6} align="center" mb="xl">
       <Grid.Col span={6}>
-        <Title order={4}>Skills</Title>
+        <Group gap={4}>
+          <Title order={4}>Skills</Title>
+
+          <Tooltip
+            multiline
+            w={320}
+            color="gray"
+            label="The letter is the skill's shade (Black/Grey/White, inherited from its root stats). Click the number to raise a skill's exponent, right-click (or press and hold) to lower it."
+          >
+            <Info size={14} />
+          </Tooltip>
+        </Group>
       </Grid.Col>
 
       <Grid.Col span={{ base: 6, sm: 5 }}>
