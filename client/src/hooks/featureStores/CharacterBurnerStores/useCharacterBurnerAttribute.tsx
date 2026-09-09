@@ -255,21 +255,26 @@ export const useCharacterBurnerAttributeStore = create<CharacterBurnerAttributeS
       updateAttributes: (): void => {
         const { abilities } = useRulesetStore.getState();
         const { hasTraitOpen } = useCharacterBurnerTraitStore.getState();
-        const { getAttribute } = get();
+        const { attributes, getAttribute } = get();
 
         const characterAttributes = new UniqueArray<dat.AbilityId, CharacterAttribute>(
           abilities
             .filter((ability): ability is Ability & { id: dat.AbilityId; } => (ability.abilityType[1].endsWith("Attribute")) && ability.id !== null)
             .filter(ability => ability.abilityType[1] === "Attribute" || (ability.requiredTraits?.some(traitId => hasTraitOpen(traitId)) ?? false))
             .map(ability => {
+              // getAttribute already computes the final shade/exponent (manual shift penalty
+              // included) from the CURRENT shadeShifted flag below -- preserve that same flag
+              // on write-back rather than re-deriving it from the computed shade, which would
+              // flip it every pass and double-apply the shift penalty.
+              const shadeShifted = attributes.find(ability.id)?.shadeShifted ?? false;
               const attr = getAttribute([ability.id, ability.name ?? ""]);
 
               return {
                 id: ability.id,
                 name: ability.name ?? "",
                 hasShade: ability.hasShades ?? false,
-                shadeShifted: attr.shade === "G",
-                exponent: attr.exponent - (attr.shade === "G" ? 5 : 0)
+                shadeShifted,
+                exponent: attr.exponent
               };
             }));
 

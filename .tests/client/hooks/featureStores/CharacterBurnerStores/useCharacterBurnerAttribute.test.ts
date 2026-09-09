@@ -333,30 +333,17 @@ describe("useCharacterBurnerAttributeStore", () => {
       expect(attr?.hasShade).toBe(false);
     });
 
-    it("BUG: a manual shade-shift's shadeShifted flag and exponent penalty perpetually oscillate across repeated recomputes instead of converging", () => {
-      // getAttribute's shade/exponent logic (useCharacterBurnerAttribute.tsx ~236-244) is inverted
-      // from what "shiftAttributeShade sets shadeShifted -> gray" would suggest: when
-      // prevAttributeState.shadeShifted is true, getAttribute returns shade "B" (not "G") alongside
-      // the -5 exponent penalty; when it's false, shade comes back "G" with no penalty from
-      // getAttribute itself. updateAttributes then re-derives shadeShifted as `attr.shade === "G"`
-      // and applies its OWN additional -5 whenever that's true -- so the two flags/exponents end up
-      // permanently out of phase with each other, oscillating every call instead of settling into a
-      // single "shade-shifted, -5 applied" steady state:
-      //   pass 1 (no prior state): shadeShifted=false, exponent=3
-      //   shiftAttributeShade():   shadeShifted=true,  exponent=3  (manual toggle, no exponent change)
-      //   pass 2: getAttribute sees shadeShifted=true -> returns shade "B", exponent 3-5=-2;
-      //           updateAttributes stores shadeShifted=(shade==="G")=false, exponent=-2-0=-2
-      //   pass 3: getAttribute sees shadeShifted=false -> returns shade "G", exponent 3-0=3;
-      //           updateAttributes stores shadeShifted=true, exponent=3-5=-2 (back to pass-2's state)
-      // From pass 2 onward the stored state alternates shadeShifted false/true while the exponent
-      // stays pinned at -2 -- never reaching a state where shadeShifted is durably true. Documented
-      // here as observed behavior, not fixed.
+    it("keeps a manual shade-shift's shadeShifted flag and exponent penalty stable across repeated recomputes", () => {
+      // updateAttributes preserves the existing shadeShifted flag on write-back rather than
+      // re-deriving it from getAttribute's computed shade -- this is what lets a manual shift
+      // converge to a steady state instead of flipping every recompute pass (see git history for
+      // the previous oscillating behavior this replaced).
       useCharacterBurnerAttributeStore.getState().updateAttributes();
       useCharacterBurnerAttributeStore.getState().shiftAttributeShade(AbilityIds.Steel);
 
       useCharacterBurnerAttributeStore.getState().updateAttributes();
       const afterPass2 = useCharacterBurnerAttributeStore.getState().attributes.find(AbilityIds.Steel);
-      expect(afterPass2?.shadeShifted).toBe(false);
+      expect(afterPass2?.shadeShifted).toBe(true);
       expect(afterPass2?.exponent).toBe(-2);
 
       useCharacterBurnerAttributeStore.getState().updateAttributes();
