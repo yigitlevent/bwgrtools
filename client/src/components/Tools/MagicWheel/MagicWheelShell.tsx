@@ -30,12 +30,12 @@ export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, band
   const magicWheel = useMagicWheel<T>({ spellFacets, bands, context, selectedElementCategory, setBands, isAvailable });
 
   useEffect(() => {
-    if (wrapperRef.current) setSize(window.getComputedStyle(wrapperRef.current).width);
+    if (wrapperRef.current !== null) setSize(window.getComputedStyle(wrapperRef.current).width);
   }, [wrapperRef]);
 
   useEffect(() => {
     const context = canvasRef.current?.getContext("2d");
-    if (context) setContext(context);
+    if (context !== null && context !== undefined) setContext(context);
   }, [canvasRef]);
 
   return (

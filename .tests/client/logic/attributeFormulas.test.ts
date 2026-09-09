@@ -391,6 +391,22 @@ describe("GetGriefOrSpite", () => {
     expect(nonSpiteResult.exponent).toBe(1 + 1);
   });
 
+  it("sums the cost of multiple Bitter Reminder resources", () => {
+    const resources = {
+      br1: ResourceOf({ name: "Bitter Reminder", cost: 20 }),
+      br2: ResourceOf({ name: "Bitter Reminder", cost: 15 })
+    };
+    const result = GetGriefOrSpite(true, Ability(3), Ability(3), 20, resources, [], [], NoLifepath, NoQuestion, NoTrait, undefined);
+    // no-lament(1) + floor((20+15)/10)=3 = 4
+    expect(result.exponent).toBe(1 + 3);
+  });
+
+  it("adds no Bitter Reminder bonus for Spite when the character has none", () => {
+    const withoutReminders = GetGriefOrSpite(true, Ability(3), Ability(3), 20, {}, [], [], NoLifepath, NoQuestion, NoTrait, undefined);
+    // no-lament(1) only -- no Bitter Reminder resources means the length-check short-circuits to +0
+    expect(withoutReminders.exponent).toBe(1);
+  });
+
   it("Mourner raises Grief up to mournerGrief (capped at 9) but never lowers it", () => {
     const hasTrait = (name: string): boolean => name === "Mourner";
     const raised = GetGriefOrSpite(false, Ability(3), Ability(3), 20, {}, [], [], NoLifepath, NoQuestion, hasTrait, 9);
@@ -615,6 +631,14 @@ describe("GetCircles", () => {
   it("does not add the resource bonus below the 50 threshold", () => {
     const resources = { a: ResourceOf({ type: [1 as unknown as dat.ResourceTypeId, "Property"], cost: 49 }) };
     expect(GetCircles(Ability(4), resources, NoTrait, undefined)).toEqual({ shade: "B", exponent: 2 });
+  });
+
+  it("sums multiple Property/Relationship resources toward the 50 threshold", () => {
+    const resources = {
+      a: ResourceOf({ type: [1 as unknown as dat.ResourceTypeId, "Property"], cost: 30 }),
+      b: ResourceOf({ type: [2 as unknown as dat.ResourceTypeId, "Relationship"], cost: 25 })
+    };
+    expect(GetCircles(Ability(4), resources, NoTrait, undefined)).toEqual({ shade: "B", exponent: 3 });
   });
 
   it("Prince of the Blood adds 1", () => {

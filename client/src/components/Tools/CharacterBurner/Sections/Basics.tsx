@@ -26,7 +26,7 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
   const hasSpecialStock = (stock[1] === "Orc" && lifepaths.length > 4) || (stock[1] === "Great Wolf" && lifepaths.length > 0);
 
   const hasSpecialLifepath =
-    lifepaths.some(lifepath => Array.isArray(lifepath.years) || (lifepath.companion?.givesSkills));
+    lifepaths.some(lifepath => Array.isArray(lifepath.years) || lifepath.companion?.givesSkills === true);
 
   const hasSpecialSkills =
     lifepaths.some(lifepath => (lifepath.skills ?? []).some(skillId => {
@@ -95,7 +95,8 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
           data={ruleset.stocks.map(v => ({ value: v.id?.toString() ?? "", label: v.name ?? "" }))}
           onChange={v => {
             const found = ruleset.stocks.find(s => s.id?.toString() === v);
-            if (!found?.id) return;
+            if (found === undefined) return;
+            if (found.id === null) return;
             if (hasProgress) setPendingStock(found);
             else setStockAndReset([found.id, found.name ?? ""]);
           }}
@@ -109,7 +110,7 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
           variant="filled"
           value={gender}
           data={["Male", "Female"]}
-          onChange={v => { if (v) setGender(v); }}
+          onChange={v => { if (v !== null) setGender(v); }}
           allowDeselect={false}
         />
       </Grid.Col>
@@ -166,7 +167,7 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
                 <Button
                   size="md"
                   onClick={() => {
-                    if (pendingStock?.id) setStockAndReset([pendingStock.id, pendingStock.name ?? ""]);
+                    if (pendingStock !== null && pendingStock.id !== null) setStockAndReset([pendingStock.id, pendingStock.name ?? ""]);
                     setPendingStock(null);
                   }}
                   fullWidth

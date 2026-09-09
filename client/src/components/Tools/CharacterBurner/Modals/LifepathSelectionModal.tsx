@@ -17,7 +17,7 @@ export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; clo
 
   const handle = useCallback((lifepath?: Lifepath) => {
     setDisabled(true);
-    if (lifepath) addLifepath(lifepath);
+    if (lifepath !== undefined) addLifepath(lifepath);
     else removeLastLifepath();
   }, [addLifepath, removeLastLifepath]);
 
@@ -45,9 +45,9 @@ export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           <Select
             label="Lifepath"
             variant="filled"
-            value={chosen ? available.indexOf(chosen).toString() : null}
+            value={chosen !== undefined ? available.indexOf(chosen).toString() : null}
             data={groupedLifepathData}
-            onChange={v => { if (v) setChosen(available[Number(v)]); }}
+            onChange={v => { if (v !== null) setChosen(available[Number(v)]); }}
             allowDeselect={false}
             disabled={disabled}
             searchable
@@ -66,7 +66,7 @@ export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; clo
                 size="md"
                 onClick={() => { setConfirmingRemove(true); }}
                 fullWidth
-                disabled={disabled || !lastLifepath}
+                disabled={disabled || lastLifepath === undefined}
               >
                 Remove Last Lifepath
               </Button>

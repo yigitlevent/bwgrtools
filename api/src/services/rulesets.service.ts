@@ -12,7 +12,7 @@ export async function GetRulesets(): Promise<Ruleset[]> {
       isExpansion: v.isExpansion
     };
 
-    if (v.expansionIds && v.expansionIds.length > 0) r.expansionIds = v.expansionIds;
+    if (v.expansionIds !== null && v.expansionIds.length > 0) r.expansionIds = v.expansionIds;
 
     return r;
   };

@@ -37,7 +37,7 @@ export const LifepathBox = memo(({ lifepath }: { lifepath: Lifepath; }): React.J
   };
 
   const leadsText = useMemo(() => {
-    const leads = (lifepath.leads && lifepath.leads.length > 0) ? lifepath.leads.map(settingId => getSetting(settingId).nameShort) : ["—"];
+    const leads = (lifepath.leads !== undefined && lifepath.leads.length > 0) ? lifepath.leads.map(settingId => getSetting(settingId).nameShort) : ["—"];
     return leads.join(", ");
   }, [lifepath.leads, getSetting]);
 
@@ -68,7 +68,7 @@ export const LifepathBox = memo(({ lifepath }: { lifepath: Lifepath; }): React.J
       <Divider mb={4} />
       <LifepathSkills lifepath={lifepath} />
       <LifepathTraits lifepath={lifepath} />
-      {lifepath.requirements ? <LifepathRequirements lifepath={lifepath} /> : null}
+      {lifepath.requirements !== undefined ? <LifepathRequirements lifepath={lifepath} /> : null}
     </Paper>
   );
 });

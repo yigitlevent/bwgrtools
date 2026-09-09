@@ -154,8 +154,10 @@ export const useRulesetStore = create<RulesetStore>()(
 
           RequestRulesetsList()
             .then(response => {
-              const firstRulesetId = response.rulesets[0]?.id;
-              if (!firstRulesetId) throw new Error("no rulesets returned");
+              if (response.rulesets.length === 0) throw new Error("no rulesets returned");
+              const firstRuleset = response.rulesets[0];
+              if (firstRuleset.id === null) throw new Error("no rulesets returned");
+              const firstRulesetId = firstRuleset.id;
 
               set(produce<RulesetStore>(state => {
                 state.rulesets = response.rulesets;
@@ -225,11 +227,11 @@ export const useRulesetStore = create<RulesetStore>()(
                     response.ruleset.lifepaths
                       .map(lifepath => {
                         const lp = { ...lifepath };
-                        if (lifepath.leads) lp.leads = lifepath.leads.filter(leadId => settings.some(x => x.id === leadId));
-                        if (lifepath.skills) lp.skills = lifepath.skills.filter(skillId => skills.some(x => x.id === skillId));
-                        if (lifepath.traits) lp.traits = lifepath.traits.filter(traitId => traits.some(x => x.id === traitId));
+                        if (lifepath.leads !== undefined) lp.leads = lifepath.leads.filter(leadId => settings.some(x => x.id === leadId));
+                        if (lifepath.skills !== undefined) lp.skills = lifepath.skills.filter(skillId => skills.some(x => x.id === skillId));
+                        if (lifepath.traits !== undefined) lp.traits = lifepath.traits.filter(traitId => traits.some(x => x.id === traitId));
 
-                        if (lp.requirements) {
+                        if (lp.requirements !== undefined) {
                           lp.requirements =
                             lp.requirements
                               .map(rb => {
@@ -241,10 +243,10 @@ export const useRulesetStore = create<RulesetStore>()(
                                       const lifepath = item.lifepath;
                                       const skill = item.skill;
                                       const trait = item.trait;
-                                      if (setting) return state.settings.some(x => x.id === setting[0]);
-                                      else if (lifepath) return response.ruleset.lifepaths.some(x => x.id === lifepath[0]);
-                                      else if (skill) return state.skills.some(x => x.id === skill[0]);
-                                      else if (trait) return state.traits.some(x => x.id === trait[0]);
+                                      if (setting !== undefined) return state.settings.some(x => x.id === setting[0]);
+                                      else if (lifepath !== undefined) return response.ruleset.lifepaths.some(x => x.id === lifepath[0]);
+                                      else if (skill !== undefined) return state.skills.some(x => x.id === skill[0]);
+                                      else if (trait !== undefined) return state.traits.some(x => x.id === trait[0]);
                                       return true;
                                     })
                                 };
@@ -362,11 +364,11 @@ export const useRulesetStore = create<RulesetStore>()(
 
         toggleDataset: (ruleset: dat.RulesetId) => {
           set(produce<RulesetStore>(state => {
-            if (!(state.rulesets.find(v => v.id === ruleset)?.isExpansion)) {
+            if (state.rulesets.find(v => v.id === ruleset)?.isExpansion !== true) {
               state.fetchState = "fetch-data";
               state.chosenRulesets = [ruleset];
             }
-            else if (state.chosenRulesets.includes(ruleset) && state.chosenRulesets.length > 1) {
+            else if (state.chosenRulesets.includes(ruleset)) {
               state.fetchState = "fetch-data";
               state.chosenRulesets = state.chosenRulesets.filter(v => v !== ruleset);
             }

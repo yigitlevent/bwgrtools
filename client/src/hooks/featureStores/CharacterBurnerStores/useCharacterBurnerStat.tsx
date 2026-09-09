@@ -88,10 +88,10 @@ export const useCharacterBurnerStatStore = create<CharacterBurnerStatState>()(
         set(produce<CharacterBurnerStatState>(state => {
           const stat = state.stats[statName];
           const currentExponent = stat.mainPoolSpent.exponent + stat.eitherPoolSpent.exponent;
-          const potentialExponent = currentExponent + (decrease ? -1 : 1);
+          const potentialExponent = currentExponent + (decrease === true ? -1 : 1);
           const stockLimit = limits.stats[statName].max;
 
-          if (decrease) {
+          if (decrease === true) {
             const hasMainSpending = state.stats[statName].mainPoolSpent.exponent > 0;
             const hasEitherSpending = state.stats[statName].eitherPoolSpent.exponent > 0;
 

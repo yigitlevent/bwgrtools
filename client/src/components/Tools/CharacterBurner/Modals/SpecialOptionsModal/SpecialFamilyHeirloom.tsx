@@ -22,7 +22,7 @@ export function SpecialFamilyHeirloom(): React.JSX.Element {
     .map(s => ({ value: s.id.toString(), label: s.name }));
 
   const resourceOptions = ruleset.resources
-    .filter(r => (stockId ? r.stock[0]?.toString() === stockId : true) && r.costs.some(c => c[0] <= 50))
+    .filter(r => (stockId !== null ? r.stock[0]?.toString() === stockId : true) && r.costs.some(c => c[0] <= 50))
     .sort((a, b) => a.name.localeCompare(b.name))
     .map(r => ({ value: r.id.toString(), label: `${r.name} (${r.stock[1]})` }));
 
@@ -47,14 +47,14 @@ export function SpecialFamilyHeirloom(): React.JSX.Element {
       <Grid.Col span={2}>
         <Select
           label="Free Item (≤50 rps)"
-          value={current ? current.id.toString() : null}
+          value={current !== undefined ? current.id.toString() : null}
           data={resourceOptions}
           onChange={v => {
             const found = ruleset.resources.find(r => r.id.toString() === v);
-            if (found) {
+            if (found !== undefined) {
               const cost = found.costs.filter(c => c[0] <= 50).sort((a, b) => b[0] - a[0])[0]?.[0] ?? found.costs[0][0];
               const trait = ruleset.getTrait("Family Heirloom");
-              if (trait.id) setFamilyHeirloomResource(trait.id, found, cost);
+              if (trait.id !== null) setFamilyHeirloomResource(trait.id, found, cost);
             }
           }}
           searchable

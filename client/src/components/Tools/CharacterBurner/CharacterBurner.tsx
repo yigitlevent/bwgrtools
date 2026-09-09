@@ -60,7 +60,7 @@ export function CharacterBurner(): React.JSX.Element {
         )}
       </Group>
 
-      {restorePayload ? (
+      {restorePayload !== null ? (
         <RestoreCharacterModal
           payload={restorePayload}
           mismatch={IsRulesetMismatch(restorePayload)}

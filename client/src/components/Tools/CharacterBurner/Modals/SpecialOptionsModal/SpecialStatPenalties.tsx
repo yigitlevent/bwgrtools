@@ -34,7 +34,7 @@ export function SpecialStatPenalties(): React.JSX.Element {
               label="Chosen Stat"
               value={special.crippledStat?.toString() ?? null}
               data={statOptions}
-              onChange={v => { modifyCrippledStat(v ? Number(v) as dat.AbilityId : undefined); }}
+              onChange={v => { modifyCrippledStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
               allowDeselect={false}
               size="sm"
             />
@@ -53,7 +53,7 @@ export function SpecialStatPenalties(): React.JSX.Element {
               label="Chosen Stat"
               value={special.frailStat?.toString() ?? null}
               data={frailOptions}
-              onChange={v => { modifyFrailStat(v ? Number(v) as dat.AbilityId : undefined); }}
+              onChange={v => { modifyFrailStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
               allowDeselect={false}
               size="sm"
             />
@@ -72,7 +72,7 @@ export function SpecialStatPenalties(): React.JSX.Element {
               label="Arm or Leg"
               value={special.missingLimb?.toString() ?? null}
               data={limbOptions}
-              onChange={v => { modifyMissingLimb(v ? Number(v) as dat.AbilityId : undefined); }}
+              onChange={v => { modifyMissingLimb(v !== null ? Number(v) as dat.AbilityId : undefined); }}
               allowDeselect={false}
               size="sm"
             />

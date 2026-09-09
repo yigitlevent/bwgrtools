@@ -8,7 +8,7 @@ export function FrontCanvas({ constants }: { constants: MagicWheelConstants; }):
   useEffect(() => {
     const context = canvasRef.current?.getContext("2d");
 
-    if (context) {
+    if (context !== undefined && context !== null) {
       context.clearRect(0, 0, constants.canvasSize, constants.canvasSize);
 
       context.fillStyle = "rgba(0, 0, 0, 0.66)";

@@ -28,7 +28,7 @@ function useLongPress(onContextMenu?: (event: React.MouseEvent<HTMLButtonElement
 
   return {
     onPointerDown: e => {
-      if (e.pointerType !== "touch" || !onContextMenu) return;
+      if (e.pointerType !== "touch" || onContextMenu === undefined) return;
       fired.current = false;
       timeout.current = setTimeout(() => {
         fired.current = true;
@@ -53,7 +53,7 @@ export function AbilityButton(props: AbilityButtonProps): React.JSX.Element {
 
   const handle = (e: React.MouseEvent<HTMLButtonElement>, callback?: (event: React.MouseEvent<HTMLButtonElement>) => void): void => {
     e.preventDefault();
-    if (callback) callback(e);
+    if (callback !== undefined) callback(e);
   };
 
   const button = (
@@ -69,7 +69,7 @@ export function AbilityButton(props: AbilityButtonProps): React.JSX.Element {
     />
   );
 
-  if (!onContextMenu) return button;
+  if (onContextMenu === undefined) return button;
 
   return (
     <Tooltip color="gray" label="Right-click or press and hold to decrease" events={{ hover: true, focus: true, touch: true }}>
@@ -83,7 +83,7 @@ export function AbilityButtonWithArrows(props: AbilityButtonProps): React.JSX.El
 
   const handle = (e: React.MouseEvent<HTMLButtonElement>, callback?: (event: React.MouseEvent<HTMLButtonElement>) => void): void => {
     e.preventDefault();
-    if (callback) callback(e);
+    if (callback !== undefined) callback(e);
   };
 
   return (

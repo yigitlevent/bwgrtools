@@ -36,7 +36,7 @@ export const DarkTheme = createTheme({
     Button: Button.extend({
       styles: (_theme, props) => ({
         root: {
-          cursor: props.disabled ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
+          cursor: props.disabled === true ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
         }
       })
     }),
@@ -97,7 +97,7 @@ export const DarkTheme = createTheme({
     Checkbox: Checkbox.extend({
       styles: (_theme, props) => ({
         input: {
-          cursor: props.disabled ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
+          cursor: props.disabled === true ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
         }
       })
     }),
@@ -123,14 +123,14 @@ export const DarkTheme = createTheme({
     ActionIcon: ActionIcon.extend({
       styles: (_theme, props) => ({
         root: {
-          cursor: props.disabled ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
+          cursor: props.disabled === true ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
         }
       })
     }),
     CloseButton: CloseButton.extend({
       styles: (_theme, props) => ({
         root: {
-          cursor: props.disabled ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
+          cursor: props.disabled === true ? "var(--cursor-invalid)" : "var(--cursor-pointer)"
         }
       })
     }),

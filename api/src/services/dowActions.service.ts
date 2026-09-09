@@ -10,9 +10,9 @@ export async function GetDoWActions(): Promise<DoWAction[]> {
         name: v.name
       };
 
-      if (v.effect) act.effect = v.effect;
-      if (v.speakingThePart) act.speakingThePart = v.speakingThePart;
-      if (v.special) act.special = v.special;
+      if (v.effect !== null) act.effect = v.effect;
+      if (v.speakingThePart !== null) act.speakingThePart = v.speakingThePart;
+      if (v.special !== null) act.special = v.special;
 
       const t = at.filter(t => t.actionId === v.id);
       if (t.length > 0) {
@@ -22,8 +22,8 @@ export async function GetDoWActions(): Promise<DoWAction[]> {
         };
 
         t.forEach(test => {
-          if (test.ability && test.abilityId !== null) act.tests?.abilities.push([test.abilityId, test.ability]);
-          if (test.skill && test.skillId !== null) act.tests?.skills.push([test.skillId, test.skill]);
+          if (test.ability !== null && test.abilityId !== null) act.tests?.abilities.push([test.abilityId, test.ability]);
+          if (test.skill !== null && test.skillId !== null) act.tests?.skills.push([test.skillId, test.skill]);
         });
       }
 
@@ -37,14 +37,14 @@ export async function GetDoWActions(): Promise<DoWAction[]> {
             type: [res.resolutionTypeId!, res.resolutionType!]
           };
 
-          if (res.isAgainstSkill) actionRes.isAgainstSkill = res.isAgainstSkill;
-          if (res.obstacle) actionRes.obstacle = res.obstacle;
-          if (res.opposingModifier) actionRes.opposingModifier = res.opposingModifier;
+          if (res.isAgainstSkill !== null) actionRes.isAgainstSkill = res.isAgainstSkill;
+          if (res.obstacle !== null) actionRes.obstacle = res.obstacle;
+          if (res.opposingModifier !== null) actionRes.opposingModifier = res.opposingModifier;
 
           if (res.skillId !== null) actionRes.skill = [res.skillId, res.skill!];
           if (res.abilityId !== null) actionRes.ability = [res.abilityId, res.ability!];
-          if (res.opposingSkillId !== null && res.opposingSkill) actionRes.opposingSkill = [res.opposingSkillId, res.opposingSkill];
-          if (res.opposingAbilityId !== null && res.opposingAbility) actionRes.opposingAbility = [res.opposingAbilityId, res.opposingAbility];
+          if (res.opposingSkillId !== null && res.opposingSkill !== null) actionRes.opposingSkill = [res.opposingSkillId, res.opposingSkill];
+          if (res.opposingAbilityId !== null && res.opposingAbility !== null) actionRes.opposingAbility = [res.opposingAbilityId, res.opposingAbility];
 
           act.resolutions?.push(actionRes);
         });

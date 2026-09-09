@@ -52,10 +52,10 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         const { traits, getTraitPools } = get();
         const charTrait = traits.find(traitId);
 
-        if (charTrait && (charTrait.isOpen || getTraitPools().remaining > 0)) {
+        if (charTrait !== undefined && (charTrait.isOpen || getTraitPools().remaining > 0)) {
           set(produce<CharacterBurnerTraitState>(state => {
             const stateTrait = state.traits.find(traitId);
-            if (stateTrait) {
+            if (stateTrait !== undefined) {
               stateTrait.isOpen = !stateTrait.isOpen;
               state.traits = new UniqueArray(state.traits.add(stateTrait).items);
             }
@@ -68,7 +68,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
       },
 
       addGeneralTrait: (trait: Trait): void => {
-        if (!trait.id) return;
+        if (trait.id === null) return;
         const charTrait: CharacterTrait = { id: trait.id, name: trait.name ?? "", isOpen: false, type: "General" };
         set(produce<CharacterBurnerTraitState>(state => { state.traits = new UniqueArray(state.traits.add(charTrait).items); }));
 
@@ -118,7 +118,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
       getTrait: (traitId: dat.TraitId): { open: boolean; } => {
         const state = get();
         const charTrait = state.traits.find(traitId);
-        const open = (charTrait && state.hasTraitOpen(traitId)) ? true : false;
+        const open = (charTrait !== undefined && state.hasTraitOpen(traitId)) ? true : false;
         return { open };
       },
 
@@ -145,7 +145,7 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
           const occurrence = occurrences[lpIndex];
           const mandatoryIndex = occurrence <= 2 ? occurrence - 1 : -1;
 
-          return lp.traits ? lp.traits.map((tr: dat.TraitId, i: number) => {
+          return lp.traits !== undefined ? lp.traits.map((tr: dat.TraitId, i: number) => {
             const trait = ruleset.getTrait(tr);
             const isMandatory = (i === mandatoryIndex);
             const entry: CharacterTrait = {
@@ -159,9 +159,9 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
         }).flat());
 
         ruleset.traits
-          .filter(trait => trait.stock?.[0] === stock[0] && trait.category[1] === "Common" && trait.id)
+          .filter(trait => trait.stock?.[0] === stock[0] && trait.category[1] === "Common" && trait.id !== null)
           .forEach(trait => {
-            if (trait.id && characterTraits.existsAny("id", trait.id) === 0) {
+            if (trait.id !== null && characterTraits.existsAny("id", trait.id) === 0) {
               characterTraits.add({ id: trait.id, name: trait.name ?? "", type: "Common", isOpen: true });
             }
           });

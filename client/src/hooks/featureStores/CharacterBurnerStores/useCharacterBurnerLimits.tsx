@@ -76,13 +76,13 @@ export const useCharacterBurnerLimitsStore = create<CharacterBurnerLimitsState>(
         // of the rule isn't representable -- the burner has no starting-vs-advancement distinction).
         if (hasTraitOpenByName("Crippled") && special.crippledStat !== undefined) {
           const statName = ruleset.getAbility(special.crippledStat).name;
-          if (statName) limits.stats[statName] = { min: 1, max: 4 };
+          if (statName !== null) limits.stats[statName] = { min: 1, max: 4 };
         }
 
         // Frail: player-chosen stat (Power or Forte) capped at exponent 5.
         if (hasTraitOpenByName("Frail") && special.frailStat !== undefined) {
           const statName = ruleset.getAbility(special.frailStat).name;
-          if (statName) limits.stats[statName] = { min: 1, max: 5 };
+          if (statName !== null) limits.stats[statName] = { min: 1, max: 5 };
         }
 
         // Missing Limb: a missing arm caps Agility at 5; a missing leg caps Speed at 4 (stride is

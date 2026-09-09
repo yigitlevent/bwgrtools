@@ -16,7 +16,7 @@ export function GeneralAbilityModal<T extends Skill | Trait>({ isOpen, close, ti
   const [chosenAbility, setChosenAbility] = useState<T>();
 
   const addNewAbility = (): void => {
-    if (chosenAbility) {
+    if (chosenAbility !== undefined) {
       onAdd(chosenAbility);
       close();
     }
@@ -27,7 +27,10 @@ export function GeneralAbilityModal<T extends Skill | Trait>({ isOpen, close, ti
   }, [possibleAbilities]);
 
   const groupedAbilityData = useMemo(() => {
-    const sorted = [...possibleAbilities].sort((a, b) => a.category[1].localeCompare(b.category[1]) || (a.name ?? "").localeCompare(b.name ?? ""));
+    const sorted = [...possibleAbilities].sort((a, b) => {
+      const categoryComparison = a.category[1].localeCompare(b.category[1]);
+      return categoryComparison !== 0 ? categoryComparison : (a.name ?? "").localeCompare(b.name ?? "");
+    });
     const groups = new Map<string, { value: string; label: string; }[]>();
     sorted.forEach(v => {
       const groupName = v.category[1];
@@ -41,7 +44,7 @@ export function GeneralAbilityModal<T extends Skill | Trait>({ isOpen, close, ti
   return (
     <Modal opened={isOpen} onClose={() => { close(); }} size="800px">
       <Grid columns={1} gap="md" align="center" justify="center">
-        {chosenAbility ? (
+        {chosenAbility !== undefined ? (
           <Grid.Col span={1}>
             <Select
               label={title}
@@ -49,7 +52,7 @@ export function GeneralAbilityModal<T extends Skill | Trait>({ isOpen, close, ti
               data={groupedAbilityData}
               onChange={v => {
                 const found = possibleAbilities.find(a => a.id?.toString() === v);
-                if (found) setChosenAbility(found);
+                if (found !== undefined) setChosenAbility(found);
               }}
               allowDeselect={false}
               searchable
@@ -57,7 +60,7 @@ export function GeneralAbilityModal<T extends Skill | Trait>({ isOpen, close, ti
           </Grid.Col>
         ) : null}
 
-        {chosenAbility ? (
+        {chosenAbility !== undefined ? (
           <Grid.Col span={1}>
             {renderDetails(chosenAbility)}
           </Grid.Col>

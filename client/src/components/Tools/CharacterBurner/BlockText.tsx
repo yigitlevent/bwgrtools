@@ -23,7 +23,7 @@ function BlockAbilityPopover({ data, checkbox, deleteCallback }: BlockAbilityPop
 
   return (
     <Grid>
-      {checkbox ? (
+      {checkbox !== undefined ? (
         <Checkbox
           checked={checkbox.checked}
           disabled={checkbox.disabled}
@@ -36,7 +36,7 @@ function BlockAbilityPopover({ data, checkbox, deleteCallback }: BlockAbilityPop
         <PopoverLink data={data} />
       </Text>
 
-      {deleteCallback ? (
+      {deleteCallback !== undefined ? (
         <Popover opened={confirmingDelete} onChange={setConfirmingDelete} withArrow position="bottom" width={260}>
           <Popover.Target>
             <ActionIcon

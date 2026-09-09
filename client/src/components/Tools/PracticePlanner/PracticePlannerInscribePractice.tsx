@@ -21,17 +21,17 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
   const [practiceName, setPracticeName] = useState<string | Skill>("");
 
   const practiceOptionLabel = (option: Practice): string =>
-    option.ability ? `${option.ability[1]} - ${String(option.cycle)}m, R: ${String(option.routine)}h, D: ${String(option.difficult)}h, C: ${String(option.challenging)}h` : `${String(option.skillType?.[1])} - ${String(option.cycle)}m, R: ${String(option.routine)}h, D: ${String(option.difficult)}h, C: ${String(option.challenging)}h`;
+    option.ability !== undefined ? `${option.ability[1]} - ${String(option.cycle)}m, R: ${String(option.routine)}h, D: ${String(option.difficult)}h, C: ${String(option.challenging)}h` : `${String(option.skillType?.[1])} - ${String(option.cycle)}m, R: ${String(option.routine)}h, D: ${String(option.difficult)}h, C: ${String(option.challenging)}h`;
 
   const possibleSkills = useMemo(() => {
-    if (practiceType.ability) {
+    if (practiceType.ability !== undefined) {
       return null;
     }
-    return skills.filter(s => s.type[0] === practiceType.skillType?.[0] && !s.flags.dontList).sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+    return skills.filter(s => s.type[0] === practiceType.skillType?.[0] && s.flags.dontList !== true).sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
   }, [practiceType, skills]);
 
   const defaultPracticeName = useMemo(() => {
-    if (practiceType.ability) {
+    if (practiceType.ability !== undefined) {
       return practiceType.ability[1];
     }
     return possibleSkills?.[0] ?? "";
@@ -43,7 +43,7 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
 
   const handleAddPractice = (): void => {
     const practice = practices.find(p => p.id === practiceType.id);
-    if (practice?.id) {
+    if (practice?.id !== undefined && practice.id !== null) {
       const practiceHours = (testType === "Routine" ? practice.routine : testType === "Difficult" ? practice.difficult : practice.challenging) ?? 0;
       const name = typeof practiceName === "string" ? practiceName : (practiceName.name ?? "");
       addPractice(practice.id, actualCellStartEndIndex, practiceHours, name, testType, setNotification);
@@ -65,7 +65,7 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
             data={practices.map(p => ({ value: p.id?.toString() ?? "", label: practiceOptionLabel(p) }))}
             onChange={v => {
               const found = practices.find(p => p.id?.toString() === v);
-              if (found) setPracticeType(found);
+              if (found !== undefined) setPracticeType(found);
             }}
             allowDeselect={false}
             disabled={cells.length < 1}
@@ -73,7 +73,7 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
         </Grid.Col>
 
         <Grid.Col span={{ base: 10, sm: 4, md: 3 }}>
-          {possibleSkills && typeof practiceName !== "string" ? (
+          {possibleSkills !== null && typeof practiceName !== "string" ? (
             <Select
               label="Name"
               variant="filled"
@@ -81,7 +81,7 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
               data={possibleSkills.map(s => ({ value: s.id?.toString() ?? "", label: s.name ?? "" }))}
               onChange={v => {
                 const found = possibleSkills.find(s => s.id?.toString() === v);
-                if (found) setPracticeName(found);
+                if (found !== undefined) setPracticeName(found);
               }}
               allowDeselect={false}
               disabled={cells.length < 1}
@@ -95,7 +95,7 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
             variant="filled"
             value={testType}
             data={["Routine", "Difficult", "Challenging"]}
-            onChange={v => { if (v) setTestType(v); }}
+            onChange={v => { if (v !== null) setTestType(v); }}
             allowDeselect={false}
             disabled={cells.length < 1}
           />

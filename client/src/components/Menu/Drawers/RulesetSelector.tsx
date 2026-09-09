@@ -8,7 +8,7 @@ import { useDrawerStore } from "../../../hooks/useDrawerStore";
 
 
 function TogglePendingRuleset(pending: dat.RulesetId[], rulesets: Ruleset[], ruleset: dat.RulesetId): dat.RulesetId[] {
-  if (!(rulesets.find(v => v.id === ruleset)?.isExpansion)) return [ruleset];
+  if (rulesets.find(v => v.id === ruleset)?.isExpansion !== true) return [ruleset];
   if (pending.includes(ruleset) && pending.length > 1) return pending.filter(v => v !== ruleset);
   return [...pending, ruleset];
 }
@@ -36,8 +36,8 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
   };
 
   const reset = (): void => {
-    const defaultRuleset = rulesets.find(v => !v.isExpansion && v.id)?.id;
-    setPending(defaultRuleset ? [defaultRuleset] : []);
+    const defaultRuleset = rulesets.find(v => v.isExpansion !== true && v.id !== null)?.id;
+    setPending(defaultRuleset !== undefined && defaultRuleset !== null ? [defaultRuleset] : []);
   };
 
   const commitApply = (): void => {
@@ -64,16 +64,16 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
       </Menu.Target>
 
       <Menu.Dropdown>
-        {rulesets.filter(ruleset => !ruleset.isExpansion && ruleset.id).map((ruleset, i) => {
+        {rulesets.filter(ruleset => ruleset.isExpansion !== true && ruleset.id !== null).map((ruleset, i) => {
           const rulesetId = ruleset.id;
-          if (!rulesetId) return null;
+          if (rulesetId === null) return null;
 
           const rulesetLeftSection = isPendingChecked(rulesetId) ? <Check size={18} color="var(--mantine-color-green-6)" /> : <X size={18} color="var(--mantine-color-red-6)" />;
-          const rulesetRightSection = ruleset.isOfficial ? (
+          const rulesetRightSection = ruleset.isOfficial === true ? (
             <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
           ) : null;
 
-          if (!ruleset.expansionIds) {
+          if (ruleset.expansionIds === undefined) {
             return (
               <Menu.Item
                 key={i}
@@ -109,12 +109,12 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
                   const expansionId2 = expansion?.id;
 
                   return (
-                    expansionId2 ? (
+                    expansion !== undefined && expansionId2 !== undefined && expansionId2 !== null ? (
                       <Menu.Item
                         key={ii}
                         disabled={!isPendingChecked(rulesetId)}
                         leftSection={isPendingExactChecked([rulesetId, expansionId2]) ? <Check size={18} color="var(--mantine-color-green-6)" /> : <X size={18} color="var(--mantine-color-red-6)" />}
-                        rightSection={ruleset.isOfficial ? (
+                        rightSection={ruleset.isOfficial === true ? (
                           <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
                         ) : null}
                         onClick={() => { setPending(p => TogglePendingRuleset(p, rulesets, expansionId2)); }}

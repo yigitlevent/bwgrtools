@@ -27,41 +27,41 @@ export function FilterLifepaths({ rulesetLifepaths, stock, age, lifepaths, gende
       // (special.companionLifepath/companionSkills only record which lifepath/skills a companion has).
 
       if ("isUnique" in item) return lifepath.id !== null && checkLifepath(lifepath.id) === -1;
-      else if ("isSettingEntry" in item) return hasSetting && lifepath.setting[0] !== null ? hasSetting(lifepath.setting[0]) === 0 : true;
-      else if ("minLpIndex" in item && item.minLpIndex) return lifepaths.length >= item.minLpIndex;
-      else if ("maxLpIndex" in item && item.maxLpIndex) return lifepaths.length <= item.maxLpIndex;
-      else if ("minYears" in item && item.minYears) return age >= item.minYears;
-      else if ("maxYears" in item && item.maxYears) return age <= item.maxYears;
+      else if ("isSettingEntry" in item) return hasSetting !== undefined && lifepath.setting[0] !== null ? hasSetting(lifepath.setting[0]) === 0 : true;
+      else if ("minLpIndex" in item && item.minLpIndex !== undefined) return lifepaths.length >= item.minLpIndex;
+      else if ("maxLpIndex" in item && item.maxLpIndex !== undefined) return lifepaths.length <= item.maxLpIndex;
+      else if ("minYears" in item && item.minYears !== undefined) return age >= item.minYears;
+      else if ("maxYears" in item && item.maxYears !== undefined) return age <= item.maxYears;
       else if ("gender" in item) {
-        if (gender) return item.gender === gender;
+        if (gender !== undefined) return item.gender === gender;
         else return true;
       }
       // TODO: oldestBy is not evaluated: "must be oldest in the party by N years" requires knowing
       // other party members' ages, which needs a campaign/party feature that doesn't exist in this
       // single-character burner. Always treated as satisfied until that feature exists.
       else if ("oldestBy" in item) return true;
-      else if (attributes && "attribute" in item && item.attribute) {
+      else if (attributes !== undefined && "attribute" in item && item.attribute !== undefined) {
         const exp = attributes.find(item.attribute[0])?.exponent;
-        if (item.min) return exp ? exp >= item.min : false;
-        else if (item.max) return exp ? exp <= item.max : false;
-        else if (hasAttribute) return hasAttribute(item.attribute[0]);
+        if (item.min !== undefined) return exp !== undefined && exp >= item.min;
+        else if (item.max !== undefined) return exp !== undefined && exp <= item.max;
+        else if (hasAttribute !== undefined) return hasAttribute(item.attribute[0]);
         else return true;
       }
-      else if ("skill" in item && item.skill) {
-        if (hasSkillOpen) return hasSkillOpen(item.skill[0]);
+      else if ("skill" in item && item.skill !== undefined) {
+        if (hasSkillOpen !== undefined) return hasSkillOpen(item.skill[0]);
         else return true;
       }
-      else if ("trait" in item && item.trait) {
-        if (hasTraitOpen) return hasTraitOpen(item.trait[0]);
+      else if ("trait" in item && item.trait !== undefined) {
+        if (hasTraitOpen !== undefined) return hasTraitOpen(item.trait[0]);
         else return true;
       }
-      else if ("lifepath" in item && item.lifepath && block.fulfillmentAmount) return countLifepath(item.lifepath[0]) >= block.fulfillmentAmount;
-      else if ("setting" in item && item.setting && block.fulfillmentAmount) {
-        if (hasSetting) return hasSetting(item.setting[0]) >= block.fulfillmentAmount;
+      else if ("lifepath" in item && item.lifepath !== undefined && block.fulfillmentAmount !== null) return countLifepath(item.lifepath[0]) >= block.fulfillmentAmount;
+      else if ("setting" in item && item.setting !== undefined && block.fulfillmentAmount !== null) {
+        if (hasSetting !== undefined) return hasSetting(item.setting[0]) >= block.fulfillmentAmount;
         else return true;
       }
-      else if ("question" in item && item.question) {
-        if (hasQuestionTrue) return hasQuestionTrue((item.question as [dat.QuestionId, unknown])[0]);
+      else if ("question" in item && item.question !== undefined) {
+        if (hasQuestionTrue !== undefined) return hasQuestionTrue((item.question as [dat.QuestionId, unknown])[0]);
         else return true;
       }
       else throw new Error(`Unidentified requirement block item: ${item.logicType.toString()}`);
@@ -78,23 +78,23 @@ export function FilterLifepaths({ rulesetLifepaths, stock, age, lifepaths, gende
 
   let possibleLifepaths: Lifepath[] = [];
 
-  if (lifepaths.length === 0) possibleLifepaths = rulesetLifepaths.filter(lp => lp.flags.isBorn && stock[0] === lp.stock[0]);
+  if (lifepaths.length === 0) possibleLifepaths = rulesetLifepaths.filter(lp => lp.flags.isBorn === true && stock[0] === lp.stock[0]);
   else {
     const lastLifepath = lifepaths[lifepaths.length - 1];
-    const possibleSettingIds = lastLifepath.leads ? [lastLifepath.setting[0], ...lastLifepath.leads] : [lastLifepath.setting[0]];
+    const possibleSettingIds = lastLifepath.leads !== undefined ? [lastLifepath.setting[0], ...lastLifepath.leads] : [lastLifepath.setting[0]];
 
     possibleLifepaths =
       possibleSettingIds
         .map(settingId => {
-          const settingLifepaths = rulesetLifepaths.filter(x => stock[0] === x.stock[0] && x.setting[0] === settingId && !x.flags.isBorn);
-          const hasUntakenEntry = settingId !== null && (!hasSetting || hasSetting(settingId) === 0) && settingLifepaths.some(isSettingEntryLifepath);
+          const settingLifepaths = rulesetLifepaths.filter(x => stock[0] === x.stock[0] && x.setting[0] === settingId && x.flags.isBorn !== true);
+          const hasUntakenEntry = settingId !== null && (hasSetting === undefined || hasSetting(settingId) === 0) && settingLifepaths.some(isSettingEntryLifepath);
           return hasUntakenEntry ? settingLifepaths.filter(isSettingEntryLifepath) : settingLifepaths;
         })
         .flat()
         .filter(lifepath => {
-          if (lifepath.requirements) {
+          if (lifepath.requirements !== undefined) {
             const blockResults = lifepath.requirements.map(block => ({ mustFulfill: block.mustFulfill, result: checkRequirementBlock(lifepath, block) }));
-            const musts = blockResults.every(v => v.mustFulfill && v.result);
+            const musts = blockResults.every(v => v.mustFulfill === true && v.result);
             const atLeastOne = blockResults.some(v => v.result);
             return musts && atLeastOne;
           }
@@ -102,7 +102,7 @@ export function FilterLifepaths({ rulesetLifepaths, stock, age, lifepaths, gende
         });
   }
 
-  if (noLeads) possibleLifepaths = possibleLifepaths.filter(lp => lp.setting[0] === noLeads[0]);
+  if (noLeads !== undefined) possibleLifepaths = possibleLifepaths.filter(lp => lp.setting[0] === noLeads[0]);
 
   return possibleLifepaths;
 }

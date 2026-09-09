@@ -74,7 +74,7 @@ function PracticesTable({ cell, cellIndex }: { cell: PracticeCell; cellIndex: nu
           width: 200,
           render: placed => {
             const practice = getPractice(placed.practiceId);
-            return `${String(practice.ability ? practice.ability[1] : practice.skillType?.[1])}, ${placed.testType}`;
+            return `${String(practice.ability !== undefined ? practice.ability[1] : practice.skillType?.[1])}, ${placed.testType}`;
           }
         },
         {

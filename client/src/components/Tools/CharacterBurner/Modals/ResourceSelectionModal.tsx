@@ -17,7 +17,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
   const resourcePool = getResourcePools();
 
   const rulesetResource = ruleset.resources.find(x => x.stock[0] === stock[0]);
-  if (!rulesetResource) throw new Error("No resources found for the selected stock.");
+  if (rulesetResource === undefined) throw new Error("No resources found for the selected stock.");
 
   const [resource, setResource] = useState<Resource>(rulesetResource);
   const [resourceDesc, setResourceDesc] = useState("");
@@ -34,7 +34,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
 
   const modifyResource = useCallback((resource: Resource) => {
     const res = getStockResources().find(v => v.id === resource.id);
-    if (res) {
+    if (res !== undefined) {
       setResourceDesc("");
       setResource(res);
       resetCosts();
@@ -42,24 +42,24 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
   }, [getStockResources, resetCosts]);
 
   const changeCost = useCallback((cost: number) => {
-    if (!costs) return;
+    if (costs === undefined) return;
     const newCosts = structuredClone(costs);
     newCosts.baseCost = cost > 0 ? cost : 0;
     setCosts(newCosts);
   }, [costs]);
 
   const changeModifier = useCallback((name: string) => {
-    if (!costs) return;
+    if (costs === undefined) return;
     const newCosts = structuredClone(costs);
     newCosts.modifiers[name] = { ...newCosts.modifiers[name], selected: !newCosts.modifiers[name].selected };
     setCosts(newCosts);
   }, [costs]);
 
-  const totalCost = useMemo(() => costs ? GetTotalCost(costs, GetSelectedModifiers(costs), numberOfWeapons) : undefined, [costs, numberOfWeapons]);
+  const totalCost = useMemo(() => costs !== undefined ? GetTotalCost(costs, GetSelectedModifiers(costs), numberOfWeapons) : undefined, [costs, numberOfWeapons]);
   const canAffordResource = totalCost !== undefined && totalCost <= resourcePool.remaining;
 
   const createResource = useCallback(() => {
-    if (costs && totalCost !== undefined && canAffordResource && resource.type[0]) {
+    if (costs !== undefined && totalCost !== undefined && canAffordResource && resource.type[0] !== null) {
       const modifiers = GetSelectedModifiers(costs);
       addResource({
         id: resource.id,
@@ -77,7 +77,10 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
     resetCosts();
   }, [resource, resetCosts, numberOfWeapons]);
 
-  const sortedStockResources = useMemo(() => getStockResources().sort((a, b) => a.type[1].localeCompare(b.type[1]) || (a.name).localeCompare(b.name)), [getStockResources]);
+  const sortedStockResources = useMemo(() => getStockResources().sort((a, b) => {
+    const typeComparison = a.type[1].localeCompare(b.type[1]);
+    return typeComparison !== 0 ? typeComparison : a.name.localeCompare(b.name);
+  }), [getStockResources]);
 
   const groupedResourceData = useMemo(() => {
     const groups = new Map<string, { value: string; label: string; }[]>();
@@ -100,7 +103,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
             data={groupedResourceData}
             onChange={v => {
               const found = sortedStockResources.find(r => r.id.toString() === v);
-              if (found) modifyResource(found);
+              if (found !== undefined) modifyResource(found);
             }}
             allowDeselect={false}
             searchable
@@ -127,7 +130,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           </Grid.Col>
         ) : null}
 
-        {resource.magical?.obstacleDetails ? (
+        {resource.magical?.obstacleDetails !== undefined ? (
           <Fragment>
             <Grid.Col span={{ base: 6, sm: 2 }}>
               <Text size="sm">
@@ -145,7 +148,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           </Fragment>
         ) : null}
 
-        {resource.magical ? (
+        {resource.magical !== undefined ? (
           <Fragment>
             <Grid.Col span={{ base: 6, sm: 2 }}>
               <Text size="sm">
@@ -184,29 +187,29 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           </Fragment>
         ) : null}
 
-        {resource.description ? (
+        {resource.description !== undefined ? (
           <Grid.Col span={6}>
             {resource.description.split("<br>").map((v, i) => {
-              if (resource.magical && i === 0) return <Text key={i} size="sm" fw={600}>{v}</Text>;
+              if (resource.magical !== undefined && i === 0) return <Text key={i} size="sm" fw={600}>{v}</Text>;
               return <Text key={i} size="sm">{v}</Text>;
             })}
           </Grid.Col>
         ) : null}
 
-        {costs && resource.costs.length > 1 ? (
+        {costs !== undefined && resource.costs.length > 1 ? (
           <Grid.Col span={6}>
             <Title order={6}>Cost</Title>
 
             <Radio.Group value={costs.baseCost.toString()} onChange={v => { changeCost(parseInt(v)); }}>
               {resource.costs.map((v, i) => {
-                if (!v[1]) return null;
+                if (v[1] === "") return null;
                 return <Radio key={i} label={`${v[1]} (${v[0].toString()}rps)`} value={(v[0]).toString()} />;
               })}
             </Radio.Group>
           </Grid.Col>
         ) : null}
 
-        {costs && resource.variableCost ? (
+        {costs !== undefined && resource.variableCost === true ? (
           <Grid.Col span={6}>
             <Text style={{ display: "inline", marginRight: 8 }}>Cost</Text>
 
@@ -219,7 +222,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           </Grid.Col>
         ) : null}
 
-        {costs ? (
+        {costs !== undefined ? (
           <Fragment>
             <Grid.Col span={6}>
               <Title order={6}>Modifiers</Title>
@@ -239,7 +242,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           </Fragment>
         ) : null}
 
-        {costs && resource.modifiers.some(v => typeof v[1] === "string") ? (
+        {costs !== undefined && resource.modifiers.some(v => typeof v[1] === "string") ? (
           <Grid.Col span={6}>
             <Title order={6}>Number of Weapons</Title>
 
@@ -256,7 +259,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           <TextInput label="Add description (optional)" variant="filled" value={resourceDesc} onChange={e => { setResourceDesc(e.target.value); }} />
         </Grid.Col>
 
-        {costs ? (
+        {costs !== undefined ? (
           <Grid.Col span="content">
             <Text my="sm" c={totalCost !== undefined && totalCost > resourcePool.remaining ? "red" : undefined}>
               Total Cost:

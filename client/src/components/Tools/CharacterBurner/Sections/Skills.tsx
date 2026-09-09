@@ -20,7 +20,7 @@ function Skill({ skill, remove }: { skill: UniqueArrayItem<dat.SkillId, Characte
           <BlockSkillPopover
             skill={[skill.id, skill.name]}
             checkbox={{ checked: skill.isOpen !== "no", disabled: skill.type === "Mandatory", onToggle: () => { openSkill(skill.id); } }}
-            deleteCallback={remove ? () => { remove(skill.id); } : undefined}
+            deleteCallback={remove !== undefined ? () => { remove(skill.id); } : undefined}
           />
 
           <Group gap={0}>
@@ -28,7 +28,7 @@ function Skill({ skill, remove }: { skill: UniqueArrayItem<dat.SkillId, Characte
               {skillPoints.shade}
             </AbilityButton>
 
-            <AbilityButton onClick={() => { modifySkillExponent(skill.id); }} onContextMenu={() => { modifySkillExponent(skill.id, true); }} disabled={!skill.isOpen}>
+            <AbilityButton onClick={() => { modifySkillExponent(skill.id); }} onContextMenu={() => { modifySkillExponent(skill.id, true); }} disabled={skill.isOpen === "no"}>
               {skillPoints.exponent}
             </AbilityButton>
           </Group>
@@ -54,7 +54,7 @@ function SkillBlock({ title, skills, remove, addButton }: {
         {skills.map(skill => <Skill key={skill.id} skill={skill} remove={remove} />)}
       </Fragment>
 
-      {addButton ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
+      {addButton !== undefined ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
     </Fragment>
   );
 }

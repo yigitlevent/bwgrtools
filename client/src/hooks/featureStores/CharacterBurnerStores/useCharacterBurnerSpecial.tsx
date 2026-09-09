@@ -78,7 +78,7 @@ export const useCharacterBurnerSpecialStore = create<CharacterBurnerSpecialState
       },
 
       modifyCompanionSkills: (companionLifepathId: dat.LifepathId, skills: dat.SkillId[] | undefined): void => {
-        if (skills) {
+        if (skills !== undefined) {
           set(produce<CharacterBurnerSpecialState>(state => {
             state.special.companionSkills[companionLifepathId] = skills;
           }));
@@ -90,7 +90,7 @@ export const useCharacterBurnerSpecialStore = create<CharacterBurnerSpecialState
       modifySkillSubskills: (skillId: dat.SkillId, subskillIds: dat.SkillId[] | null, canSelectMultiple: boolean): void => {
         const prev = get().special.chosenSubskills[skillId];
 
-        if (canSelectMultiple && subskillIds) {
+        if (canSelectMultiple && subskillIds !== null) {
           set(produce<CharacterBurnerSpecialState>(state => {
             state.special.chosenSubskills[skillId] = [...subskillIds];
           }));
@@ -195,7 +195,7 @@ export const useCharacterBurnerSpecialStore = create<CharacterBurnerSpecialState
         const { addGeneralTrait, removeGeneralTrait } = useCharacterBurnerTraitStore.getState();
 
         if (special.feyBloodTrait !== undefined) removeGeneralTrait(special.feyBloodTrait);
-        if (trait?.id) addGeneralTrait(trait);
+        if (trait !== undefined && trait.id !== null) addGeneralTrait(trait);
 
         set(produce<CharacterBurnerSpecialState>(state => {
           state.special.feyBloodTrait = trait?.id ?? undefined;
@@ -249,7 +249,7 @@ export const useCharacterBurnerSpecialStore = create<CharacterBurnerSpecialState
         const { addGeneralTrait, removeGeneralTrait } = useCharacterBurnerTraitStore.getState();
 
         if (special.taintedLegacyTrait !== undefined) removeGeneralTrait(special.taintedLegacyTrait);
-        if (trait?.id) addGeneralTrait(trait);
+        if (trait !== undefined && trait.id !== null) addGeneralTrait(trait);
 
         set(produce<CharacterBurnerSpecialState>(state => {
           state.special.taintedLegacyTrait = trait?.id ?? undefined;
@@ -286,11 +286,11 @@ export const useCharacterBurnerSpecialStore = create<CharacterBurnerSpecialState
         const newQuestions: CharacterQuestion[] =
           ruleset.questions
             .filter((v): v is Question & { id: dat.QuestionId; name: string; question: string; } => {
-              if (!v.id || !v.name || !v.question) return false;
+              if (v.id === null || v.name === null || v.question === null) return false;
 
               const attrIds = [];
-              if (v.attributes?.[0]?.[0]) attrIds.push(v.attributes[0][0]);
-              if (v.attributes?.[1]?.[0]) attrIds.push(v.attributes[1][0]);
+              if (v.attributes?.[0]?.[0] !== undefined) attrIds.push(v.attributes[0][0]);
+              if (v.attributes?.[1]?.[0] !== undefined) attrIds.push(v.attributes[1][0]);
               if (attrIds.length === 0) return true;
               else if (attrIds.length > 0 && attrIds.some(a => hasAttribute(a))) return true;
               else return false;

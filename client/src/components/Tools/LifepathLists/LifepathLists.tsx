@@ -56,7 +56,7 @@ export function LifepathLists({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
             label="Stock"
             variant="filled"
             value={searchValues.filters.stock}
-            onChange={v => { if (v) updateStock(v); }}
+            onChange={v => { if (v !== null) updateStock(v); }}
             data={stocks.map(v => v.name ?? "")}
             allowDeselect={false}
           />
@@ -67,7 +67,7 @@ export function LifepathLists({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
             label="Setting"
             variant="filled"
             value={allowedSettings.includes(searchValues.filters.setting) ? searchValues.filters.setting : ""}
-            onChange={v => { if (v) setFilter([{ key: "setting", value: v }]); }}
+            onChange={v => { if (v !== null) setFilter([{ key: "setting", value: v }]); }}
             data={allowedSettings}
             allowDeselect={false}
           />

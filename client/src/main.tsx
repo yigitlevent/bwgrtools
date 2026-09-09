@@ -13,7 +13,7 @@ import "./theme/fonts.css";
 
 const RootElement = document.getElementById("root");
 
-if (!RootElement) {
+if (RootElement === null) {
   throw new Error("Root element not found");
 }
 

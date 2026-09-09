@@ -25,23 +25,23 @@ export function BrutalLife(): React.JSX.Element {
     if (isBrutal) {
       if (lifepathNumber === 5) {
         const trait = ruleset.getTrait("Missing Digit");
-        if (trait.id) traitToAdd = [trait.id, trait.name ?? ""];
+        if (trait.id !== null) traitToAdd = [trait.id, trait.name ?? ""];
       }
       else if (lifepathNumber === 6) {
         const trait = ruleset.getTrait("Lame");
-        if (trait.id) traitToAdd = [trait.id, trait.name ?? ""];
+        if (trait.id !== null) traitToAdd = [trait.id, trait.name ?? ""];
       }
       else if (lifepathNumber === 7) {
         const trait = ruleset.getTrait("Missing Eye");
-        if (trait.id) traitToAdd = [trait.id, trait.name ?? ""];
+        if (trait.id !== null) traitToAdd = [trait.id, trait.name ?? ""];
       }
       else if (lifepathNumber === 8) {
         const trait = ruleset.getTrait("Missing Hand");
-        if (trait.id) traitToAdd = [trait.id, trait.name ?? ""];
+        if (trait.id !== null) traitToAdd = [trait.id, trait.name ?? ""];
       }
       else if (lifepathNumber > 8) {
         const trait = ruleset.getTrait("Missing Limb");
-        if (trait.id) traitToAdd = [trait.id, trait.name ?? ""];
+        if (trait.id !== null) traitToAdd = [trait.id, trait.name ?? ""];
       }
     }
 
@@ -65,7 +65,7 @@ export function BrutalLife(): React.JSX.Element {
             </Grid.Col>
 
             <Grid.Col span={2}>
-              {traitId ? traitId === "No Trait" ? <Text style={{ margin: "0 0 0 8px" }}>No Trait</Text> : <BlockTraitPopover trait={traitId} /> : <Button variant="outline" size="sm" onClick={() => { rollBrutalLife(i + 5); }}>Roll</Button>}
+              {traitId !== undefined ? traitId === "No Trait" ? <Text style={{ margin: "0 0 0 8px" }}>No Trait</Text> : <BlockTraitPopover trait={traitId} /> : <Button variant="outline" size="sm" onClick={() => { rollBrutalLife(i + 5); }}>Roll</Button>}
             </Grid.Col>
           </Fragment>
         );

@@ -27,6 +27,16 @@ describe("GetActionResolutionString", () => {
     expect(result).toBe("Charge: Ob=");
   });
 
+  it("renders a fixed obstacle of 0 (not the Ob= placeholder)", () => {
+    const result = GetActionResolutionString(Resolution({ type: [1 as unknown as dat.ActionResolutionTypeId, "Ob"], obstacle: 0 }));
+    expect(result).toBe("Charge: Ob 0");
+  });
+
+  it("suffixes an opposing modifier of 0", () => {
+    const result = GetActionResolutionString(Resolution({ type: [1 as unknown as dat.ActionResolutionTypeId, "Vs"], opposingSkill: [1 as unknown as dat.SkillId, "Sword"], opposingModifier: 0 }));
+    expect(result).toBe("Charge: Vs Sword +0D");
+  });
+
   it("prefixes with the skill name when present", () => {
     const result = GetActionResolutionString(Resolution({ type: [1 as unknown as dat.ActionResolutionTypeId, "Skill"], skill: [1 as unknown as dat.SkillId, "Sword"] }));
     expect(result).toBe("Charge: Sword Skill");
@@ -59,5 +69,10 @@ describe("GetActionResolutionString", () => {
   it("suffixes with the opposing ability name when no obstacle, isAgainstSkill, or opposingSkill is set", () => {
     const result = GetActionResolutionString(Resolution({ type: [1 as unknown as dat.ActionResolutionTypeId, "Vs"], opposingAbility: [1 as unknown as dat.AbilityId, "Will"] }));
     expect(result).toBe("Charge: Vs Will");
+  });
+
+  it("renders no type prefix for an unrecognised resolution type", () => {
+    const result = GetActionResolutionString(Resolution({ type: [1 as unknown as dat.ActionResolutionTypeId, "Unknown"] }));
+    expect(result).toBe("Charge: ");
   });
 });

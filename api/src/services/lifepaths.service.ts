@@ -32,23 +32,23 @@ export async function GetLifepaths(rulesets: dat.RulesetId[]): Promise<Lifepath[
         }
       };
 
-      if (v.leadIds && v.leadIds.length > 0) lp.leads = v.leadIds;
-      if (v.skillIds && v.skillIds.length > 0) lp.skills = v.skillIds;
-      if (v.traitIds && v.traitIds.length > 0) lp.traits = v.traitIds;
+      if (v.leadIds !== null && v.leadIds.length > 0) lp.leads = v.leadIds;
+      if (v.skillIds !== null && v.skillIds.length > 0) lp.skills = v.skillIds;
+      if (v.traitIds !== null && v.traitIds.length > 0) lp.traits = v.traitIds;
 
-      if (v.companionName && v.companionGivesSkills && v.companionSettingIds && v.companionSettingIds.length > 0) {
+      if (v.companionName !== null && v.companionGivesSkills !== null && v.companionSettingIds !== null && v.companionSettingIds.length > 0) {
         lp.companion = {
           name: v.companionName,
           givesSkills: v.companionGivesSkills,
           settingIds: v.companionSettingIds
         };
 
-        if (v.companionGspMultiplier && v.companionGspMultiplier > 0) lp.companion.inheritGSPMultiplier = v.companionGspMultiplier;
-        if (v.companionLspMultiplier && v.companionLspMultiplier > 0) lp.companion.inheritLSPMultiplier = v.companionLspMultiplier;
-        if (v.companionRpMultiplier && v.companionRpMultiplier > 0) lp.companion.inheritRPMultiplier = v.companionRpMultiplier;
+        if (v.companionGspMultiplier !== null && v.companionGspMultiplier > 0) lp.companion.inheritGSPMultiplier = v.companionGspMultiplier;
+        if (v.companionLspMultiplier !== null && v.companionLspMultiplier > 0) lp.companion.inheritLSPMultiplier = v.companionLspMultiplier;
+        if (v.companionRpMultiplier !== null && v.companionRpMultiplier > 0) lp.companion.inheritRPMultiplier = v.companionRpMultiplier;
       }
 
-      if (v.requirementText) lp.requirementsText = v.requirementText;
+      if (v.requirementText !== null) lp.requirementsText = v.requirementText;
 
       const reqBlocks = lr.filter(a => a.lifepathId === v.id);
       if (reqBlocks.length > 0) {
@@ -70,41 +70,43 @@ export async function GetLifepaths(rulesets: dat.RulesetId[]): Promise<Lifepath[
               if (vrbi.requirementType === "UNIQUE") return { ...rbi, isUnique: true };
               else if (vrbi.requirementType === "SETTINGENTRY") return { ...rbi, isSettingEntry: true };
               else if (vrbi.requirementType === "LPINDEX") {
-                if (vrbi.min) return { ...rbi, minLpIndex: vrbi.min };
-                if (!vrbi.max) throw new Error("max value must be set for LPINDEX requirement type");
+                // Was `if (vrbi.min)`, which silently ignored a legitimate min of 0 and fell through to max.
+                if (vrbi.min !== null) return { ...rbi, minLpIndex: vrbi.min };
+                if (vrbi.max === null) throw new Error("max value must be set for LPINDEX requirement type");
                 return { ...rbi, maxLpIndex: vrbi.max };
               }
               else if (vrbi.requirementType === "YEARS") {
-                if (vrbi.min) return { ...rbi, minYears: vrbi.min };
-                if (!vrbi.max) throw new Error("max value must be set for YEARS requirement type");
+                // Was `if (vrbi.min)`, which silently ignored a legitimate min of 0 (e.g. "born this lifepath") and fell through to max.
+                if (vrbi.min !== null) return { ...rbi, minYears: vrbi.min };
+                if (vrbi.max === null) throw new Error("max value must be set for YEARS requirement type");
                 return { ...rbi, maxYears: vrbi.max };
               }
               else if (vrbi.requirementType === "FEMALE") return { ...rbi, gender: "Female" };
               else if (vrbi.requirementType === "MALE") return { ...rbi, gender: "Male" };
               else if (vrbi.requirementType === "OLDESTBY") {
-                if (!vrbi.max) throw new Error("max value must be set for OLDESTBY requirement type");
+                if (vrbi.max === null) throw new Error("max value must be set for OLDESTBY requirement type");
                 return { ...rbi, oldestBy: vrbi.max };
               }
-              else if (vrbi.requirementType === "ATTRIBUTE" && vrbi.attributeId && vrbi.attribute) {
+              else if (vrbi.requirementType === "ATTRIBUTE" && vrbi.attributeId !== null && vrbi.attribute !== null) {
                 const atr: LifepathRequirementItem = {
                   ...rbi,
                   attribute: [vrbi.attributeId, vrbi.attribute] as NamedTuple<dat.AbilityId>,
                   forCompanion: vrbi.forCompanion
                 };
-                if (vrbi.min) atr.min = vrbi.min;
-                if (vrbi.max) atr.max = vrbi.max;
+                if (vrbi.min !== null) atr.min = vrbi.min;
+                if (vrbi.max !== null) atr.max = vrbi.max;
                 return atr;
               }
-              else if (vrbi.requirementType === "SKILL" && vrbi.skillId && vrbi.skill) {
+              else if (vrbi.requirementType === "SKILL" && vrbi.skillId !== null && vrbi.skill !== null) {
                 return { ...rbi, skill: [vrbi.skillId, vrbi.skill], forCompanion: vrbi.forCompanion };
               }
-              else if (vrbi.requirementType === "TRAIT" && vrbi.traitId && vrbi.trait) {
+              else if (vrbi.requirementType === "TRAIT" && vrbi.traitId !== null && vrbi.trait !== null) {
                 return { ...rbi, trait: [vrbi.traitId, vrbi.trait], forCompanion: vrbi.forCompanion };
               }
-              else if (vrbi.requirementType === "LIFEPATH" && vrbi.lifepathId && vrbi.lifepath) {
+              else if (vrbi.requirementType === "LIFEPATH" && vrbi.lifepathId !== null && vrbi.lifepath !== null) {
                 return { ...rbi, lifepath: [vrbi.lifepathId, vrbi.lifepath], forCompanion: vrbi.forCompanion };
               }
-              else if (vrbi.requirementType === "SETTING" && vrbi.settingId && vrbi.setting) {
+              else if (vrbi.requirementType === "SETTING" && vrbi.settingId !== null && vrbi.setting !== null) {
                 return { ...rbi, setting: [vrbi.settingId, vrbi.setting], forCompanion: vrbi.forCompanion };
               }
               else throw new Error(`unidentified requirement block item type: ${vrbi.requirementType ?? "null"}`);

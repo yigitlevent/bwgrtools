@@ -13,6 +13,11 @@ describe("GetObstacleString", () => {
     expect(result).toBe("3");
   });
 
+  it("renders a fixed obstacle of 0", () => {
+    const result = GetObstacleString(ResourceStub(), [{ obstacle: 0 }]);
+    expect(result).toBe("0");
+  });
+
   it("adds a caret suffix when caret is set", () => {
     const result = GetObstacleString(ResourceStub(), [{ obstacle: 3, caret: true }]);
     expect(result).toBe("3^");

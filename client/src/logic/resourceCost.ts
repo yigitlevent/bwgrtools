@@ -9,7 +9,7 @@ export interface SelectedCost {
 export function ResetCosts(resource: Resource): SelectedCost {
   const newCosts: SelectedCost = { baseCost: 0, modifiers: {} };
 
-  newCosts.baseCost = resource.variableCost ? 0 : resource.costs[0][0];
+  newCosts.baseCost = resource.variableCost === true ? 0 : resource.costs[0][0];
 
   resource.modifiers.forEach(modifier => {
     newCosts.modifiers[modifier[2]] = { cost: modifier[1] ? `${modifier[0].toString()}/per` : modifier[0], selected: false };

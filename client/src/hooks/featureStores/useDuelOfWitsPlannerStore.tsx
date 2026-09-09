@@ -24,7 +24,7 @@ export const useDuelOfWitsPlannerStore = create<DuelOfWitsPlannerState>()(
 
       addAction: (actions: DoWAction[], volleyIndex: number, actionName: undefined | string) => {
         const actionMaybe = actions.find(v => v.name === actionName);
-        if (!actionMaybe) return;
+        if (actionMaybe === undefined) return;
         const action: DoWActionExtended = { ...actionMaybe, open: false, visible: true };
         set(produce<DuelOfWitsPlannerState>(state => {
           const newActions = state.actions;
@@ -52,7 +52,7 @@ export const useDuelOfWitsPlannerStore = create<DuelOfWitsPlannerState>()(
         set(produce<DuelOfWitsPlannerState>(state => {
           const newActions = state.actions;
           state.actions = newActions.map((v, i) => {
-            if (v && i === volleyIndex) { return { ...v, open: !v.open }; }
+            if (v !== undefined && i === volleyIndex) { return { ...v, open: !v.open }; }
             return v;
           }) as [DoWActionExtended, DoWActionExtended, DoWActionExtended];
         }));
@@ -61,7 +61,7 @@ export const useDuelOfWitsPlannerStore = create<DuelOfWitsPlannerState>()(
         set(produce<DuelOfWitsPlannerState>(state => {
           const newActions = state.actions;
           state.actions = newActions.map((v, i) => {
-            if (v && i === volleyIndex) { return { ...v, visible: !v.visible }; }
+            if (v !== undefined && i === volleyIndex) { return { ...v, visible: !v.visible }; }
             return v;
           }) as [DoWActionExtended, DoWActionExtended, DoWActionExtended];
         }));

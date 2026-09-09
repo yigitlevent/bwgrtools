@@ -80,7 +80,7 @@ async function RunMigrations(): Promise<void> {
 async function RunRollback(name?: string): Promise<void> {
   let target = name;
 
-  if (!target) {
+  if (target === undefined) {
     const result: PgRows<MigrationNameRow> = await PgClient.query(
       "SELECT name FROM meta.\"Migration\" ORDER BY \"executedAt\" DESC LIMIT 1"
     );
@@ -108,14 +108,14 @@ async function RunRollback(name?: string): Promise<void> {
     if (target.endsWith(".sql")) {
       const contents = fs.readFileSync(filePath, "utf-8");
       const parts = contents.split(/^-- DOWN$/m);
-      if (parts.length < 2 || !parts[1].trim()) {
+      if (parts.length < 2 || parts[1].trim() === "") {
         throw new Error(`No DOWN block found in ${target}. Cannot roll back automatically.`);
       }
       await PgClient.query(parts[1]);
     }
     else if (target.endsWith(".mjs")) {
       const { down } = (await import(`file://${filePath}`)) as MigrationModule;
-      if (!down) throw new Error(`No down export found in ${target}. Cannot roll back automatically.`);
+      if (down === undefined) throw new Error(`No down export found in ${target}. Cannot roll back automatically.`);
       await down(PgClient);
     }
 

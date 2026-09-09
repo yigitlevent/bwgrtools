@@ -9,11 +9,11 @@ import { useCharacterBurnerSkillStore } from "../../../../hooks/featureStores/Ch
 
 
 function GetRestrictionString(skill: Skill): string | null {
-  if (skill.restriction) {
+  if (skill.restriction !== undefined) {
     const rest = [];
-    if (skill.restriction.onlyStock) rest.push(`Only ${skill.restriction.onlyStock[1]}.`);
-    if (skill.restriction.onlyWithAbility) rest.push(`Only ${skill.restriction.onlyWithAbility[1]}.`);
-    if (skill.restriction.onlyAtBurn) rest.push("Only during character burn.");
+    if (skill.restriction.onlyStock !== undefined) rest.push(`Only ${skill.restriction.onlyStock[1]}.`);
+    if (skill.restriction.onlyWithAbility !== undefined) rest.push(`Only ${skill.restriction.onlyWithAbility[1]}.`);
+    if (skill.restriction.onlyAtBurn === true) rest.push("Only during character burn.");
     return rest.join(" ");
   }
   return null;
@@ -27,7 +27,7 @@ function SkillDetails({ skill }: { skill: Skill; }): React.JSX.Element {
       </Grid.Col>
 
       <Grid.Col span={{ base: 2, md: 1 }}>
-        {skill.roots ? (
+        {skill.roots !== undefined ? (
           <Text size="xs">
             Root:
             {skill.roots.join("/")}
@@ -52,7 +52,7 @@ function SkillDetails({ skill }: { skill: Skill; }): React.JSX.Element {
       </Grid.Col>
 
       <Grid.Col span={2}>
-        {skill.restriction ? (
+        {skill.restriction !== undefined ? (
           <Text size="xs">
             Restrictions:
             {GetRestrictionString(skill)}
@@ -61,7 +61,7 @@ function SkillDetails({ skill }: { skill: Skill; }): React.JSX.Element {
       </Grid.Col>
 
       <Grid.Col span={2}>
-        {skill.description ? skill.description.split("<br>").map(v => <Text key={v} size="sm">{v}</Text>) : null}
+        {skill.description !== undefined ? skill.description.split("<br>").map(v => <Text key={v} size="sm">{v}</Text>) : null}
       </Grid.Col>
     </Grid>
   );
@@ -78,11 +78,11 @@ export function GeneralSkillModal({ isOpen, close }: { isOpen: boolean; close: (
   useEffect(() => {
     if (ruleset.fetchState === "done") {
       const possible = ruleset.skills.filter(skill =>
-        skill.id
+        skill.id !== null
         && !skills.has(skill.id)
-        && (skill.stock === stock || (skill.restriction?.onlyStock ? skill.restriction.onlyStock[0] === stock[0] ? true : false : true))
-        && (skill.restriction?.onlyWithAbility ? hasAttribute(skill.restriction.onlyWithAbility[0]) ? true : false : true)
-        && !skill.flags.dontList
+        && (skill.stock === stock || (skill.restriction?.onlyStock !== undefined ? skill.restriction.onlyStock[0] === stock[0] : true))
+        && (skill.restriction?.onlyWithAbility !== undefined ? hasAttribute(skill.restriction.onlyWithAbility[0]) : true)
+        && skill.flags.dontList !== true
       );
       setPossibleSkills(possible);
     }

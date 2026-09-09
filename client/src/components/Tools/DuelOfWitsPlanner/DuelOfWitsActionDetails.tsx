@@ -13,14 +13,14 @@ export function DuelOfWitsActionDetails({ action, volleyIndex }: { action: DoWAc
     <Stack gap={0} style={{ width: "100%" }}>
       <Title order={5} mb="8px">{action.name}</Title>
 
-      {action.tests ? (
+      {action.tests !== undefined ? (
         <Box mb="10px">
           <b>Tests:</b>
           <Text size="sm">{[...action.tests.abilities, ...action.tests.skills].map(v => v[1]).join(", ")}</Text>
         </Box>
       ) : null}
 
-      {action.speakingThePart ? (
+      {action.speakingThePart !== null && action.speakingThePart !== undefined && action.speakingThePart.length > 0 ? (
         <Box mb="10px">
           <b>Speaking the part:</b>
 
@@ -30,7 +30,7 @@ export function DuelOfWitsActionDetails({ action, volleyIndex }: { action: DoWAc
         </Box>
       ) : null}
 
-      {action.special ? (
+      {action.special !== null && action.special !== undefined && action.special.length > 0 ? (
         <Box mb="10px">
           <b>Special:</b>
 
@@ -40,7 +40,7 @@ export function DuelOfWitsActionDetails({ action, volleyIndex }: { action: DoWAc
         </Box>
       ) : null}
 
-      {action.effect ? (
+      {action.effect !== null && action.effect !== undefined && action.effect.length > 0 ? (
         <Box mb="10px">
           <b>Effects:</b>
 
@@ -50,7 +50,7 @@ export function DuelOfWitsActionDetails({ action, volleyIndex }: { action: DoWAc
         </Box>
       ) : null}
 
-      {action.resolutions ? (
+      {action.resolutions !== undefined ? (
         <Box mb="10px">
           <b>Resolution:</b>
           {action.resolutions.map((v, i) => <Text size="sm" key={i}>{GetActionResolutionString(v)}</Text>)}

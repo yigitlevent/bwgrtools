@@ -15,7 +15,8 @@ export function TraitLists(): React.JSX.Element {
     const sorted = [...filteredList].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
     const groups = new Map<string, Trait[]>();
     sorted.forEach(v => {
-      const letter = (v.name ?? "").charAt(0).toUpperCase() || "#";
+      const upperFirstChar = (v.name ?? "").charAt(0).toUpperCase();
+      const letter = upperFirstChar.length > 0 ? upperFirstChar : "#";
       const items = groups.get(letter) ?? [];
       items.push(v);
       groups.set(letter, items);
@@ -33,7 +34,7 @@ export function TraitLists(): React.JSX.Element {
             label="Stock"
             variant="filled"
             value={searchValues.filters.stock}
-            onChange={v => { if (v) setFilter([{ key: "stock", value: v }]); }}
+            onChange={v => { if (v !== null) setFilter([{ key: "stock", value: v }]); }}
             data={["Any", ...stocks.map(v => v.name ?? "")]}
             allowDeselect={false}
           />
@@ -44,7 +45,7 @@ export function TraitLists(): React.JSX.Element {
             label="Category"
             variant="filled"
             value={searchValues.filters.category}
-            onChange={v => { if (v) setFilter([{ key: "category", value: v }]); }}
+            onChange={v => { if (v !== null) setFilter([{ key: "category", value: v }]); }}
             data={["Any", ...traitCategories]}
             allowDeselect={false}
           />
@@ -55,7 +56,7 @@ export function TraitLists(): React.JSX.Element {
             label="Type"
             variant="filled"
             value={searchValues.filters.type}
-            onChange={v => { if (v) setFilter([{ key: "type", value: v }]); }}
+            onChange={v => { if (v !== null) setFilter([{ key: "type", value: v }]); }}
             data={["Any", ...traitTypes]}
             allowDeselect={false}
           />

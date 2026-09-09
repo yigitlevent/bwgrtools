@@ -32,7 +32,7 @@ export function DuelOfWitsPlanner(): React.JSX.Element {
               <Divider my="8px" />
 
               <Paper key={volleyIndex} shadow="sm" style={{ padding: "8px", marginBottom: "8px" }}>
-                {action ? action.visible ? <DuelOfWitsActionDetails action={action} volleyIndex={volleyIndex} /> : (
+                {action !== undefined ? action.visible ? <DuelOfWitsActionDetails action={action} volleyIndex={volleyIndex} /> : (
                   <ActionIcon variant="subtle" style={{ width: "100%", height: "auto", padding: "16px" }} onClick={() => { toggleActionVisibility(volleyIndex); }}>
                     <Eye size={100} />
                   </ActionIcon>
@@ -40,7 +40,7 @@ export function DuelOfWitsPlanner(): React.JSX.Element {
                   <Fragment>
                     <Select
                       value={selectedAction[volleyIndex]}
-                      onChange={v => { if (v) changeSelectedAction(v, volleyIndex); }}
+                      onChange={v => { if (v !== null) changeSelectedAction(v, volleyIndex); }}
                       data={sortedActionNames}
                       allowDeselect={false}
                       searchable

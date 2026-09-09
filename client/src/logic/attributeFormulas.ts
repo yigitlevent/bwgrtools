@@ -134,7 +134,7 @@ export function GetNaturalGreed(
   let bonus = 0;
   if (will.exponent <= 4) bonus += 1;
   bonus += Math.floor(resourcePoints.spent / 60);
-  bonus += lifepaths.filter(v => v.name && GreedLifepaths.includes(v.name)).length;
+  bonus += lifepaths.filter(v => v.name !== null && GreedLifepaths.includes(v.name)).length;
 
   if (hasQuestionTrueByName("COVET")) bonus += 1;
   if (hasQuestionTrueByName("STOLE")) bonus += 1;
@@ -188,12 +188,12 @@ export function GetGriefOrSpite(
   const knowsLament = skills.filter(v => v.name.toLowerCase().includes("lament") && v.isOpen !== "no");
 
   let bonus = 0;
-  if (hasLifepathByName("Protector")) bonus += 1;
-  if (hasLifepathByName("Born Etharch")) bonus += 1;
-  if (hasLifepathByName("Elder")) bonus += 1;
-  if (GriefOrSpiteLifepaths.some(v => hasLifepathByName(v))) bonus += 1;
-  if (GriefOrSpiteLifepaths2.some(v => hasLifepathByName(v))) bonus += 1;
-  if (GriefOrSpiteLifepaths3.some(v => hasLifepathByName(v))) bonus += 1;
+  if (hasLifepathByName("Protector") > 0) bonus += 1;
+  if (hasLifepathByName("Born Etharch") > 0) bonus += 1;
+  if (hasLifepathByName("Elder") > 0) bonus += 1;
+  if (GriefOrSpiteLifepaths.some(v => hasLifepathByName(v) > 0)) bonus += 1;
+  if (GriefOrSpiteLifepaths2.some(v => hasLifepathByName(v) > 0)) bonus += 1;
+  if (GriefOrSpiteLifepaths3.some(v => hasLifepathByName(v) > 0)) bonus += 1;
   bonus += knowsLament.length > 0 ? 0 : 1;
 
   if (hasQuestionTrueByName("TRAGEDY")) bonus += 1;

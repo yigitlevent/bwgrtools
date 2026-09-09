@@ -32,7 +32,7 @@ function TraitDetails({ trait }: { trait: Trait; }): React.JSX.Element {
       ) : null}
 
       <Grid.Col span={{ base: 3, md: 1 }}>
-        {trait.stock ? (
+        {trait.stock !== undefined ? (
           <Text size="xs">
             Stock:
             {trait.stock[1]}
@@ -41,7 +41,7 @@ function TraitDetails({ trait }: { trait: Trait; }): React.JSX.Element {
       </Grid.Col>
 
       <Grid.Col span={3}>
-        {trait.description ? trait.description.split("<br>").map(v => <Text key={v} size="sm" style={{ textIndent: "8px" }}>{v}</Text>) : null}
+        {trait.description !== undefined ? trait.description.split("<br>").map(v => <Text key={v} size="sm" style={{ textIndent: "8px" }}>{v}</Text>) : null}
       </Grid.Col>
     </Grid>
   );
@@ -59,9 +59,9 @@ export function GeneralTraitModal({ isOpen, close }: { isOpen: boolean; close: (
       const traitPools = getTraitPools();
 
       const possible = ruleset.traits.filter(trait =>
-        trait.id
+        trait.id !== null
         && !traits.has(trait.id)
-        && (trait.stock ? trait.stock === stock : true)
+        && (trait.stock !== undefined ? trait.stock === stock : true)
         && (trait.cost ?? 0) <= traitPools.remaining
       );
       setPossibleTraits(possible);

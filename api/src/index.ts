@@ -26,7 +26,7 @@ App.register(BwgrRoutes, { prefix: "/api" });
 App.setErrorHandler((err: FastifyError, _request, reply) => {
   if (reply.sent) return;
 
-  if (err.validation) {
+  if (err.validation !== undefined) {
     reply.code(err.statusCode ?? 400).send({ error: err.message });
     return;
   }
@@ -36,7 +36,7 @@ App.setErrorHandler((err: FastifyError, _request, reply) => {
 });
 
 App.listen({ port: parseInt(Env.apiPort, 10), host: "0.0.0.0" }, err => {
-  if (err) {
+  if (err !== null) {
     App.log.error(err);
     process.exit(1);
   }

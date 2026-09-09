@@ -39,7 +39,7 @@ function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, Characte
           <BlockTraitPopover
             trait={[trait.id, trait.name]}
             checkbox={{ checked: trait.isOpen, disabled: trait.type === "Mandatory" || trait.type === "Common", onToggle: () => { openTrait(trait.id); } }}
-            deleteCallback={remove ? () => { remove(trait.id); } : undefined}
+            deleteCallback={remove !== undefined ? () => { remove(trait.id); } : undefined}
           />
 
           {showCallOnWarning ? (
@@ -69,7 +69,7 @@ function TraitBlock({ title, traits, remove, addButton }: {
         {traits.map(trait => <Trait key={trait.id} trait={trait} remove={remove} />)}
       </Fragment>
 
-      {addButton ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
+      {addButton !== undefined ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
     </Fragment>
   );
 }

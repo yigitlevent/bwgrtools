@@ -19,7 +19,7 @@ export function SpecialFeyBlood(): React.JSX.Element {
       && ["Elf", "Dwarf", "Orc"].includes(t.stock[1])
       && ["Lifepath", "Common", "Special"].includes(t.category[1]))
     .sort((a, b) => a.name.localeCompare(b.name))
-    .map(t => ({ value: t.id.toString(), label: `${t.name} (${t.stock[1]}, ${t.category[1]}${t.cost ? `, ${t.cost.toString()} pts` : ""})` }));
+    .map(t => ({ value: t.id.toString(), label: `${t.name} (${t.stock[1]}, ${t.category[1]}${t.cost !== null ? `, ${t.cost.toString()} pts` : ""})` }));
 
   return (
     <Fragment>

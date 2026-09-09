@@ -107,7 +107,7 @@ export function useMagicWheel<T extends OneOfWheelObjects>({ spellFacets, bands,
     setIsRotating(true);
 
     const getRandomRotation = (): number =>
-      steps && direction ? steps * direction : ((Math.random() > 0.5) ? 1 : -1) * RandomNumber(1, 6);
+      steps !== undefined && direction !== undefined ? steps * direction : ((Math.random() > 0.5) ? 1 : -1) * RandomNumber(1, 6);
 
     const revisedBands = mapBands((key, band) => isAvailable(key) ? band.targetAmount + getRandomRotation() : band.currentAmount);
 
@@ -117,7 +117,7 @@ export function useMagicWheel<T extends OneOfWheelObjects>({ spellFacets, bands,
   const reset = useCallback(() => {
     setAreaOfEffectId(spellFacets.areaOfEffects[0].id);
     if ("elements" in spellFacets) setElementId(spellFacets.elements[0].id);
-    else if (selectedElementCategory) setElementId(spellFacets[selectedElementCategory][0].id);
+    else if (selectedElementCategory !== undefined) setElementId(spellFacets[selectedElementCategory][0].id);
     setImpetusId(spellFacets.impetus[0].id);
     setDurationId(spellFacets.duration[0].id);
     setOriginId(spellFacets.origins[0].id);
@@ -131,7 +131,7 @@ export function useMagicWheel<T extends OneOfWheelObjects>({ spellFacets, bands,
   useEffect(() => { bandsRef.current = bands; }, [bands]);
 
   useEffect(() => {
-    if (!context || !isRotating) return;
+    if (context === undefined || !isRotating) return;
 
     let animationFrameId = 0;
 

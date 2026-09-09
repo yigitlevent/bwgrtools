@@ -21,7 +21,7 @@ export interface CharacterBurnerBasicsState {
   setConcept: (concept: string) => void;
   setGender: (gender: "Male" | "Female") => void;
 
-  setStockAndReset: (stock?: [id: dat.StockId, name: string]) => void;
+  setStockAndReset: (stock: [id: dat.StockId, name: string]) => void;
 
   setBelief: (index: number, belief: string) => void;
   setInstinct: (index: number, instinct: string) => void;
@@ -50,9 +50,9 @@ export const useCharacterBurnerBasicsStore = create<CharacterBurnerBasicsState>(
         { name: "Special Instinct", instinct: "" }
       ],
 
-      setStockAndReset: (stock?: [id: dat.StockId, name: string]): void => {
+      setStockAndReset: (stock: [id: dat.StockId, name: string]): void => {
         set({
-          stock: stock,
+          stock,
           concept: "",
           name: "",
           gender: "Male",
@@ -71,7 +71,6 @@ export const useCharacterBurnerBasicsStore = create<CharacterBurnerBasicsState>(
           ]
         });
 
-        if (stock) set({ stock });
         ResetCharacterBurner();
       },
 
@@ -114,7 +113,7 @@ export const useCharacterBurnerBasicsStore = create<CharacterBurnerBasicsState>(
 
         const stockMaybe = getStock(stock[0]);
         const agePool = stockMaybe.agePool;
-        return agePool.filter(a => age > a.minAge).reduce((pv, cv) => pv.minAge < cv.minAge ? pv : cv);
+        return agePool.filter(a => age > a.minAge).reduce((pv, cv) => pv.minAge > cv.minAge ? pv : cv);
       }
     }),
     { name: "useCharacterBurnerBasicsStore" }
