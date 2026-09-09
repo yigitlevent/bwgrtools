@@ -60,4 +60,9 @@ describe("GetActionResolutionString", () => {
     const result = GetActionResolutionString(Resolution({ type: [1 as unknown as dat.ActionResolutionTypeId, "Vs"], opposingAbility: [1 as unknown as dat.AbilityId, "Will"] }));
     expect(result).toBe("Charge: Vs Will");
   });
+
+  it("renders no type prefix for an unrecognised resolution type", () => {
+    const result = GetActionResolutionString(Resolution({ type: [1 as unknown as dat.ActionResolutionTypeId, "Unknown"] }));
+    expect(result).toBe("Charge: ");
+  });
 });
