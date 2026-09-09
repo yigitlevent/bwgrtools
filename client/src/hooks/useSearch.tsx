@@ -15,13 +15,17 @@ interface SearchReturn<T> {
   searchValues: SearchValues;
   setFilter: (filtersToApply: { key: string; value: string; }[]) => void;
   filteredList: List<T>;
+  isPending: boolean;
 }
+
+export const MinSearchTextLength = 3;
 
 export function useSearch<T>(mainList: List<T>, filterKeys: string[], initialFilterValues?: Record<string, string>): SearchReturn<T> {
   const [urlParams, setUrlParams] = useSearchParams();
 
   const [originalList] = useState(mainList);
   const [filteredList, setFilteredList] = useState(mainList);
+  const [isPending, setIsPending] = useState(false);
 
   const applyInitialFilterValues = useCallback((fKeys: string[]) => {
     const s = urlParams.get("s");
@@ -55,10 +59,8 @@ export function useSearch<T>(mainList: List<T>, filterKeys: string[], initialFil
       }
       else if (filter.key === "sf") {
         if (filter.value !== "") urlParams.set("sf", filter.value);
-        else if (newSearchValues.fields.length > 1) {
-          urlParams.delete(filter.key);
-          newSearchValues.fields = filter.value.split(",");
-        }
+        else urlParams.delete(filter.key);
+        newSearchValues.fields = filter.value === "" ? [] : filter.value.split(",");
       }
       else {
         if (filter.value !== "Any") urlParams.set(filter.key, filter.value);
@@ -102,24 +104,29 @@ export function useSearch<T>(mainList: List<T>, filterKeys: string[], initialFil
 
   const search = useCallback(async () => {
     await new Promise(resolve => {
-      const result = (searchValues.text.length > 2 && fuse) ? fuse.search(searchValues.text).map(x => x.item) : filteredByFilters;
+      const result = (searchValues.text.length >= MinSearchTextLength && fuse) ? fuse.search(searchValues.text).map(x => x.item) : filteredByFilters;
 
       setFilteredList(result);
+      setIsPending(false);
       resolve(true);
     }).catch((e: unknown) => { console.error(e); });
   }, [filteredByFilters, fuse, searchValues.text]);
 
   useEffect(() => {
     const hasFilters = !Object.values(searchValues.filters).every(v => v === "Any");
-    const hasText = searchValues.text.length > 2;
+    const hasText = searchValues.text.length >= MinSearchTextLength;
 
-    const delay = setTimeout(() => {
-      if (hasFilters || hasText) { void search(); }
-      else { setFilteredList(originalList); }
-    }, 800);
+    if (!hasFilters && !hasText) {
+      setIsPending(false);
+      setFilteredList(originalList);
+      return;
+    }
+
+    setIsPending(true);
+    const delay = setTimeout(() => { void search(); }, 800);
     return () => { clearTimeout(delay); };
   }, [originalList, search, searchValues.filters, searchValues.text.length]);
 
-  return { searchValues, setFilter: applySearchValues, filteredList };
+  return { searchValues, setFilter: applySearchValues, filteredList, isPending };
 }
 
