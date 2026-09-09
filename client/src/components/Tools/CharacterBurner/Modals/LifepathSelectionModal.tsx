@@ -1,4 +1,4 @@
-import { Button, Grid, Modal, Select } from "@mantine/core";
+import { Button, Grid, Group, Modal, Popover, Select, Stack, Text } from "@mantine/core";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 
 import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
@@ -11,6 +11,9 @@ export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; clo
   const [disabled, setDisabled] = useState(false);
   const [chosen, setChosen] = useState<Lifepath | undefined>(availableLifepaths[0]);
   const [available, setAvailable] = useState(availableLifepaths);
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
+
+  const lastLifepath = lifepaths[lifepaths.length - 1] as Lifepath | undefined;
 
   const handle = useCallback((lifepath?: Lifepath) => {
     setDisabled(true);
@@ -56,7 +59,46 @@ export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; clo
         </Grid.Col>
 
         <Grid.Col span={{ base: 5, sm: 1, md: 1 }}>
-          <Button variant="outline" size="md" onClick={() => { handle(); }} fullWidth disabled={disabled}>Remove Lifepath</Button>
+          <Popover opened={confirmingRemove} onChange={setConfirmingRemove} withArrow position="bottom" width={280}>
+            <Popover.Target>
+              <Button
+                variant="outline"
+                size="md"
+                onClick={() => { setConfirmingRemove(true); }}
+                fullWidth
+                disabled={disabled || !lastLifepath}
+              >
+                Remove Last Lifepath
+              </Button>
+            </Popover.Target>
+
+            <Popover.Dropdown>
+              <Stack gap="xs">
+                <Text size="sm">
+                  Remove
+                  {" "}
+                  <Text span fw={700}>{lastLifepath?.name}</Text>
+                  {" "}
+                  (the most recently chosen lifepath)? Lifepaths can only be removed in reverse order. This cannot be undone.
+                </Text>
+
+                <Group justify="flex-end" gap="xs">
+                  <Button variant="subtle" size="xs" onClick={() => { setConfirmingRemove(false); }}>Cancel</Button>
+
+                  <Button
+                    color="red"
+                    size="xs"
+                    onClick={() => {
+                      handle();
+                      setConfirmingRemove(false);
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </Group>
+              </Stack>
+            </Popover.Dropdown>
+          </Popover>
         </Grid.Col>
 
         <Fragment>
