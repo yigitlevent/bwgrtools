@@ -1,15 +1,10 @@
 import { Alert, Button, FileInput, Grid, Modal, Text } from "@mantine/core";
 import { useState } from "react";
 
+import { PersistCharacterSnapshot } from "../../../../hooks/featureStores/CharacterBurnerStores/characterBurnerAutosave";
 import { HydrateCharacterBurner } from "../../../../hooks/featureStores/CharacterBurnerStores/characterBurnerSnapshot";
+import { IsCharacterBurnerExportSnapshot } from "../../../../hooks/featureStores/CharacterBurnerStores/characterBurnerSnapshotGuard";
 
-
-const RequiredSnapshotKeys: (keyof CharacterBurnerExportSnapshot)[] = ["basics", "lifepaths", "stats", "skills", "traits", "attributes", "resources", "misc"];
-
-function IsCharacterBurnerExportSnapshot(value: unknown): value is CharacterBurnerExportSnapshot {
-  if (typeof value !== "object" || value === null) return false;
-  return RequiredSnapshotKeys.every(key => key in value);
-}
 
 export function ImportCharacterModal({ isOpen, close }: { isOpen: boolean; close: () => void; }): React.JSX.Element {
   const [file, setFile] = useState<File | null>(null);
@@ -40,6 +35,7 @@ export function ImportCharacterModal({ isOpen, close }: { isOpen: boolean; close
         }
 
         HydrateCharacterBurner(parsed);
+        PersistCharacterSnapshot();
         setFile(null);
         setError(null);
         close();

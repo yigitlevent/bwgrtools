@@ -1,4 +1,4 @@
-import { Title } from "@mantine/core";
+import { Badge, Group, Title } from "@mantine/core";
 import { Fragment, useEffect, useState } from "react";
 
 import { Checklist } from "./Checklist";
@@ -9,6 +9,7 @@ import { LifepathSelectionModal } from "./Modals/LifepathSelectionModal";
 import { QuestionsModal } from "./Modals/QuestionsModal";
 import { RandomLifepathsModal } from "./Modals/RandomLifepathsModal";
 import { ResourceSelectionModal } from "./Modals/ResourceSelectionModal";
+import { RestoreCharacterModal } from "./Modals/RestoreCharacterModal";
 import { SpecialOptionsModal } from "./Modals/SpecialOptionsModal";
 import { Attributes } from "./Sections/Attributes";
 import { Basics } from "./Sections/Basics";
@@ -19,6 +20,7 @@ import { Skills } from "./Sections/Skills";
 import { Stats } from "./Sections/Stats";
 import { Tolerances } from "./Sections/Tolerances";
 import { Traits } from "./Sections/Traits";
+import { IsRulesetMismatch, ReadPersistedCharacter, SubscribeCharacterBurnerAutosave } from "../../../hooks/featureStores/CharacterBurnerStores/characterBurnerAutosave";
 import { useCharacterBurnerAttributeStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
@@ -34,6 +36,8 @@ export function CharacterBurner(): React.JSX.Element {
   const { attributes } = useCharacterBurnerAttributeStore();
 
   const [currentModal, setCurrentModal] = useState<CharacterBurnerModals | null>(null);
+  const [restorePayload, setRestorePayload] = useState<CharacterBurnerAutosavePayload | null>(() => ReadPersistedCharacter());
+  const [autosaveFailed, setAutosaveFailed] = useState(false);
 
   const openModal = (name: CharacterBurnerModals): void => { setCurrentModal(name); };
   const closeModals = (): void => { setCurrentModal(null); };
@@ -42,9 +46,28 @@ export function CharacterBurner(): React.JSX.Element {
     updateAvailableLifepaths();
   }, [updateAvailableLifepaths, stock]);
 
+  useEffect(() => SubscribeCharacterBurnerAutosave(setAutosaveFailed), []);
+
   return (
     <Fragment>
-      <Title order={3}>Character Burner</Title>
+      <Group align="center" gap="sm">
+        <Title order={3}>Character Burner</Title>
+
+        {autosaveFailed ? (
+          <Badge variant="light" color="yellow">Autosave unavailable - export to avoid losing progress</Badge>
+        ) : (
+          <Badge variant="light" color="green">Autosaved</Badge>
+        )}
+      </Group>
+
+      {restorePayload ? (
+        <RestoreCharacterModal
+          payload={restorePayload}
+          mismatch={IsRulesetMismatch(restorePayload)}
+          close={() => { setRestorePayload(null); }}
+        />
+      ) : null}
+
       <Basics openModal={openModal} />
       <Stats />
       {skills.length > 0 ? <Skills openModal={openModal} /> : null}

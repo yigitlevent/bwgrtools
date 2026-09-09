@@ -1,3 +1,4 @@
+import { ClearPersistedCharacter } from "./characterBurnerAutosave";
 import { useCharacterBurnerAttributeStore } from "./useCharacterBurnerAttribute";
 import { useCharacterBurnerLifepathStore } from "./useCharacterBurnerLifepath";
 import { useCharacterBurnerLimitsStore } from "./useCharacterBurnerLimits";
@@ -87,4 +88,5 @@ export function ResetCharacterBurner(): void {
   useCharacterBurnerLimitsStore.getState().reset();
   useCharacterBurnerResourceStore.getState().reset();
   useCharacterBurnerAttributeStore.getState().reset();
+  ClearPersistedCharacter();
 }

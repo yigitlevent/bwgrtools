@@ -3,6 +3,7 @@ import { Circle, CircleAlert, CircleCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
+import { ClearPersistedCharacter } from "../../../hooks/featureStores/CharacterBurnerStores/characterBurnerAutosave";
 import { useCharacterBurnerAttributeStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
@@ -129,7 +130,10 @@ export function Checklist(): React.JSX.Element {
     else if (remainingResourcePoints !== 0) setActiveStep(7);
     else if ((beliefs.filter(v => v.belief !== "").length !== limits.beliefs || instincts.filter(v => v.instinct !== "").length !== limits.instincts)) setActiveStep(8);
     else if (name === "") setActiveStep(9);
-    else setActiveStep(10);
+    else {
+      setActiveStep(10);
+      ClearPersistedCharacter();
+    }
   }, [beliefs, concept, instincts, lifepaths, limits, name, questions, special, stock, stats, attributes, skills, traits, resources, ruleset,
     getEitherPool, getMentalPool, getPhysicalPool, getResourcePools, getSkillPools, getTraitPools]);
 
