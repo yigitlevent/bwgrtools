@@ -1,4 +1,5 @@
-import { Alert, Box, Divider, Grid, MultiSelect, Select, Title } from "@mantine/core";
+import { Box, Divider, EmptyState, Grid, MultiSelect, Select, Title } from "@mantine/core";
+import { SearchX } from "lucide-react";
 import { Fragment, useMemo } from "react";
 
 import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
@@ -115,9 +116,12 @@ export function SkillLists(): React.JSX.Element {
           </Box>
         )
         : (
-          <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>
-            Could not find any matches. Try adding more fields or changing search text or filters.
-          </Alert>
+          <EmptyState
+            mt="md"
+            icon={<SearchX />}
+            title="No matches found"
+            description="Try adding more fields or changing search text or filters."
+          />
         )}
     </Fragment>
   );

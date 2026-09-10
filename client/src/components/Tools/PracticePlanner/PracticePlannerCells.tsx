@@ -1,5 +1,5 @@
-import { ActionIcon, Box, Button, Group, Popover, Stack, Text } from "@mantine/core";
-import { CirclePlus, CircleMinus, Trash2 } from "lucide-react";
+import { ActionIcon, Box, Button, EmptyState, Group, Popover, Stack, Text } from "@mantine/core";
+import { CalendarOff, CirclePlus, CircleMinus, ClipboardX, Trash2 } from "lucide-react";
 import { DataTable } from "mantine-datatable";
 import { useState } from "react";
 
@@ -51,9 +51,13 @@ function PracticesTable({ cell, cellIndex }: { cell: PracticeCell; cellIndex: nu
 
   if (records.length === 0) {
     return (
-      <Box p="xs">
-        <Text size="sm" c="dimmed">No practices placed on this day.</Text>
-      </Box>
+      <EmptyState
+        size="xs"
+        py="xs"
+        icon={<ClipboardX />}
+        title="No practices placed"
+        description="No practices placed on this day."
+      />
     );
   }
 
@@ -155,7 +159,14 @@ export function PracticePlannerCells({ setNotification }: { setNotification: (va
             }}
           />
         )
-        : null}
+        : (
+          <EmptyState
+            mt="md"
+            icon={<CalendarOff />}
+            title="No timetable inscribed"
+            description="Inscribe a timetable to start planning practices."
+          />
+        )}
     </Box>
   );
 }

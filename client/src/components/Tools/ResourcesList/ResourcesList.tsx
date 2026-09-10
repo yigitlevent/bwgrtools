@@ -1,5 +1,6 @@
-import { Alert, Box, Grid, MultiSelect, Select, Title } from "@mantine/core";
+import { Box, EmptyState, Grid, MultiSelect, Select, Title } from "@mantine/core";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { SearchX } from "lucide-react";
 import { Fragment } from "react";
 
 import { ResourceItem } from "./ResourceItem";
@@ -86,7 +87,14 @@ export function ResourcesList({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
             ))}
           </Box>
         )
-        : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
+        : (
+          <EmptyState
+            mt="md"
+            icon={<SearchX />}
+            title="No matches found"
+            description="Try adding more fields or changing search text."
+          />
+        )}
     </Fragment>
   );
 }
