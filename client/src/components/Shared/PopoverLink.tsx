@@ -1,6 +1,7 @@
 import { Anchor, Box, Divider, Grid, Group, Popover, Text } from "@mantine/core";
 import { memo } from "react";
 
+import { useRulesetStore } from "../../hooks/apiStores/useRulesetStore";
 import { LifepathBox } from "../Tools/LifepathLists/LifepathBox";
 
 
@@ -15,6 +16,9 @@ function GetSkillRestrictionString(skill: Skill): string {
 }
 
 function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
+  const { getSkill } = useRulesetStore();
+  const wises = getSkill(207 as dat.SkillId);
+
   return (
     <Grid gap={4} columns={2}>
       <Grid.Col span={2}>
@@ -62,7 +66,15 @@ function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
             {skill.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
           </Grid.Col>
         )
-        : null}
+        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+        : skill.name?.endsWith("-wise")
+          ? (
+            <Grid.Col span={2}>
+              <Divider mb={4} />
+              {wises.description?.split("<br>").map(v => <Text key={v}>{v}</Text>)}
+            </Grid.Col>
+          )
+          : null}
     </Grid>
   );
 }

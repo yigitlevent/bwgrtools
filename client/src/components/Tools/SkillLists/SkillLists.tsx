@@ -13,7 +13,9 @@ export function SkillLists(): React.JSX.Element {
   const { stocks, skills, skillCategories, skillTypes } = useRulesetStore();
 
   const searchableSkills = useMemo((): SearchableSkill[] => {
-    return skills.map(skill => ({ ...skill, rootnames: (skill.roots ?? []).map(v => v[1]).join(", ") }));
+    return skills
+      .filter(skill => skill.flags.dontList !== null && !skill.flags.dontList)
+      .map(skill => ({ ...skill, rootnames: (skill.roots ?? []).map(v => v[1]).join(", ") }));
   }, [skills]);
 
   const { searchValues, setFilter, filteredList, isPending } = useSearch<SearchableSkill>(searchableSkills, ["stock", "category", "type"]);
@@ -101,10 +103,10 @@ export function SkillLists(): React.JSX.Element {
               <Fragment key={letter}>
                 <Divider label={letter} labelPosition="left" mt="sm" mb="xs" />
 
-                <Grid>
-                  {items.map(skill => (
+                <Grid gap={4}>
+                  {items.map((skill, i) => (
                     <Grid.Col span="content" key={skill.id}>
-                      <PopoverLink data={skill} />
+                      <PopoverLink data={skill} hasComma={i < items.length - 1} />
                     </Grid.Col>
                   ))}
                 </Grid>
