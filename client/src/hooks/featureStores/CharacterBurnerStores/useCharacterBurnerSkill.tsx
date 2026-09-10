@@ -238,19 +238,21 @@ export const useCharacterBurnerSkillStore = create<CharacterBurnerSkillState>()(
           const occurrence = occurrences[lpIndex];
           const mandatoryIndex = occurrence <= 2 ? occurrence - 1 : -1;
 
-          return lp.skills !== undefined ? lp.skills.map((sk: dat.SkillId, i: number) => {
-            const skill = getSkill(sk);
-            const isMandatory = (i === mandatoryIndex);
-            const entry: CharacterSkill = {
-              id: skill.id ?? sk,
-              name: skill.name ?? "",
-              type: isMandatory ? "Mandatory" : "Lifepath",
-              isSpecial: skill.subskillIds !== undefined ? true : false,
-              isOpen: isMandatory ? (skill.flags.isMagical === true || skill.flags.isTraining === true ? "double" : "yes") : "no",
-              advancement: { general: 0, lifepath: 0 }
-            };
-            return entry;
-          }) : [];
+          return lp.skills !== undefined
+            ? lp.skills.map((sk: dat.SkillId, i: number) => {
+              const skill = getSkill(sk);
+              const isMandatory = (i === mandatoryIndex);
+              const entry: CharacterSkill = {
+                id: skill.id ?? sk,
+                name: skill.name ?? "",
+                type: isMandatory ? "Mandatory" : "Lifepath",
+                isSpecial: skill.subskillIds !== undefined ? true : false,
+                isOpen: isMandatory ? (skill.flags.isMagical === true || skill.flags.isTraining === true ? "double" : "yes") : "no",
+                advancement: { general: 0, lifepath: 0 }
+              };
+              return entry;
+            })
+            : [];
         }).flat());
 
         // companion-granted skills (Special Options: companion lifepath selection)

@@ -17,15 +17,17 @@ function Attribute({ attribute }: { attribute: UniqueArrayItem<dat.AbilityId, Ch
 
   return (
     <Fragment>
-      {attribute.hasShade ? (
-        <AbilityButton
-          disabled={attributeDetails.exponent < 6}
-          onClick={() => { shiftAttributeShade(attribute.id); }}
-          onContextMenu={() => { shiftAttributeShade(attribute.id); }}
-        >
-          {attributeDetails.shade}
-        </AbilityButton>
-      ) : null}
+      {attribute.hasShade
+        ? (
+          <AbilityButton
+            disabled={attributeDetails.exponent < 6}
+            onClick={() => { shiftAttributeShade(attribute.id); }}
+            onContextMenu={() => { shiftAttributeShade(attribute.id); }}
+          >
+            {attributeDetails.shade}
+          </AbilityButton>
+        )
+        : null}
 
       <AbilityButton disabled>
         {attributeDetails.exponent}
@@ -66,16 +68,18 @@ export function Attributes(): React.JSX.Element {
                   <Group gap={4}>
                     <Text>{attribute.name}</Text>
 
-                    {attribute.name === "Hesitation" && hesitationNotes.length > 0 ? (
-                      <Tooltip
-                        multiline
-                        w={320}
-                        color="gray"
-                        label={hesitationNotes.map(v => `${v.name}: ${v.note}`).join("\n\n")}
-                      >
-                        <Info size={14} />
-                      </Tooltip>
-                    ) : null}
+                    {attribute.name === "Hesitation" && hesitationNotes.length > 0
+                      ? (
+                        <Tooltip
+                          multiline
+                          w={320}
+                          color="gray"
+                          label={hesitationNotes.map(v => `${v.name}: ${v.note}`).join("\n\n")}
+                        >
+                          <Info size={14} />
+                        </Tooltip>
+                      )
+                      : null}
                   </Group>
 
                   <Group gap={0}>

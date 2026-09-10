@@ -121,157 +121,177 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           />
         </Grid.Col>
 
-        {resource.costs.length === 1 ? (
-          <Grid.Col span={{ base: 6, sm: 2 }}>
-            <Text size="sm">
-              Cost:
-              {resource.costs[0][1]}
-            </Text>
-          </Grid.Col>
-        ) : null}
-
-        {resource.magical?.obstacleDetails !== undefined ? (
-          <Fragment>
+        {resource.costs.length === 1
+          ? (
             <Grid.Col span={{ base: 6, sm: 2 }}>
               <Text size="sm">
-                Obstacle:
-                {GetObstacleString(resource, resource.magical.obstacleDetails)}
+                Cost:
+                {resource.costs[0][1]}
               </Text>
             </Grid.Col>
+          )
+          : null}
 
-            <Grid.Col span={{ base: 6, sm: 2 }}>
-              <Text size="sm">
-                Actions:
-                {resource.magical.actions}
-              </Text>
-            </Grid.Col>
-          </Fragment>
-        ) : null}
+        {resource.magical?.obstacleDetails !== undefined
+          ? (
+            <Fragment>
+              <Grid.Col span={{ base: 6, sm: 2 }}>
+                <Text size="sm">
+                  Obstacle:
+                  {GetObstacleString(resource, resource.magical.obstacleDetails)}
+                </Text>
+              </Grid.Col>
 
-        {resource.magical !== undefined ? (
-          <Fragment>
-            <Grid.Col span={{ base: 6, sm: 2 }}>
-              <Text size="sm">
-                Origin:
-                {resource.magical.origin[1]}
-              </Text>
-            </Grid.Col>
+              <Grid.Col span={{ base: 6, sm: 2 }}>
+                <Text size="sm">
+                  Actions:
+                  {resource.magical.actions}
+                </Text>
+              </Grid.Col>
+            </Fragment>
+          )
+          : null}
 
-            <Grid.Col span={{ base: 6, sm: 2 }}>
-              <Text size="sm">
-                Element:
-                {resource.magical.elements.map(x => x[1]).join("/")}
-              </Text>
-            </Grid.Col>
+        {resource.magical !== undefined
+          ? (
+            <Fragment>
+              <Grid.Col span={{ base: 6, sm: 2 }}>
+                <Text size="sm">
+                  Origin:
+                  {resource.magical.origin[1]}
+                </Text>
+              </Grid.Col>
 
-            <Grid.Col span={{ base: 6, sm: 2 }}>
-              <Text size="sm">
-                Duration:
-                {resource.magical.duration[1]}
-              </Text>
-            </Grid.Col>
+              <Grid.Col span={{ base: 6, sm: 2 }}>
+                <Text size="sm">
+                  Element:
+                  {resource.magical.elements.map(x => x[1]).join("/")}
+                </Text>
+              </Grid.Col>
 
-            <Grid.Col span={{ base: 6, sm: 4 }}>
-              <Text size="sm">
-                Area of Effect:
-                {resource.magical.areaOfEffect[1]}
-              </Text>
-            </Grid.Col>
+              <Grid.Col span={{ base: 6, sm: 2 }}>
+                <Text size="sm">
+                  Duration:
+                  {resource.magical.duration[1]}
+                </Text>
+              </Grid.Col>
 
-            <Grid.Col span={{ base: 6, sm: 2 }}>
-              <Text size="sm">
-                Impetus:
-                {resource.magical.impetus.map(x => x[1]).join("/")}
-              </Text>
-            </Grid.Col>
-          </Fragment>
-        ) : null}
+              <Grid.Col span={{ base: 6, sm: 4 }}>
+                <Text size="sm">
+                  Area of Effect:
+                  {resource.magical.areaOfEffect[1]}
+                </Text>
+              </Grid.Col>
 
-        {resource.description !== undefined ? (
-          <Grid.Col span={6}>
-            {resource.description.split("<br>").map((v, i) => {
-              if (resource.magical !== undefined && i === 0) return <Text key={i} size="sm" fw={600}>{v}</Text>;
-              return <Text key={i} size="sm">{v}</Text>;
-            })}
-          </Grid.Col>
-        ) : null}
+              <Grid.Col span={{ base: 6, sm: 2 }}>
+                <Text size="sm">
+                  Impetus:
+                  {resource.magical.impetus.map(x => x[1]).join("/")}
+                </Text>
+              </Grid.Col>
+            </Fragment>
+          )
+          : null}
 
-        {costs !== undefined && resource.costs.length > 1 ? (
-          <Grid.Col span={6}>
-            <Title order={6}>Cost</Title>
-
-            <Radio.Group value={costs.baseCost.toString()} onChange={v => { changeCost(parseInt(v)); }}>
-              {resource.costs.map((v, i) => {
-                if (v[1] === "") return null;
-                return <Radio key={i} label={`${v[1]} (${v[0].toString()}rps)`} value={(v[0]).toString()} />;
-              })}
-            </Radio.Group>
-          </Grid.Col>
-        ) : null}
-
-        {costs !== undefined && resource.variableCost === true ? (
-          <Grid.Col span={6}>
-            <Text style={{ display: "inline", marginRight: 8 }}>Cost</Text>
-
-            <AbilityButton
-              onClick={e => { e.preventDefault(); changeCost(costs.baseCost + 1); }}
-              onContextMenu={e => { e.preventDefault(); changeCost(costs.baseCost - 1); }}
-            >
-              {costs.baseCost}
-            </AbilityButton>
-          </Grid.Col>
-        ) : null}
-
-        {costs !== undefined ? (
-          <Fragment>
+        {resource.description !== undefined
+          ? (
             <Grid.Col span={6}>
-              <Title order={6}>Modifiers</Title>
+              {resource.description.split("<br>").map((v, i) => {
+                if (resource.magical !== undefined && i === 0) return <Text key={i} size="sm" fw={600}>{v}</Text>;
+                return <Text key={i} size="sm">{v}</Text>;
+              })}
             </Grid.Col>
+          )
+          : null}
 
-            {resource.modifiers.map((v, i) =>
-              (v[2] in costs.modifiers) ? (
-                <Grid.Col key={i} span={2}>
-                  <Checkbox
-                    label={`${v[2]} (${v[0].toString()}rps)`}
-                    checked={costs.modifiers[v[2]].selected}
-                    onChange={() => { changeModifier(v[2]); }}
-                  />
-                </Grid.Col>
-              ) : null
-            )}
-          </Fragment>
-        ) : null}
+        {costs !== undefined && resource.costs.length > 1
+          ? (
+            <Grid.Col span={6}>
+              <Title order={6}>Cost</Title>
 
-        {costs !== undefined && resource.modifiers.some(v => typeof v[1] === "string") ? (
-          <Grid.Col span={6}>
-            <Title order={6}>Number of Weapons</Title>
+              <Radio.Group value={costs.baseCost.toString()} onChange={v => { changeCost(parseInt(v)); }}>
+                {resource.costs.map((v, i) => {
+                  if (v[1] === "") return null;
+                  return <Radio key={i} label={`${v[1]} (${v[0].toString()}rps)`} value={(v[0]).toString()} />;
+                })}
+              </Radio.Group>
+            </Grid.Col>
+          )
+          : null}
 
-            <AbilityButton
-              onClick={e => { e.preventDefault(); setNumberOfWeapons(v => v + 1); }}
-              onContextMenu={e => { e.preventDefault(); setNumberOfWeapons(v => v - 1); }}
-            >
-              {numberOfWeapons}
-            </AbilityButton>
-          </Grid.Col>
-        ) : null}
+        {costs !== undefined && resource.variableCost === true
+          ? (
+            <Grid.Col span={6}>
+              <Text style={{ display: "inline", marginRight: 8 }}>Cost</Text>
+
+              <AbilityButton
+                onClick={e => { e.preventDefault(); changeCost(costs.baseCost + 1); }}
+                onContextMenu={e => { e.preventDefault(); changeCost(costs.baseCost - 1); }}
+              >
+                {costs.baseCost}
+              </AbilityButton>
+            </Grid.Col>
+          )
+          : null}
+
+        {costs !== undefined
+          ? (
+            <Fragment>
+              <Grid.Col span={6}>
+                <Title order={6}>Modifiers</Title>
+              </Grid.Col>
+
+              {resource.modifiers.map((v, i) =>
+                (v[2] in costs.modifiers)
+                  ? (
+                    <Grid.Col key={i} span={2}>
+                      <Checkbox
+                        label={`${v[2]} (${v[0].toString()}rps)`}
+                        checked={costs.modifiers[v[2]].selected}
+                        onChange={() => { changeModifier(v[2]); }}
+                      />
+                    </Grid.Col>
+                  )
+                  : null
+              )}
+            </Fragment>
+          )
+          : null}
+
+        {costs !== undefined && resource.modifiers.some(v => typeof v[1] === "string")
+          ? (
+            <Grid.Col span={6}>
+              <Title order={6}>Number of Weapons</Title>
+
+              <AbilityButton
+                onClick={e => { e.preventDefault(); setNumberOfWeapons(v => v + 1); }}
+                onContextMenu={e => { e.preventDefault(); setNumberOfWeapons(v => v - 1); }}
+              >
+                {numberOfWeapons}
+              </AbilityButton>
+            </Grid.Col>
+          )
+          : null}
 
         <Grid.Col span={6}>
           <TextInput label="Add description (optional)" variant="filled" value={resourceDesc} onChange={e => { setResourceDesc(e.target.value); }} />
         </Grid.Col>
 
-        {costs !== undefined ? (
-          <Grid.Col span="content">
-            <Text my="sm" c={totalCost !== undefined && totalCost > resourcePool.remaining ? "red" : undefined}>
-              Total Cost:
-              {totalCost}
-              {" "}
-              (Remaining:
-              {" "}
-              {resourcePool.remaining}
-              )
-            </Text>
-          </Grid.Col>
-        ) : null}
+        {costs !== undefined
+          ? (
+            <Grid.Col span="content">
+              <Text my="sm" c={totalCost !== undefined && totalCost > resourcePool.remaining ? "red" : undefined}>
+                Total Cost:
+                {totalCost}
+                {" "}
+                (Remaining:
+                {" "}
+                {resourcePool.remaining}
+                )
+              </Text>
+            </Grid.Col>
+          )
+          : null}
 
         <Grid.Col span="content">
           <Button variant="outline" size="md" onClick={() => { createResource(); }} disabled={!canAffordResource}>Add Resource</Button>

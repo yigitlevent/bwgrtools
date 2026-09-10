@@ -11,37 +11,41 @@ export function SpecialCitadelVows(): React.JSX.Element {
 
   return (
     <Fragment>
-      {hasTraitOpenByName("Servant of the Citadel") ? (
-        <Fragment>
-          <Grid.Col span={1}>
-            <Title order={5} style={{ display: "inline-block" }}>Servant of the Citadel</Title>
-          </Grid.Col>
+      {hasTraitOpenByName("Servant of the Citadel")
+        ? (
+          <Fragment>
+            <Grid.Col span={1}>
+              <Title order={5} style={{ display: "inline-block" }}>Servant of the Citadel</Title>
+            </Grid.Col>
 
-          <Grid.Col span={2}>
-            <Checkbox
-              label="Wrote a Belief and Instinct about the citadel's welfare"
-              checked={special.servantOfCitadelQualifies}
-              onChange={e => { modifyServantOfCitadelQualifies(e.currentTarget.checked); }}
-            />
-          </Grid.Col>
-        </Fragment>
-      ) : null}
+            <Grid.Col span={2}>
+              <Checkbox
+                label="Wrote a Belief and Instinct about the citadel's welfare"
+                checked={special.servantOfCitadelQualifies}
+                onChange={e => { modifyServantOfCitadelQualifies(e.currentTarget.checked); }}
+              />
+            </Grid.Col>
+          </Fragment>
+        )
+        : null}
 
-      {hasTraitOpenByName("Sworn to Protect") ? (
-        <Fragment>
-          <Grid.Col span={1}>
-            <Title order={5} style={{ display: "inline-block" }}>Sworn to Protect</Title>
-          </Grid.Col>
+      {hasTraitOpenByName("Sworn to Protect")
+        ? (
+          <Fragment>
+            <Grid.Col span={1}>
+              <Title order={5} style={{ display: "inline-block" }}>Sworn to Protect</Title>
+            </Grid.Col>
 
-          <Grid.Col span={2}>
-            <Checkbox
-              label="Wrote a Belief about defending the citadel/Wilderlands/royalty"
-              checked={special.swornToProtectQualifies}
-              onChange={e => { modifySwornToProtectQualifies(e.currentTarget.checked); }}
-            />
-          </Grid.Col>
-        </Fragment>
-      ) : null}
+            <Grid.Col span={2}>
+              <Checkbox
+                label="Wrote a Belief about defending the citadel/Wilderlands/royalty"
+                checked={special.swornToProtectQualifies}
+                onChange={e => { modifySwornToProtectQualifies(e.currentTarget.checked); }}
+              />
+            </Grid.Col>
+          </Fragment>
+        )
+        : null}
     </Fragment>
   );
 }

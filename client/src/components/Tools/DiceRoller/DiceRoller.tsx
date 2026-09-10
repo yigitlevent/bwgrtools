@@ -6,7 +6,7 @@ import { DiceRollerProbabilities } from "./DiceRollerProbabilities";
 import { DiceRollerResult } from "./DiceRollerResult";
 import { CalculateDiceProbability } from "../../../utils/CalculateDiceProbability";
 import { Clamp } from "../../../utils/Clamp";
-import { RandomNumber } from "../../../utils/RandomNumber";
+import { RandomInteger } from "../../../utils/RandomInteger";
 import { AbilityButton, AbilityButtonWithArrows } from "../../Shared/AbilityButton";
 
 
@@ -53,7 +53,13 @@ export function DiceRoller(): React.JSX.Element {
   const [probabilities, setProbabilities] = useState<number[]>([]);
 
   const testType =
-    (dicePool === 1 && obstacle === 1) ? "Routine or Difficult" : (obstacle > dicePool) ? "Challenging" : (obstacle <= Tests[dicePool].routineMaxObstacle) ? "Routine" : "Difficult";
+    (dicePool === 1 && obstacle === 1)
+      ? "Routine or Difficult"
+      : (obstacle > dicePool)
+        ? "Challenging"
+        : (obstacle <= Tests[dicePool].routineMaxObstacle)
+          ? "Routine"
+          : "Difficult";
 
   const calculateResult = (dice: number[], usedFate: boolean): void => {
     let successes = 0;
@@ -70,23 +76,23 @@ export function DiceRoller(): React.JSX.Element {
   const rerollFailure = (dice: number[]): void => {
     const tempDice = [...dice];
     const index = tempDice.findIndex(v => (shade === "B" && v < 4) || (shade === "G" && v < 3) || (shade === "W" && v < 2));
-    tempDice[index] = RandomNumber(1, 6);
+    tempDice[index] = RandomInteger(1, 6);
     calculateResult(tempDice.sort((a, b) => b - a), true);
   };
 
   const rerollSixes = (dice: number[], spendingFate: boolean): void => {
     const rerolled: number[][] = [];
     if (isOpenEnded || spendingFate) {
-      rerolled.push(dice.filter(v => v === 6).map(() => RandomNumber(1, 6)));
+      rerolled.push(dice.filter(v => v === 6).map(() => RandomInteger(1, 6)));
       while (rerolled[rerolled.length - 1].filter(v => v === 6).length > 0) {
-        rerolled.push(rerolled[rerolled.length - 1].filter(v => v === 6).map(() => RandomNumber(1, 6)));
+        rerolled.push(rerolled[rerolled.length - 1].filter(v => v === 6).map(() => RandomInteger(1, 6)));
       }
     }
     calculateResult([...dice, ...rerolled.flat()].sort((a, b) => b - a), spendingFate);
   };
 
   const resolveDiceRoll = (): void => {
-    rerollSixes([...Array<number>(dicePool)].map(() => RandomNumber(1, 6)), false);
+    rerollSixes([...Array<number>(dicePool)].map(() => RandomInteger(1, 6)), false);
   };
 
   useEffect(() => {
@@ -104,13 +110,23 @@ export function DiceRoller(): React.JSX.Element {
 
           <AbilityButton
             style={{ height: "30px" }}
-            onClick={() => { setShade(v => v === "W" ? "B" : v === "B" ? "G" : "W"); }}
+            onClick={() => {
+              setShade(v => v === "W"
+                ? "B"
+                : v === "B"
+                  ? "G"
+                  : "W");
+            }}
           >
             {shade}
           </AbilityButton>
 
           <AbilityButtonWithArrows
-            onClick={() => { setDicePool(v => v === 20 ? v = 1 : Clamp(v + 1, 1, 20)); }}
+            onClick={() => {
+              setDicePool(v => v === 20
+                ? v = 1
+                : Clamp(v + 1, 1, 20));
+            }}
             onContextMenu={() => { setDicePool(v => Clamp(v - 1, 1, 20)); }}
           >
             {dicePool}
@@ -119,7 +135,11 @@ export function DiceRoller(): React.JSX.Element {
           <Text style={{ display: "inline-block", margin: "0 8px" }}>vs. Ob</Text>
 
           <AbilityButtonWithArrows
-            onClick={() => { setObstacle(v => v === 20 ? v = 1 : Clamp(v + 1, 1, 20)); }}
+            onClick={() => {
+              setObstacle(v => v === 20
+                ? v = 1
+                : Clamp(v + 1, 1, 20));
+            }}
             onContextMenu={() => { setObstacle(v => Clamp(v - 1, 1, 20)); }}
           >
             {obstacle}

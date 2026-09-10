@@ -23,62 +23,68 @@ export function SpecialStatPenalties(): React.JSX.Element {
 
   return (
     <Fragment>
-      {hasTraitOpenByName("Crippled") ? (
-        <Fragment>
-          <Grid.Col span={1}>
-            <Title order={5} style={{ display: "inline-block" }}>Crippled Stat</Title>
-          </Grid.Col>
+      {hasTraitOpenByName("Crippled")
+        ? (
+          <Fragment>
+            <Grid.Col span={1}>
+              <Title order={5} style={{ display: "inline-block" }}>Crippled Stat</Title>
+            </Grid.Col>
 
-          <Grid.Col span={2}>
-            <Select
-              label="Chosen Stat"
-              value={special.crippledStat?.toString() ?? null}
-              data={statOptions}
-              onChange={v => { modifyCrippledStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
-              allowDeselect={false}
-              size="sm"
-            />
-          </Grid.Col>
-        </Fragment>
-      ) : null}
+            <Grid.Col span={2}>
+              <Select
+                label="Chosen Stat"
+                value={special.crippledStat?.toString() ?? null}
+                data={statOptions}
+                onChange={v => { modifyCrippledStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
+                allowDeselect={false}
+                size="sm"
+              />
+            </Grid.Col>
+          </Fragment>
+        )
+        : null}
 
-      {hasTraitOpenByName("Frail") ? (
-        <Fragment>
-          <Grid.Col span={1}>
-            <Title order={5} style={{ display: "inline-block" }}>Frail Stat</Title>
-          </Grid.Col>
+      {hasTraitOpenByName("Frail")
+        ? (
+          <Fragment>
+            <Grid.Col span={1}>
+              <Title order={5} style={{ display: "inline-block" }}>Frail Stat</Title>
+            </Grid.Col>
 
-          <Grid.Col span={2}>
-            <Select
-              label="Chosen Stat"
-              value={special.frailStat?.toString() ?? null}
-              data={frailOptions}
-              onChange={v => { modifyFrailStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
-              allowDeselect={false}
-              size="sm"
-            />
-          </Grid.Col>
-        </Fragment>
-      ) : null}
+            <Grid.Col span={2}>
+              <Select
+                label="Chosen Stat"
+                value={special.frailStat?.toString() ?? null}
+                data={frailOptions}
+                onChange={v => { modifyFrailStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
+                allowDeselect={false}
+                size="sm"
+              />
+            </Grid.Col>
+          </Fragment>
+        )
+        : null}
 
-      {hasTraitOpenByName("Missing Limb") ? (
-        <Fragment>
-          <Grid.Col span={1}>
-            <Title order={5} style={{ display: "inline-block" }}>Missing Limb</Title>
-          </Grid.Col>
+      {hasTraitOpenByName("Missing Limb")
+        ? (
+          <Fragment>
+            <Grid.Col span={1}>
+              <Title order={5} style={{ display: "inline-block" }}>Missing Limb</Title>
+            </Grid.Col>
 
-          <Grid.Col span={2}>
-            <Select
-              label="Arm or Leg"
-              value={special.missingLimb?.toString() ?? null}
-              data={limbOptions}
-              onChange={v => { modifyMissingLimb(v !== null ? Number(v) as dat.AbilityId : undefined); }}
-              allowDeselect={false}
-              size="sm"
-            />
-          </Grid.Col>
-        </Fragment>
-      ) : null}
+            <Grid.Col span={2}>
+              <Select
+                label="Arm or Leg"
+                value={special.missingLimb?.toString() ?? null}
+                data={limbOptions}
+                onChange={v => { modifyMissingLimb(v !== null ? Number(v) as dat.AbilityId : undefined); }}
+                allowDeselect={false}
+                size="sm"
+              />
+            </Grid.Col>
+          </Fragment>
+        )
+        : null}
     </Fragment>
   );
 }

@@ -3,11 +3,11 @@ import { ClipboardList, Sparkles, Dices, Shapes, CalendarClock, Fingerprint, Use
 import { Fragment } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
-import { useDrawerStore } from "../../../hooks/useDrawerStore";
+import { useMenuStore } from "../../hooks/useMenuStore";
 
 
 export function Tools({ expanded }: { expanded: boolean; }): React.JSX.Element {
-  const { toggleDrawer } = useDrawerStore();
+  const { toggleMenu } = useMenuStore();
   const location = useLocation();
 
   const getProps = (path: string): { size: number; color: string | undefined; } =>
@@ -29,10 +29,10 @@ export function Tools({ expanded }: { expanded: boolean; }): React.JSX.Element {
   ];
 
   return (
-    <Menu opened={expanded} onClose={() => { toggleDrawer(); }} position="bottom-end" withArrow>
+    <Menu opened={expanded} onClose={() => { toggleMenu(); }} position="bottom-end" withArrow>
       <Menu.Target>
         <Tooltip color="gray" label="Tools">
-          <ActionIcon size="lg" mt={16} p={4} variant="light" onClick={() => { toggleDrawer("Tools"); }} aria-label="Tools">
+          <ActionIcon size="lg" mt={16} p={4} variant="subtle" onClick={() => { toggleMenu("Tools"); }}>
             <ClipboardList />
           </ActionIcon>
         </Tooltip>
@@ -46,7 +46,7 @@ export function Tools({ expanded }: { expanded: boolean; }): React.JSX.Element {
                 component={RouterLink}
                 to={item[1]}
                 leftSection={item[2]}
-                onClick={() => { toggleDrawer(); }}
+                onClick={() => { toggleMenu(); }}
                 fw={location.pathname === item[1] ? 700 : undefined}
               >
                 {item[0]}

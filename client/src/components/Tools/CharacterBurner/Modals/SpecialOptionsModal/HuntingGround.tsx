@@ -5,7 +5,7 @@ import { useCharacterBurnerBasicsStore } from "../../../../../hooks/featureStore
 import { useCharacterBurnerLifepathStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
 import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { Clamp } from "../../../../../utils/Clamp";
-import { RandomNumber } from "../../../../../utils/RandomNumber";
+import { RandomInteger } from "../../../../../utils/RandomInteger";
 
 
 export function HuntingGround(): React.JSX.Element {
@@ -16,7 +16,7 @@ export function HuntingGround(): React.JSX.Element {
   const rollTerritory = useCallback(() => {
     const huntingGrounds: HuntingGroundsList[] = ["Waste", "Marginal", "Typical", "Plentiful", "Untouched"];
     const lastLp = lifepaths[lifepaths.length - 1];
-    const roll = RandomNumber(1, 6) + RandomNumber(1, 6) + (lastLp.name === "Dominant" && lastLp.setting[1] === "Wild Pack" ? 1 : 0);
+    const roll = RandomInteger(1, 6) + RandomInteger(1, 6) + (lastLp.name === "Dominant" && lastLp.setting[1] === "Wild Pack" ? 1 : 0);
 
     let category = 0;
     if (roll === 2) category = 0;
@@ -41,18 +41,23 @@ export function HuntingGround(): React.JSX.Element {
 
   return (
     <Fragment>
-      {stock[1] === "Great Wolf" ? (
-        <Fragment>
-          <Grid.Col span={1}>
-            <Title order={5} style={{ display: "inline-block" }}>Hunting Ground</Title>
-          </Grid.Col>
+      {stock[1] === "Great Wolf"
+        ? (
+          <Fragment>
+            <Grid.Col span={1}>
+              <Title order={5} style={{ display: "inline-block" }}>Hunting Ground</Title>
+            </Grid.Col>
 
-          <Grid.Col span={2}>
-            {special.stock.huntingGround !== undefined ? <Text>{special.stock.huntingGround}</Text> : <Fragment>—</Fragment>}
-            <Button variant="outline" size="sm" onClick={() => { rollTerritory(); }} disabled={special.stock.huntingGround !== undefined}>Roll</Button>
-          </Grid.Col>
-        </Fragment>
-      ) : null}
+            <Grid.Col span={2}>
+              {special.stock.huntingGround !== undefined
+                ? <Text>{special.stock.huntingGround}</Text>
+                : <Text>—</Text>}
+
+              <Button variant="outline" size="sm" onClick={() => { rollTerritory(); }} disabled={special.stock.huntingGround !== undefined}>Roll</Button>
+            </Grid.Col>
+          </Fragment>
+        )
+        : null}
     </Fragment>
   );
 }

@@ -1,3 +1,4 @@
 export function Average(arr: number[]): number {
-  return arr.reduce((a, b) => a + b) / arr.length;
+  if (arr.length === 0) throw new Error("Average: cannot average an empty array");
+  return arr.reduce((a, b) => a + b, 0) / arr.length;
 }

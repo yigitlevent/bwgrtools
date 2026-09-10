@@ -52,55 +52,65 @@ export function RangeAndCoverActionDetails({ action, volleyIndex }: { action: Ra
         <Text size="sm">{action.group[1]}</Text>
       </Box>
 
-      {action.effect !== null && action.effect !== undefined && action.effect.length > 0 ? (
-        <Box mb="10px">
-          <b>Effect:</b>
+      {action.effect !== null && action.effect !== undefined && action.effect.length > 0
+        ? (
+          <Box mb="10px">
+            <b>Effect:</b>
 
-          {action.effect.split("<br>").map((v, i) =>
-            <Text size="sm" key={i}>{v}</Text>
-          )}
-        </Box>
-      ) : null}
+            {action.effect.split("<br>").map((v, i) =>
+              <Text size="sm" key={i}>{v}</Text>
+            )}
+          </Box>
+        )
+        : null}
 
-      {action.specialRestriction !== null && action.specialRestriction !== undefined && action.specialRestriction.length > 0 ? (
-        <Box mb="10px">
-          <b>Special Restriction:</b>
+      {action.specialRestriction !== null && action.specialRestriction !== undefined && action.specialRestriction.length > 0
+        ? (
+          <Box mb="10px">
+            <b>Special Restriction:</b>
 
-          {action.specialRestriction.split("<br>").map((v, i) =>
-            <Text size="sm" key={i}>{v}</Text>
-          )}
-        </Box>
-      ) : null}
+            {action.specialRestriction.split("<br>").map((v, i) =>
+              <Text size="sm" key={i}>{v}</Text>
+            )}
+          </Box>
+        )
+        : null}
 
-      {action.specialAction !== null && action.specialAction !== undefined && action.specialAction.length > 0 ? (
-        <Box mb="10px">
-          <b>Special Action:</b>
+      {action.specialAction !== null && action.specialAction !== undefined && action.specialAction.length > 0
+        ? (
+          <Box mb="10px">
+            <b>Special Action:</b>
 
-          {action.specialAction.split("<br>").map((v, i) =>
-            <Text size="sm" key={i}>{v}</Text>
-          )}
-        </Box>
-      ) : null}
+            {action.specialAction.split("<br>").map((v, i) =>
+              <Text size="sm" key={i}>{v}</Text>
+            )}
+          </Box>
+        )
+        : null}
 
-      {action.however !== null && action.however !== undefined && action.however.length > 0 ? (
-        <Box mb="10px">
-          <b>There is a big &quot;however&quot;:</b>
+      {action.however !== null && action.however !== undefined && action.however.length > 0
+        ? (
+          <Box mb="10px">
+            <b>There is a big &quot;however&quot;:</b>
 
-          {action.however.split("<br>").map((v, i) =>
-            <Text size="sm" key={i}>{v}</Text>
-          )}
-        </Box>
-      ) : null}
+            {action.however.split("<br>").map((v, i) =>
+              <Text size="sm" key={i}>{v}</Text>
+            )}
+          </Box>
+        )
+        : null}
 
-      {action.resolutions !== undefined ? (
-        <Box mb="10px">
-          <b>Resolution:</b>
+      {action.resolutions !== undefined
+        ? (
+          <Box mb="10px">
+            <b>Resolution:</b>
 
-          {action.resolutions
-            .map(v => GetActionResolutionString(v))
-            .map((v, i) => <Text size="sm" key={i}>{v}</Text>)}
-        </Box>
-      ) : null}
+            {action.resolutions
+              .map(v => GetActionResolutionString(v))
+              .map((v, i) => <Text size="sm" key={i}>{v}</Text>)}
+          </Box>
+        )
+        : null}
 
       <Grid>
         <Box style={{ width: "50%" }}>

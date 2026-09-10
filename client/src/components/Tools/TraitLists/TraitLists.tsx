@@ -82,27 +82,29 @@ export function TraitLists(): React.JSX.Element {
         </Grid.Col>
       </Grid>
 
-      {filteredList.length > 0 ? (
-        <Box mt="md" style={{ maxHeight: "70vh", overflowY: "auto" }}>
-          {groupedList.map(([letter, items]) => (
-            <Fragment key={letter}>
-              <Divider label={letter} labelPosition="left" mt="sm" mb="xs" />
+      {filteredList.length > 0
+        ? (
+          <Box mt="md" style={{ maxHeight: "70vh", overflowY: "auto" }}>
+            {groupedList.map(([letter, items]) => (
+              <Fragment key={letter}>
+                <Divider label={letter} labelPosition="left" mt="sm" mb="xs" />
 
-              <Grid>
-                {items.map(trait => (
-                  <Grid.Col span="content" key={trait.id}>
-                    <PopoverLink data={trait} />
-                  </Grid.Col>
-                ))}
-              </Grid>
-            </Fragment>
-          ))}
-        </Box>
-      ) : (
-        <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>
-          Could not find any matches. Try adding more fields or changing search text or filters.
-        </Alert>
-      )}
+                <Grid>
+                  {items.map(trait => (
+                    <Grid.Col span="content" key={trait.id}>
+                      <PopoverLink data={trait} />
+                    </Grid.Col>
+                  ))}
+                </Grid>
+              </Fragment>
+            ))}
+          </Box>
+        )
+        : (
+          <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>
+            Could not find any matches. Try adding more fields or changing search text or filters.
+          </Alert>
+        )}
     </Fragment>
   );
 }

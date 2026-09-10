@@ -26,9 +26,9 @@ bwgrtools/
 | `configs/` | CORS setup |
 | `controllers/` | Request handlers (`ruleset.controller.ts`) |
 | `routes/` | Route registration (`bwgr.route.ts`) |
-| `services/` | One query module per ruleset data domain (stocks, skills, traits, lifepaths, spell facets, Duel of Wits/Range and Cover/Fight actions, practices, questions, resources, abilities, settings) |
+| `services/` | One query module per ruleset data domain (rulesets, stocks, skills, traits, lifepaths, spell facets — base and alt — Duel of Wits/Range and Cover/Fight actions, practices, questions, resources, abilities, settings) |
 | `utils/` | Logger and error helpers |
-| `validators/` | AJV schemas for ruleset requests |
+| `validators/` | JSON Schema objects for Fastify route validation of ruleset requests |
 
 ### client/src/
 
@@ -41,6 +41,7 @@ bwgrtools/
 | `hooks/featureStores/` | Per-tool Zustand stores, including `CharacterBurnerStores/` |
 | `logic/` | Pure Burning Wheel rules math (attribute formulas, resource cost) |
 | `utils/` | Misc pure helpers (dice probability, fetch wrapper, array/object utilities) |
+| `theme/` | Mantine theme config and global CSS (fonts, cursors, overrides) |
 
 ### shared/
 

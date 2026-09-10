@@ -103,6 +103,19 @@ describe("useRulesetStore", () => {
       });
     });
 
+    it("marks fetchState as failed when the first returned ruleset has a null id", async () => {
+      const rulesets: Ruleset[] = [
+        { id: null as unknown as dat.RulesetId, name: "Core", isOfficial: true, isPublic: true, isExpansion: false }
+      ];
+      MockFetchResponse(true, { rulesets });
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => { });
+
+      useRulesetStore.getState().fetchList();
+      await vi.waitFor(() => expect(useRulesetStore.getState().fetchState).toBe("failed"));
+
+      errorSpy.mockRestore();
+    });
+
     it("marks fetchState as failed when no rulesets are returned", async () => {
       MockFetchResponse(true, { rulesets: [] });
       const errorSpy = vi.spyOn(console, "error").mockImplementation(() => { });

@@ -145,17 +145,19 @@ export const useCharacterBurnerTraitStore = create<CharacterBurnerTraitState>()(
           const occurrence = occurrences[lpIndex];
           const mandatoryIndex = occurrence <= 2 ? occurrence - 1 : -1;
 
-          return lp.traits !== undefined ? lp.traits.map((tr: dat.TraitId, i: number) => {
-            const trait = ruleset.getTrait(tr);
-            const isMandatory = (i === mandatoryIndex);
-            const entry: CharacterTrait = {
-              id: trait.id ?? tr,
-              name: trait.name ?? "",
-              type: isMandatory ? "Mandatory" : "Lifepath",
-              isOpen: isMandatory || trait.category[1] === "Common"
-            };
-            return entry;
-          }) : [];
+          return lp.traits !== undefined
+            ? lp.traits.map((tr: dat.TraitId, i: number) => {
+              const trait = ruleset.getTrait(tr);
+              const isMandatory = (i === mandatoryIndex);
+              const entry: CharacterTrait = {
+                id: trait.id ?? tr,
+                name: trait.name ?? "",
+                type: isMandatory ? "Mandatory" : "Lifepath",
+                isOpen: isMandatory || trait.category[1] === "Common"
+              };
+              return entry;
+            })
+            : [];
         }).flat());
 
         ruleset.traits

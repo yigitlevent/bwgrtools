@@ -43,23 +43,27 @@ export function RangeAndCoverPlanner(): React.JSX.Element {
               <Divider my="8px" />
 
               <Paper key={volleyIndex} shadow="sm" style={{ padding: "8px", marginBottom: "8px" }}>
-                {action !== undefined ? action.visible ? <RangeAndCoverActionDetails action={action} volleyIndex={volleyIndex} /> : (
-                  <ActionIcon variant="subtle" style={{ width: "100%", height: "auto", padding: "16px" }} onClick={() => { toggleActionVisibility(volleyIndex); }}>
-                    <Eye size={100} />
-                  </ActionIcon>
-                ) : (
-                  <Fragment>
-                    <Select
-                      value={selectedAction[volleyIndex]}
-                      data={groupedActionData}
-                      onChange={v => { if (v !== null) changeSelectedAction(v, volleyIndex); }}
-                      allowDeselect={false}
-                      searchable
-                    />
+                {action !== undefined
+                  ? action.visible
+                    ? <RangeAndCoverActionDetails action={action} volleyIndex={volleyIndex} />
+                    : (
+                      <ActionIcon variant="subtle" style={{ width: "100%", height: "auto", padding: "16px" }} onClick={() => { toggleActionVisibility(volleyIndex); }}>
+                        <Eye size={100} />
+                      </ActionIcon>
+                    )
+                  : (
+                    <Fragment>
+                      <Select
+                        value={selectedAction[volleyIndex]}
+                        data={groupedActionData}
+                        onChange={v => { if (v !== null) changeSelectedAction(v, volleyIndex); }}
+                        allowDeselect={false}
+                        searchable
+                      />
 
-                    <Button size="lg" fullWidth style={{ padding: "16px", margin: "16px 0 8px" }} onClick={() => { addAction(racActions, volleyIndex, selectedAction[volleyIndex]); }}>Add Action</Button>
-                  </Fragment>
-                )}
+                      <Button size="lg" fullWidth style={{ padding: "16px", margin: "16px 0 8px" }} onClick={() => { addAction(racActions, volleyIndex, selectedAction[volleyIndex]); }}>Add Action</Button>
+                    </Fragment>
+                  )}
               </Paper>
             </Card>
           </Grid.Col>

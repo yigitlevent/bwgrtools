@@ -49,56 +49,60 @@ export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, band
         setSelectedElementCategory={setSelectedElementCategory}
       />
 
-      {isFontLoaded ? (
-        <Grid columns={1} align="center" justify="center" mt="md">
-          {magicWheel.prayed ? (
-            <Button
-              variant="outline"
-              disabled={magicWheel.isRotating}
-              onClick={() => { magicWheel.reset(); }}
-              fullWidth
-            >
-              Try again
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              disabled={magicWheel.isRotating}
-              onClick={() => { magicWheel.setTargetAmounts(); }}
-              fullWidth
-            >
-              Pray to the Lady Luck
-            </Button>
-          )}
+      {isFontLoaded
+        ? (
+          <Grid columns={1} align="center" justify="center" mt="md">
+            {magicWheel.prayed
+              ? (
+                <Button
+                  variant="outline"
+                  disabled={magicWheel.isRotating}
+                  onClick={() => { magicWheel.reset(); }}
+                  fullWidth
+                >
+                  Try again
+                </Button>
+              )
+              : (
+                <Button
+                  variant="outline"
+                  disabled={magicWheel.isRotating}
+                  onClick={() => { magicWheel.setTargetAmounts(); }}
+                  fullWidth
+                >
+                  Pray to the Lady Luck
+                </Button>
+              )}
 
-          <Grid.Col span={1}>
-            <div
-              ref={wrapperRef}
-              style={{
-                maxWidth: "100%",
-                width: (size === "0px") ? "580px" : size,
-                height: (size === "0px") ? "580px" : size,
-                position: "relative",
-                margin: "0 auto",
-                zIndex: 100
-              }}
-            >
-              <BackCanvas constants={magicWheel.constants} />
-
-              <canvas
-                ref={canvasRef}
-                height={magicWheel.constants.canvasSize}
-                width={magicWheel.constants.canvasSize}
-                style={{ position: "absolute", left: 0, top: 0, zIndex: 102, width: "100%" }}
+            <Grid.Col span={1}>
+              <div
+                ref={wrapperRef}
+                style={{
+                  maxWidth: "100%",
+                  width: (size === "0px") ? "580px" : size,
+                  height: (size === "0px") ? "580px" : size,
+                  position: "relative",
+                  margin: "0 auto",
+                  zIndex: 100
+                }}
               >
-                Your browser does not support canvas.
-              </canvas>
+                <BackCanvas constants={magicWheel.constants} />
 
-              <FrontCanvas constants={magicWheel.constants} />
-            </div>
-          </Grid.Col>
-        </Grid>
-      ) : <Loader />}
+                <canvas
+                  ref={canvasRef}
+                  height={magicWheel.constants.canvasSize}
+                  width={magicWheel.constants.canvasSize}
+                  style={{ position: "absolute", left: 0, top: 0, zIndex: 102, width: "100%" }}
+                >
+                  Your browser does not support canvas.
+                </canvas>
+
+                <FrontCanvas constants={magicWheel.constants} />
+              </div>
+            </Grid.Col>
+          </Grid>
+        )
+        : <Loader />}
     </Fragment>
   );
 }

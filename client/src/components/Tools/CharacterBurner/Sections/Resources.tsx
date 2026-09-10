@@ -12,11 +12,7 @@ function DeleteResourceButton({ name, onDelete }: { name: string; onDelete: () =
   return (
     <Popover opened={confirming} onChange={setConfirming} withArrow position="bottom" width={260}>
       <Popover.Target>
-        <ActionIcon
-          variant="subtle"
-          aria-label={`Remove ${name}`}
-          onClick={e => { e.stopPropagation(); setConfirming(true); }}
-        >
+        <ActionIcon variant="subtle" onClick={e => { e.stopPropagation(); setConfirming(true); }}>
           <Trash2 size={18} />
         </ActionIcon>
       </Popover.Target>
@@ -86,13 +82,15 @@ export function Resources({ openModal }: { openModal: (name: CharacterBurnerModa
               <Accordion>
                 <Accordion.Item value={resourceKey}>
                   <Accordion.Control
-                    icon={isLocked ? (
-                      <Tooltip color="gray" label="Granted by a trait, cannot be removed while the trait is open.">
-                        <Lock size={18} />
-                      </Tooltip>
-                    ) : (
-                      <DeleteResourceButton name={resource.name} onDelete={() => { removeResource(resourceKey); }} />
-                    )}
+                    icon={
+                      isLocked
+                        ? (
+                          <Tooltip color="gray" label="Granted by a trait, cannot be removed while the trait is open.">
+                            <Lock size={18} />
+                          </Tooltip>
+                        )
+                        : <DeleteResourceButton name={resource.name} onDelete={() => { removeResource(resourceKey); }} />
+                    }
                   >
                     <Text size="lg">
                       {resource.name}
@@ -116,34 +114,38 @@ export function Resources({ openModal }: { openModal: (name: CharacterBurnerModa
                         </Text>
                       </Grid.Col>
 
-                      {resource.modifiers.length > 0 ? (
-                        <Grid.Col span={2}>
-                          <Text size="sm">
-                            Modifiers:
-                            {resource.modifiers.join(", ")}
-                          </Text>
-                        </Grid.Col>
-                      ) : null}
+                      {resource.modifiers.length > 0
+                        ? (
+                          <Grid.Col span={2}>
+                            <Text size="sm">
+                              Modifiers:
+                              {resource.modifiers.join(", ")}
+                            </Text>
+                          </Grid.Col>
+                        )
+                        : null}
 
-                      {isLocked && rulesetResource !== undefined && rulesetResource.costs.length > 1 ? (
-                        <Grid.Col span={2}>
-                          <Title order={6}>
-                            Tier (first
-                            {" "}
-                            {resource.minCost}
-                            {" "}
-                            rps free)
-                          </Title>
+                      {isLocked && rulesetResource !== undefined && rulesetResource.costs.length > 1
+                        ? (
+                          <Grid.Col span={2}>
+                            <Title order={6}>
+                              Tier (first
+                              {" "}
+                              {resource.minCost}
+                              {" "}
+                              rps free)
+                            </Title>
 
-                          <Radio.Group value={resource.cost.toString()} onChange={v => { upgradeResourceCost(resourceKey, parseInt(v)); }}>
-                            {rulesetResource.costs.map((v, ii) => {
-                              if (v[1] === "") return null;
-                              const disabled = v[0] < (resource.minCost ?? 0);
-                              return <Radio key={ii} disabled={disabled} label={`${v[1]} (${v[0].toString()}rps)`} value={v[0].toString()} />;
-                            })}
-                          </Radio.Group>
-                        </Grid.Col>
-                      ) : null}
+                            <Radio.Group value={resource.cost.toString()} onChange={v => { upgradeResourceCost(resourceKey, parseInt(v)); }}>
+                              {rulesetResource.costs.map((v, ii) => {
+                                if (v[1] === "") return null;
+                                const disabled = v[0] < (resource.minCost ?? 0);
+                                return <Radio key={ii} disabled={disabled} label={`${v[1]} (${v[0].toString()}rps)`} value={v[0].toString()} />;
+                              })}
+                            </Radio.Group>
+                          </Grid.Col>
+                        )
+                        : null}
 
                       <Grid.Col span={2}>
                         <TextInput

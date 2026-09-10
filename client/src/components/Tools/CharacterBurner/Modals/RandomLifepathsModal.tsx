@@ -9,7 +9,7 @@ import { useCharacterBurnerLifepathStore } from "../../../../hooks/featureStores
 import { useCharacterBurnerSpecialStore } from "../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { useLifepathRandomizerStore } from "../../../../hooks/featureStores/useLifepathRandomizerStore";
 import { FilterLifepaths } from "../../../../utils/FilterLifepaths";
-import { RandomNumber } from "../../../../utils/RandomNumber";
+import { RandomInteger } from "../../../../utils/RandomInteger";
 import { UniqueArray } from "../../../../utils/UniqueArray";
 
 
@@ -38,7 +38,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
       if (typeof lp.years === "number") return lp.years;
       const existing = lp.id !== null ? tempResolvedAges[lp.id] : undefined;
       if (existing !== undefined) return existing;
-      const resolved = RandomNumber(lp.years[0], lp.years[1]);
+      const resolved = RandomInteger(lp.years[0], lp.years[1]);
       if (lp.id !== null) {
         tempResolvedAges[lp.id] = resolved;
         // Applied immediately (not just at transfer) so getAge()'s preview in
@@ -50,9 +50,9 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
 
     let leadsCounter = 0;
     let chosenAmount = 0;
-    const lpAmount = RandomNumber(minLifepaths - 1, maxLifepaths - 1);
+    const lpAmount = RandomInteger(minLifepaths - 1, maxLifepaths - 1);
 
-    const chosenStock = ruleset.stocks.find(v => v.id === stock) ?? ruleset.stocks[RandomNumber(0, ruleset.stocks.length - 1)];
+    const chosenStock = ruleset.stocks.find(v => v.id === stock) ?? ruleset.stocks[RandomInteger(0, ruleset.stocks.length - 1)];
     setNewStock(chosenStock);
 
     if (chosenStock.id === null) return;
@@ -60,9 +60,9 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
 
     const possibleSettings = ruleset.settings.filter(setting => (chosenStock.settingIds ?? []).includes(setting.id ?? -1 as dat.SettingId) && setting.isSubsetting !== true);
     const settingIndex = ruleset.settings.findIndex(v => v.id === setting);
-    const chosenSetting = settingIndex !== -1 ? ruleset.settings[settingIndex] : possibleSettings[RandomNumber(0, possibleSettings.length - 1)];
+    const chosenSetting = settingIndex !== -1 ? ruleset.settings[settingIndex] : possibleSettings[RandomInteger(0, possibleSettings.length - 1)];
 
-    const chosenGender = gender === "Random" ? (RandomNumber(0, 1) === 0 ? "Male" : "Female") : gender;
+    const chosenGender = gender === "Random" ? (RandomInteger(0, 1) === 0 ? "Male" : "Female") : gender;
     setNewGender(chosenGender);
 
     // The randomizer rolls a hypothetical character that doesn't exist in the real character-burner
@@ -82,7 +82,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
       attributes: noAttributes,
       hasAttribute: () => false
     }).filter(lp => lp.setting[0] === chosenSetting.id);
-    tempChosenLifepaths.push(bornLPs[RandomNumber(0, bornLPs.length - 1)]);
+    tempChosenLifepaths.push(bornLPs[RandomInteger(0, bornLPs.length - 1)]);
 
     const maxTries = 50;
     let tries = 0;
@@ -102,7 +102,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
         noLeads: maxLeads <= leadsCounter ? [lastLifepath.setting[0] ?? -1 as dat.SettingId, lastLifepath.setting[1]] : undefined
       });
 
-      const chosenLifepath = possibilities[RandomNumber(0, possibilities.length - 1)];
+      const chosenLifepath = possibilities[RandomInteger(0, possibilities.length - 1)];
 
       if (chosenLifepath.setting[0] !== lastLifepath.setting[0]) leadsCounter = leadsCounter + 1;
 
@@ -219,43 +219,47 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
         </Grid.Col>
       </Grid>
 
-      {chosenLifepaths.length > 0 ? (
-        <Grid columns={2} mt="md">
-          {triedTooMuch ? (
-            <Grid.Col span={2}>
-              <Alert color="yellow">There might be lifepaths missing because of the chosen options.</Alert>
-            </Grid.Col>
-          ) : <Fragment />}
-
-          <Grid.Col span={{ base: 2, md: 1 }}>
-            <Divider label="Lifepaths" mb="6px" />
-
-            <Stack gap="md">
-              {chosenLifepaths.map((v, i) => (
-                <Paper key={i}>
-                  {i + 1}
-                  .
-                  {" "}
-                  {`${v.setting[1]} ➞ ${v.name ?? ""}`}
-                </Paper>
+      {chosenLifepaths.length > 0
+        ? (
+          <Grid columns={2} mt="md">
+            {triedTooMuch
+              ? (
+                <Grid.Col span={2}>
+                  <Alert color="yellow">There might be lifepaths missing because of the chosen options.</Alert>
+                </Grid.Col>
               )
-              )}
-            </Stack>
+              : <Fragment />}
 
-            <Divider label="Basic Information" mt="30px" mb="6px" />
-            <RandomLifepathsBasics chosenLifepaths={chosenLifepaths} />
-          </Grid.Col>
+            <Grid.Col span={{ base: 2, md: 1 }}>
+              <Divider label="Lifepaths" mb="6px" />
 
-          <Grid.Col span={{ base: 2, md: 1 }}>
-            <Divider label="Skills, Traits, and Misc" mb="6px" />
-            <RandomLifepathsLists chosenLifepaths={chosenLifepaths} />
-          </Grid.Col>
+              <Stack gap="md">
+                {chosenLifepaths.map((v, i) => (
+                  <Paper key={i}>
+                    {i + 1}
+                    .
+                    {" "}
+                    {`${v.setting[1]} ➞ ${v.name ?? ""}`}
+                  </Paper>
+                )
+                )}
+              </Stack>
 
-          <Grid.Col span={2}>
-            <Button variant="outline" onClick={() => { transferCharacter(); }} fullWidth>I like this Character</Button>
-          </Grid.Col>
-        </Grid>
-      ) : null}
+              <Divider label="Basic Information" mt="30px" mb="6px" />
+              <RandomLifepathsBasics chosenLifepaths={chosenLifepaths} />
+            </Grid.Col>
+
+            <Grid.Col span={{ base: 2, md: 1 }}>
+              <Divider label="Skills, Traits, and Misc" mb="6px" />
+              <RandomLifepathsLists chosenLifepaths={chosenLifepaths} />
+            </Grid.Col>
+
+            <Grid.Col span={2}>
+              <Button variant="outline" onClick={() => { transferCharacter(); }} fullWidth>I like this Character</Button>
+            </Grid.Col>
+          </Grid>
+        )
+        : null}
     </Modal>
   );
 }

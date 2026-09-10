@@ -20,7 +20,7 @@ const App = Fastify({
 
 App.register(fastifyHelmet);
 App.register(fastifyCors, CorsConfig);
-App.register(fastifyRateLimit, { max: 1000, timeWindow: "1 minute" });
+App.register(fastifyRateLimit, { max: Env.env === "dev" ? 10000 : 10, timeWindow: "1 minute" });
 
 App.register(BwgrRoutes, { prefix: "/api" });
 

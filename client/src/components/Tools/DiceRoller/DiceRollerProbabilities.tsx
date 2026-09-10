@@ -31,12 +31,9 @@ export function DiceRollerProbabilities({ probabilities, isDoubleObstacle, obsta
                   ob
                 </Text>
 
-                {probability === undefined ? <Text>0%</Text> : (
-                  <Text>
-                    {Math.round(probability * 100)}
-                    %
-                  </Text>
-                )}
+                {probability === undefined
+                  ? <Text>0%</Text>
+                  : <Text>{`${String(Math.round(probability * 100))}%`}</Text>}
               </Card>
             </Grid.Col>
           );

@@ -42,11 +42,13 @@ function Trait({ trait, remove }: { trait: UniqueArrayItem<dat.TraitId, Characte
             deleteCallback={remove !== undefined ? () => { remove(trait.id); } : undefined}
           />
 
-          {showCallOnWarning ? (
-            <Tooltip color="gray" label="Character doesn't have any of this trait's call-on skills/attributes.">
-              <TriangleAlert size={16} color="var(--mantine-color-yellow-6)" />
-            </Tooltip>
-          ) : null}
+          {showCallOnWarning
+            ? (
+              <Tooltip color="gray" label="Character doesn't have any of this trait's call-on skills/attributes.">
+                <TriangleAlert size={16} color="var(--mantine-color-yellow-6)" />
+              </Tooltip>
+            )
+            : null}
         </Group>
       </Paper>
     </Grid.Col>
@@ -90,9 +92,17 @@ export function Traits({ openModal }: { openModal: (name: CharacterBurnerModals)
         <Text>{text}</Text>
       </Grid.Col>
 
-      {traits.existsAny("type", "Common") > 0 ? <TraitBlock title="Common" traits={traits.filter(t => t.type === "Common")} /> : null}
-      {traits.existsAny("type", "Mandatory") > 0 ? <TraitBlock title="Mandatory" traits={traits.filter(t => t.type === "Mandatory")} /> : null}
-      {traits.existsAny("type", "Lifepath") > 0 ? <TraitBlock title="Lifepath" traits={traits.filter(t => t.type === "Lifepath")} /> : null}
+      {traits.existsAny("type", "Common") > 0
+        ? <TraitBlock title="Common" traits={traits.filter(t => t.type === "Common")} />
+        : null}
+
+      {traits.existsAny("type", "Mandatory") > 0
+        ? <TraitBlock title="Mandatory" traits={traits.filter(t => t.type === "Mandatory")} />
+        : null}
+
+      {traits.existsAny("type", "Lifepath") > 0
+        ? <TraitBlock title="Lifepath" traits={traits.filter(t => t.type === "Lifepath")} />
+        : null}
 
       <TraitBlock
         title="General"

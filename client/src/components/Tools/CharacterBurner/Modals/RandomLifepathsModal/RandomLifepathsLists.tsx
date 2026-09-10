@@ -19,33 +19,41 @@ export function RandomLifepathsLists({ chosenLifepaths }: { chosenLifepaths: Lif
       <Grid.Col span={1}>
         <Text mr={4} fw={700} style={{ display: "inline-block" }}>Mandatory Skills:</Text>
 
-        {mandatorySkills.length > 0 ? mandatorySkills.map((skill, i) =>
-          <PopoverLink key={skill.id} data={skill} hasComma={i < mandatorySkills.length - 1} />
-        ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
+        {mandatorySkills.length > 0
+          ? mandatorySkills.map((skill, i) =>
+            <PopoverLink key={skill.id} data={skill} hasComma={i < mandatorySkills.length - 1} />
+          )
+          : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
       </Grid.Col>
 
       <Grid.Col span={1}>
         <Text mr={4} fw={700} style={{ display: "inline-block" }}>Skills:</Text>
 
-        {lifepathSkills.length > 0 ? lifepathSkills.map((skill, i) =>
-          <PopoverLink key={skill.id} data={skill} hasComma={i < lifepathSkills.length - 1} />
-        ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
+        {lifepathSkills.length > 0
+          ? lifepathSkills.map((skill, i) =>
+            <PopoverLink key={skill.id} data={skill} hasComma={i < lifepathSkills.length - 1} />
+          )
+          : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
       </Grid.Col>
 
       <Grid.Col span={1}>
         <Text mr={4} fw={700} style={{ display: "inline-block" }}>Mandatory Traits:</Text>
 
-        {mandatoryTraits.length > 0 ? mandatoryTraits.map((trait, i) =>
-          <PopoverLink key={trait.id} data={trait} hasComma={i < mandatoryTraits.length - 1} />
-        ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
+        {mandatoryTraits.length > 0
+          ? mandatoryTraits.map((trait, i) =>
+            <PopoverLink key={trait.id} data={trait} hasComma={i < mandatoryTraits.length - 1} />
+          )
+          : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
       </Grid.Col>
 
       <Grid.Col span={1}>
         <Text mr={4} fw={700} style={{ display: "inline-block" }}>Traits:</Text>
 
-        {lifepathTraits.length > 0 ? lifepathTraits.map((trait, i) =>
-          <PopoverLink key={trait.id} data={trait} hasComma={i < lifepathTraits.length - 1} />
-        ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
+        {lifepathTraits.length > 0
+          ? lifepathTraits.map((trait, i) =>
+            <PopoverLink key={trait.id} data={trait} hasComma={i < lifepathTraits.length - 1} />
+          )
+          : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
       </Grid.Col>
     </Grid>
   );

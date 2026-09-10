@@ -21,23 +21,27 @@ function TraitDetails({ trait }: { trait: Trait; }): React.JSX.Element {
         </Text>
       </Grid.Col>
 
-      {trait.cost !== 0 ? (
-        <Grid.Col span={{ base: 3, md: 1 }}>
-          <Text size="xs">
-            Cost:
-            {" "}
-            {trait.cost}
-          </Text>
-        </Grid.Col>
-      ) : null}
+      {trait.cost !== 0
+        ? (
+          <Grid.Col span={{ base: 3, md: 1 }}>
+            <Text size="xs">
+              Cost:
+              {" "}
+              {trait.cost}
+            </Text>
+          </Grid.Col>
+        )
+        : null}
 
       <Grid.Col span={{ base: 3, md: 1 }}>
-        {trait.stock !== undefined ? (
-          <Text size="xs">
-            Stock:
-            {trait.stock[1]}
-          </Text>
-        ) : null}
+        {trait.stock !== undefined
+          ? (
+            <Text size="xs">
+              Stock:
+              {trait.stock[1]}
+            </Text>
+          )
+          : null}
       </Grid.Col>
 
       <Grid.Col span={3}>

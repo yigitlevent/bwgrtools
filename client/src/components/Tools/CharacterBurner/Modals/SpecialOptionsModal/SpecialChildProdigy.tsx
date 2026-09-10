@@ -42,31 +42,35 @@ export function SpecialChildProdigy(): React.JSX.Element {
         />
       </Grid.Col>
 
-      {mode === "stat" ? (
-        <Grid.Col span={2}>
-          <Select
-            label="Chosen Stat"
-            value={special.childProdigyStat?.toString() ?? null}
-            data={statOptions}
-            onChange={v => { modifyChildProdigyStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
-            allowDeselect={false}
-            size="sm"
-          />
-        </Grid.Col>
-      ) : null}
+      {mode === "stat"
+        ? (
+          <Grid.Col span={2}>
+            <Select
+              label="Chosen Stat"
+              value={special.childProdigyStat?.toString() ?? null}
+              data={statOptions}
+              onChange={v => { modifyChildProdigyStat(v !== null ? Number(v) as dat.AbilityId : undefined); }}
+              allowDeselect={false}
+              size="sm"
+            />
+          </Grid.Col>
+        )
+        : null}
 
-      {mode === "skill" ? (
-        <Grid.Col span={2}>
-          <Select
-            label="Chosen Skill"
-            value={special.childProdigyShiftedSkill?.toString() ?? null}
-            data={skillOptions}
-            onChange={v => { modifyChildProdigyShiftedSkill(v !== null ? Number(v) as dat.SkillId : undefined); }}
-            allowDeselect={false}
-            size="sm"
-          />
-        </Grid.Col>
-      ) : null}
+      {mode === "skill"
+        ? (
+          <Grid.Col span={2}>
+            <Select
+              label="Chosen Skill"
+              value={special.childProdigyShiftedSkill?.toString() ?? null}
+              data={skillOptions}
+              onChange={v => { modifyChildProdigyShiftedSkill(v !== null ? Number(v) as dat.SkillId : undefined); }}
+              allowDeselect={false}
+              size="sm"
+            />
+          </Grid.Col>
+        )
+        : null}
     </Fragment>
   );
 }

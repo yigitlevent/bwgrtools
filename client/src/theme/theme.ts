@@ -4,16 +4,16 @@ import type { MantineColorsTuple } from "@mantine/core";
 
 
 const MainColors: MantineColorsTuple = [
-  "#e1f8ff",
-  "#cbedff",
-  "#9ad7ff",
-  "#64c1ff",
-  "#3aaefe",
-  "#20a2fe",
-  "#099cff",
-  "#0088e4",
-  "#0079cd",
-  "#0068b6"
+  "hsl(174, 100%, 94%)",
+  "hsl(181, 100%, 90%)",
+  "hsl(184, 100%, 80%)",
+  "hsl(184, 100%, 70%)",
+  "hsl(184, 99%, 61%)",
+  "hsl(185, 99%, 56%)",
+  "hsl(184, 100%, 52%)",
+  "hsl(184, 100%, 45%)",
+  "hsl(185, 100%, 40%)",
+  "hsl(186, 100%, 36%)"
 ];
 
 export const DarkTheme = createTheme({

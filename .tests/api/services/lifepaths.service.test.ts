@@ -266,4 +266,64 @@ describe("GetLifepaths", () => {
 
     await expect(GetLifepaths([1 as unknown as dat.RulesetId])).rejects.toThrow("unidentified requirement block item type: null");
   });
+
+  it("omits min/max on an ATTRIBUTE item when both are explicitly null", async () => {
+    const lifepathId = 1 as unknown as dat.LifepathId;
+    const blockId = 10 as unknown as dat.LifepathRequirementBlockId;
+    const reqBlock = { id: blockId, lifepathId, logicTypeId: 1, logicType: "AND", mustFulfill: true, fulfillmentAmount: null } as unknown as dat.LifepathRequirementBlock;
+    const item = {
+      requirementId: blockId, requirementTypeId: 1, requirementType: "ATTRIBUTE",
+      attributeId: 5, attribute: "Will", min: null, max: null, forCompanion: false
+    } as unknown as dat.LifepathRequirementBlockItem;
+
+    MockQueryResults([BaseRow({ id: lifepathId })], [reqBlock], [item]);
+
+    const result = await GetLifepaths([1 as unknown as dat.RulesetId]);
+    expect(result[0].requirements?.[0].items).toEqual([{ logicType: [1, "ATTRIBUTE"], attribute: [5, "Will"], forCompanion: false }]);
+  });
+
+  it("includes both min and max on an ATTRIBUTE item when both are set", async () => {
+    const lifepathId = 1 as unknown as dat.LifepathId;
+    const blockId = 10 as unknown as dat.LifepathRequirementBlockId;
+    const reqBlock = { id: blockId, lifepathId, logicTypeId: 1, logicType: "AND", mustFulfill: true, fulfillmentAmount: null } as unknown as dat.LifepathRequirementBlock;
+    const item = {
+      requirementId: blockId, requirementTypeId: 1, requirementType: "ATTRIBUTE",
+      attributeId: 5, attribute: "Will", min: 3, max: 7, forCompanion: false
+    } as unknown as dat.LifepathRequirementBlockItem;
+
+    MockQueryResults([BaseRow({ id: lifepathId })], [reqBlock], [item]);
+
+    const result = await GetLifepaths([1 as unknown as dat.RulesetId]);
+    expect(result[0].requirements?.[0].items).toEqual([{ logicType: [1, "ATTRIBUTE"], attribute: [5, "Will"], forCompanion: false, min: 3, max: 7 }]);
+  });
+
+  it("keeps a requirement item whose rulesets overlap with the active rulesets", async () => {
+    const lifepathId = 1 as unknown as dat.LifepathId;
+    const blockId = 10 as unknown as dat.LifepathRequirementBlockId;
+    const reqBlock = { id: blockId, lifepathId, logicTypeId: 1, logicType: "AND", mustFulfill: true, fulfillmentAmount: null } as unknown as dat.LifepathRequirementBlock;
+    const item = {
+      requirementId: blockId, requirementTypeId: 1, requirementType: "UNIQUE",
+      rulesets: ["core"]
+    } as unknown as dat.LifepathRequirementBlockItem;
+
+    MockQueryResults([BaseRow({ id: lifepathId })], [reqBlock], [item]);
+
+    const result = await GetLifepaths(["core" as unknown as dat.RulesetId]);
+    expect(result[0].requirements?.[0].items).toEqual([{ logicType: [1, "UNIQUE"], isUnique: true }]);
+  });
+
+  it("drops a requirement item whose rulesets don't overlap with the active rulesets", async () => {
+    const lifepathId = 1 as unknown as dat.LifepathId;
+    const blockId = 10 as unknown as dat.LifepathRequirementBlockId;
+    const reqBlock = { id: blockId, lifepathId, logicTypeId: 1, logicType: "AND", mustFulfill: true, fulfillmentAmount: null } as unknown as dat.LifepathRequirementBlock;
+    const item = {
+      requirementId: blockId, requirementTypeId: 1, requirementType: "UNIQUE",
+      rulesets: ["expansion"]
+    } as unknown as dat.LifepathRequirementBlockItem;
+
+    MockQueryResults([BaseRow({ id: lifepathId })], [reqBlock], [item]);
+
+    const result = await GetLifepaths(["core" as unknown as dat.RulesetId]);
+    expect(result[0].requirements).toBeUndefined();
+  });
 });

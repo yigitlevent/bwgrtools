@@ -224,7 +224,9 @@ function ResolveRequirementBlocks(requirementBlocks: LifepathRequirementBlock[],
 
   return (
     <Fragment>
-      {!hasOneBlock ? <Box key="parent-logic">{BlockTitle(parentLogic, 1)}</Box> : null}
+      {!hasOneBlock
+        ? <Box key="parent-logic">{BlockTitle(parentLogic, 1)}</Box>
+        : null}
 
       {requirementBlocks.map((block, i) => {
         const isGroupedBlock = IsFullyGroupableBlock(block);
@@ -243,11 +245,13 @@ function ResolveRequirementBlocks(requirementBlocks: LifepathRequirementBlock[],
           <Fragment key={i}>
             <Box ml={hasOneBlock ? 0 : "xs"}>{RenderParts(titleParts, resolvers)}</Box>
 
-            {!isCollapsed ? (
-              <Box ml={hasOneBlock ? 0 : "xs"}>
-                {itemPartsList.map((parts, ii) => <Box key={ii} ml="xs">{RenderParts(parts, resolvers)}</Box>)}
-              </Box>
-            ) : null}
+            {!isCollapsed
+              ? (
+                <Box ml={hasOneBlock ? 0 : "xs"}>
+                  {itemPartsList.map((parts, ii) => <Box key={ii} ml="xs">{RenderParts(parts, resolvers)}</Box>)}
+                </Box>
+              )
+              : null}
           </Fragment>
         );
       })}

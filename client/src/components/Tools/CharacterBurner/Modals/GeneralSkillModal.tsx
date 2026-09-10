@@ -27,12 +27,14 @@ function SkillDetails({ skill }: { skill: Skill; }): React.JSX.Element {
       </Grid.Col>
 
       <Grid.Col span={{ base: 2, md: 1 }}>
-        {skill.roots !== undefined ? (
-          <Text size="xs">
-            Root:
-            {skill.roots.join("/")}
-          </Text>
-        ) : null}
+        {skill.roots !== undefined
+          ? (
+            <Text size="xs">
+              Root:
+              {skill.roots.join("/")}
+            </Text>
+          )
+          : null}
       </Grid.Col>
 
       <Grid.Col span={{ base: 2, md: 1 }}>
@@ -52,12 +54,14 @@ function SkillDetails({ skill }: { skill: Skill; }): React.JSX.Element {
       </Grid.Col>
 
       <Grid.Col span={2}>
-        {skill.restriction !== undefined ? (
-          <Text size="xs">
-            Restrictions:
-            {GetRestrictionString(skill)}
-          </Text>
-        ) : null}
+        {skill.restriction !== undefined
+          ? (
+            <Text size="xs">
+              Restrictions:
+              {GetRestrictionString(skill)}
+            </Text>
+          )
+          : null}
       </Grid.Col>
 
       <Grid.Col span={2}>
