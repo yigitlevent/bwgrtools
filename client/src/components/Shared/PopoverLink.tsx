@@ -22,14 +22,16 @@ function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
         <Divider />
       </Grid.Col>
 
-      {skill.roots !== undefined ? (
-        <Grid.Col span={{ base: 2, md: 1 }}>
-          <Group gap={4} justify="start">
-            <Text fw={700}>Root:</Text>
-            <Text>{skill.roots.map(v => v[1]).join("/")}</Text>
-          </Group>
-        </Grid.Col>
-      ) : null}
+      {skill.roots !== undefined
+        ? (
+          <Grid.Col span={{ base: 2, md: 1 }}>
+            <Group gap={4} justify="start">
+              <Text fw={700}>Root:</Text>
+              <Text>{skill.roots.map(v => v[1]).join("/")}</Text>
+            </Group>
+          </Grid.Col>
+        )
+        : null}
 
       <Grid.Col span={{ base: 2, md: 1 }}>
         <Group gap={4} justify="start">
@@ -53,12 +55,14 @@ function SkillPop({ skill }: { skill: Skill; }): React.JSX.Element {
         </Group>
       </Grid.Col>
 
-      {skill.description !== undefined && skill.description.length > 0 ? (
-        <Grid.Col span={2}>
-          <Divider mb={4} />
-          {skill.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
-        </Grid.Col>
-      ) : null}
+      {skill.description !== undefined && skill.description.length > 0
+        ? (
+          <Grid.Col span={2}>
+            <Divider mb={4} />
+            {skill.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
+          </Grid.Col>
+        )
+        : null}
     </Grid>
   );
 }
@@ -78,37 +82,43 @@ function TraitPop({ trait }: { trait: Trait; }): React.JSX.Element {
         </Group>
       </Grid.Col>
 
-      {trait.cost !== 0 ? (
-        <Grid.Col span={{ base: 3, md: 1 }}>
-          <Group gap={4} justify="start">
-            <Text fw={700}>Cost:</Text>
-            <Text>{trait.cost}</Text>
-          </Group>
-        </Grid.Col>
-      ) : null}
+      {trait.cost !== 0
+        ? (
+          <Grid.Col span={{ base: 3, md: 1 }}>
+            <Group gap={4} justify="start">
+              <Text fw={700}>Cost:</Text>
+              <Text>{trait.cost}</Text>
+            </Group>
+          </Grid.Col>
+        )
+        : null}
 
-      {trait.stock !== undefined ? (
-        <Grid.Col span={{ base: 3, md: 1 }}>
-          <Group gap={4} justify="start">
-            <Text fw={700}>Stock:</Text>
-            <Text>{trait.stock[1]}</Text>
-          </Group>
-        </Grid.Col>
-      ) : (
-        <Grid.Col span={{ base: 3, md: 1 }}>
-          <Group gap={4} justify="start">
-            <Text fw={700}>Stock:</Text>
-            <Text>Any</Text>
-          </Group>
-        </Grid.Col>
-      )}
+      {trait.stock !== undefined
+        ? (
+          <Grid.Col span={{ base: 3, md: 1 }}>
+            <Group gap={4} justify="start">
+              <Text fw={700}>Stock:</Text>
+              <Text>{trait.stock[1]}</Text>
+            </Group>
+          </Grid.Col>
+        )
+        : (
+          <Grid.Col span={{ base: 3, md: 1 }}>
+            <Group gap={4} justify="start">
+              <Text fw={700}>Stock:</Text>
+              <Text>Any</Text>
+            </Group>
+          </Grid.Col>
+        )}
 
-      {trait.description !== undefined && trait.description.length > 0 ? (
-        <Grid.Col span={2}>
-          <Divider mb={4} />
-          {trait.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
-        </Grid.Col>
-      ) : null}
+      {trait.description !== undefined && trait.description.length > 0
+        ? (
+          <Grid.Col span={2}>
+            <Divider mb={4} />
+            {trait.description.split("<br>").map(v => <Text key={v}>{v}</Text>)}
+          </Grid.Col>
+        )
+        : null}
     </Grid>
   );
 }
@@ -123,12 +133,16 @@ export const PopoverLink = memo(({ data, noColor, hasComma }: { data: Skill | Tr
               {data.name}
             </Anchor>
 
-            {hasComma === true ? <Box mr={4} style={{ display: "inline-block" }}>,</Box> : null}
+            {hasComma === true
+              ? <Box mr={4} style={{ display: "inline-block" }}>,</Box>
+              : null}
           </Box>
         </Popover.Target>
 
         <Popover.Dropdown style={{ maxWidth: "400px" }}>
-          {"pools" in data ? <LifepathBox lifepath={data} noBorder /> : "tool" in data ? <SkillPop skill={data} /> : <TraitPop trait={data} />}
+          {"pools" in data
+            ? <LifepathBox lifepath={data} noBorder />
+            : "tool" in data ? <SkillPop skill={data} /> : <TraitPop trait={data} />}
         </Popover.Dropdown>
       </Popover>
     </Box>

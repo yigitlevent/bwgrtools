@@ -59,38 +59,44 @@ export function App(): React.JSX.Element {
           </Group>
 
           <Box style={{ height: "calc(100svh - 54px)", minHeight: "calc(100svh - 54px)" }}>
-            {fetchState === "failed" ? (
-              <Center style={{ height: "100%" }}>
-                <Stack align="center" gap="sm">
-                  <Text>Could not load ruleset data. Check your connection and try again.</Text>
-                  <Button variant="outline" onClick={retry}>Retry</Button>
-                </Stack>
-              </Center>
-            ) : null}
+            {fetchState === "failed"
+              ? (
+                <Center style={{ height: "100%" }}>
+                  <Stack align="center" gap="sm">
+                    <Text>Could not load ruleset data. Check your connection and try again.</Text>
+                    <Button variant="outline" onClick={retry}>Retry</Button>
+                  </Stack>
+                </Center>
+              )
+              : null}
 
-            {fetchState === "done" ? (
-              <Routes>
-                <Route path="/" element={<Navigate replace to="/diceroller" />} />
-                <Route path="/diceroller" element={<DiceRoller />} />
-                <Route path="/lifepaths" element={<LifepathLists scrollRef={scrollRef} />} />
-                <Route path="/skills" element={<SkillLists />} />
-                <Route path="/traits" element={<TraitLists />} />
-                <Route path="/resources" element={<ResourcesList scrollRef={scrollRef} />} />
-                <Route path="/practiceplanner" element={<PracticePlanner />} />
-                <Route path="/magicwheel" element={<MagicWheel />} />
-                <Route path="/magicwheelalt" element={<MagicWheelAlt />} />
-                <Route path="/dowplanner" element={<DuelOfWitsPlanner />} />
-                <Route path="/racplanner" element={<RangeAndCoverPlanner />} />
-                <Route path="/fightplanner" element={<FightPlanner />} />
-                <Route path="/characterburner" element={<CharacterBurner />} />
-              </Routes>
-            ) : null}
+            {fetchState === "done"
+              ? (
+                <Routes>
+                  <Route path="/" element={<Navigate replace to="/diceroller" />} />
+                  <Route path="/diceroller" element={<DiceRoller />} />
+                  <Route path="/lifepaths" element={<LifepathLists scrollRef={scrollRef} />} />
+                  <Route path="/skills" element={<SkillLists />} />
+                  <Route path="/traits" element={<TraitLists />} />
+                  <Route path="/resources" element={<ResourcesList scrollRef={scrollRef} />} />
+                  <Route path="/practiceplanner" element={<PracticePlanner />} />
+                  <Route path="/magicwheel" element={<MagicWheel />} />
+                  <Route path="/magicwheelalt" element={<MagicWheelAlt />} />
+                  <Route path="/dowplanner" element={<DuelOfWitsPlanner />} />
+                  <Route path="/racplanner" element={<RangeAndCoverPlanner />} />
+                  <Route path="/fightplanner" element={<FightPlanner />} />
+                  <Route path="/characterburner" element={<CharacterBurner />} />
+                </Routes>
+              )
+              : null}
 
-            {fetchState !== "done" && fetchState !== "failed" ? (
-              <Center style={{ height: "100%" }}>
-                <Loader />
-              </Center>
-            ) : null}
+            {fetchState !== "done" && fetchState !== "failed"
+              ? (
+                <Center style={{ height: "100%" }}>
+                  <Loader />
+                </Center>
+              )
+              : null}
           </Box>
         </Stack>
       </Container>

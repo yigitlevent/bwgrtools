@@ -73,20 +73,22 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
         </Grid.Col>
 
         <Grid.Col span={{ base: 10, sm: 4, md: 3 }}>
-          {possibleSkills !== null && typeof practiceName !== "string" ? (
-            <Select
-              label="Name"
-              variant="filled"
-              value={practiceName.id?.toString() ?? null}
-              data={possibleSkills.map(s => ({ value: s.id?.toString() ?? "", label: s.name ?? "" }))}
-              onChange={v => {
-                const found = possibleSkills.find(s => s.id?.toString() === v);
-                if (found !== undefined) setPracticeName(found);
-              }}
-              allowDeselect={false}
-              disabled={cells.length < 1}
-            />
-          ) : <TextInput label="Name" variant="filled" defaultValue={typeof practiceName === "string" ? practiceName : (practiceName.name ?? "")} disabled />}
+          {possibleSkills !== null && typeof practiceName !== "string"
+            ? (
+              <Select
+                label="Name"
+                variant="filled"
+                value={practiceName.id?.toString() ?? null}
+                data={possibleSkills.map(s => ({ value: s.id?.toString() ?? "", label: s.name ?? "" }))}
+                onChange={v => {
+                  const found = possibleSkills.find(s => s.id?.toString() === v);
+                  if (found !== undefined) setPracticeName(found);
+                }}
+                allowDeselect={false}
+                disabled={cells.length < 1}
+              />
+            )
+            : <TextInput label="Name" variant="filled" defaultValue={typeof practiceName === "string" ? practiceName : (practiceName.name ?? "")} disabled />}
         </Grid.Col>
 
         <Grid.Col span={{ base: 10, sm: 4, md: 3 }}>

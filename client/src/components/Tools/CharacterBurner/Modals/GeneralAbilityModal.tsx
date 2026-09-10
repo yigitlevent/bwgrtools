@@ -44,27 +44,31 @@ export function GeneralAbilityModal<T extends Skill | Trait>({ isOpen, close, ti
   return (
     <Modal opened={isOpen} onClose={() => { close(); }} size="800px">
       <Grid columns={1} gap="md" align="center" justify="center">
-        {chosenAbility !== undefined ? (
-          <Grid.Col span={1}>
-            <Select
-              label={title}
-              value={chosenAbility.id?.toString() ?? null}
-              data={groupedAbilityData}
-              onChange={v => {
-                const found = possibleAbilities.find(a => a.id?.toString() === v);
-                if (found !== undefined) setChosenAbility(found);
-              }}
-              allowDeselect={false}
-              searchable
-            />
-          </Grid.Col>
-        ) : null}
+        {chosenAbility !== undefined
+          ? (
+            <Grid.Col span={1}>
+              <Select
+                label={title}
+                value={chosenAbility.id?.toString() ?? null}
+                data={groupedAbilityData}
+                onChange={v => {
+                  const found = possibleAbilities.find(a => a.id?.toString() === v);
+                  if (found !== undefined) setChosenAbility(found);
+                }}
+                allowDeselect={false}
+                searchable
+              />
+            </Grid.Col>
+          )
+          : null}
 
-        {chosenAbility !== undefined ? (
-          <Grid.Col span={1}>
-            {renderDetails(chosenAbility)}
-          </Grid.Col>
-        ) : null}
+        {chosenAbility !== undefined
+          ? (
+            <Grid.Col span={1}>
+              {renderDetails(chosenAbility)}
+            </Grid.Col>
+          )
+          : null}
 
         <Grid.Col span={1}>
           <Button variant="outline" size="md" onClick={addNewAbility} fullWidth>{addButtonLabel}</Button>

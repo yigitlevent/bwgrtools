@@ -98,21 +98,25 @@ export function SpecialSkills(): React.JSX.Element {
             </Grid.Col>
 
             <Grid.Col span={2}>
-              {charSkillId in special.chosenSubskills ? canSelectMultiple ? (
-                <MultiSelect
-                  label="Chosen Skills"
-                  value={special.chosenSubskills[charSkillId].map(id => id.toString())}
-                  data={subskillData}
-                  onChange={v => { modifySkillSubskills(charSkillId, v.map(id => Number(id) as dat.SkillId), canSelectMultiple); }}
-                />
-              ) : (
-                <Select
-                  label="Chosen Skill"
-                  value={special.chosenSubskills[charSkillId][0]?.toString() ?? null}
-                  data={subskillData}
-                  onChange={v => { modifySkillSubskills(charSkillId, v !== null ? [Number(v) as dat.SkillId] : null, canSelectMultiple); }}
-                />
-              ) : null}
+              {charSkillId in special.chosenSubskills
+                ? canSelectMultiple
+                  ? (
+                    <MultiSelect
+                      label="Chosen Skills"
+                      value={special.chosenSubskills[charSkillId].map(id => id.toString())}
+                      data={subskillData}
+                      onChange={v => { modifySkillSubskills(charSkillId, v.map(id => Number(id) as dat.SkillId), canSelectMultiple); }}
+                    />
+                  )
+                  : (
+                    <Select
+                      label="Chosen Skill"
+                      value={special.chosenSubskills[charSkillId][0]?.toString() ?? null}
+                      data={subskillData}
+                      onChange={v => { modifySkillSubskills(charSkillId, v !== null ? [Number(v) as dat.SkillId] : null, canSelectMultiple); }}
+                    />
+                  )
+                : null}
             </Grid.Col>
           </Fragment>
         );

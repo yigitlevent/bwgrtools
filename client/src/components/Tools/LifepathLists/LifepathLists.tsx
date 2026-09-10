@@ -100,20 +100,22 @@ export function LifepathLists({ scrollRef }: { scrollRef: React.RefObject<HTMLDi
         </Grid.Col>
       </Grid>
 
-      {filteredList.length > 0 ? (
-        <Box mt={16} style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
-          {rowVirtualizer.getVirtualItems().map(virtualRow => (
-            <Box
-              key={virtualRow.key}
-              ref={rowVirtualizer.measureElement}
-              data-index={virtualRow.index}
-              style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${virtualRow.start.toString()}px)`, paddingBottom: "var(--mantine-spacing-xs)" }}
-            >
-              <LifepathBox lifepath={filteredList[virtualRow.index]} />
-            </Box>
-          ))}
-        </Box>
-      ) : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
+      {filteredList.length > 0
+        ? (
+          <Box mt={16} style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
+            {rowVirtualizer.getVirtualItems().map(virtualRow => (
+              <Box
+                key={virtualRow.key}
+                ref={rowVirtualizer.measureElement}
+                data-index={virtualRow.index}
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${virtualRow.start.toString()}px)`, paddingBottom: "var(--mantine-spacing-xs)" }}
+              >
+                <LifepathBox lifepath={filteredList[virtualRow.index]} />
+              </Box>
+            ))}
+          </Box>
+        )
+        : <Alert color="yellow" style={{ width: "100%", maxWidth: "600px", margin: "12px auto" }}>Could not find any matches. Try adding more fields or changing search text.</Alert>}
     </Fragment>
   );
 }

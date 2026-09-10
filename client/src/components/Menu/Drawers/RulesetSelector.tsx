@@ -72,10 +72,14 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
           const rulesetId = ruleset.id;
           if (rulesetId === null) return null;
 
-          const rulesetLeftSection = isPendingChecked(rulesetId) ? <Check size={18} color="var(--mantine-color-green-6)" /> : <X size={18} color="var(--mantine-color-red-6)" />;
-          const rulesetRightSection = ruleset.isOfficial === true ? (
-            <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
-          ) : null;
+          const rulesetLeftSection =
+            isPendingChecked(rulesetId)
+              ? <Check size={18} color="var(--mantine-color-green-6)" />
+              : <X size={18} color="var(--mantine-color-red-6)" />;
+
+          const rulesetRightSection = ruleset.isOfficial === true
+            ? <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
+            : null;
 
           if (ruleset.expansionIds === undefined) {
             return (
@@ -113,19 +117,23 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
                   const expansionId2 = expansion?.id;
 
                   return (
-                    expansion !== undefined && expansionId2 !== undefined && expansionId2 !== null ? (
-                      <Menu.Item
-                        key={ii}
-                        disabled={!isPendingChecked(rulesetId)}
-                        leftSection={isPendingExactChecked([rulesetId, expansionId2]) ? <Check size={18} color="var(--mantine-color-green-6)" /> : <X size={18} color="var(--mantine-color-red-6)" />}
-                        rightSection={ruleset.isOfficial === true ? (
-                          <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
-                        ) : null}
-                        onClick={() => { setPending(p => TogglePendingRuleset(p, rulesets, expansionId2)); }}
-                      >
-                        {expansion.name}
-                      </Menu.Item>
-                    ) : null
+                    expansion !== undefined && expansionId2 !== undefined && expansionId2 !== null
+                      ? (
+                        <Menu.Item
+                          key={ii}
+                          disabled={!isPendingChecked(rulesetId)}
+                          leftSection={isPendingExactChecked([rulesetId, expansionId2]) ? <Check size={18} color="var(--mantine-color-green-6)" /> : <X size={18} color="var(--mantine-color-red-6)" />}
+                          rightSection={ruleset.isOfficial === true
+                            ? (
+                              <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
+                            )
+                            : null}
+                          onClick={() => { setPending(p => TogglePendingRuleset(p, rulesets, expansionId2)); }}
+                        >
+                          {expansion.name}
+                        </Menu.Item>
+                      )
+                      : null
                   );
                 })}
               </Menu.Sub.Dropdown>

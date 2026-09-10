@@ -106,54 +106,56 @@ export function PracticePlannerCells({ setNotification }: { setNotification: (va
 
   return (
     <Box>
-      {cells.length > 0 ? (
-        <DataTable
-          columns={[
-            {
-              accessor: "day",
-              title: "Day",
-              width: 60,
-              render: cell => `Day ${(cell.cellIndex + 1).toString()}`
-            },
-            {
-              accessor: "hours",
-              title: "Hours Filled",
-              render: cell => (
-                <Box mt={8}>
-                  {[...Array<number>(cell.maxHours)].map((_, ii) => {
-                    const filled = (cell.placed.length > 0 ? cell.placed.map(v => v.hours).reduce((pv, cv) => pv + cv) : 0);
-                    return (
-                      <PracticePlannerCellIcon
-                        key={ii}
-                        isDayFull={cell.maxHours === filled ? "full" : filled > 0 ? "partial" : "empty"}
-                        isCellFull={ii < filled}
-                      />
-                    );
-                  })}
-                </Box>
-              )
-            },
-            {
-              accessor: "actions",
-              title: "",
-              width: 120,
-              textAlign: "right",
-              render: cell => (
-                <Group gap={4} justify="flex-end" wrap="nowrap">
-                  <ActionIcon size="sm" variant="subtle" onClick={e => { e.stopPropagation(); changeCellHour(cell.cellIndex, -1, cells, setNotification); }}><CircleMinus size={16} /></ActionIcon>
-                  <ActionIcon size="sm" variant="subtle" onClick={e => { e.stopPropagation(); changeCellHour(cell.cellIndex, 1, cells, setNotification); }}><CirclePlus size={16} /></ActionIcon>
-                  <DeleteButton confirmText="Delete this day? Any practices placed in it will be lost." onDelete={() => { deleteCell(cell.cellIndex); }} />
-                </Group>
-              )
-            }
-          ]}
-          records={records}
-          idAccessor="cellIndex"
-          rowExpansion={{
-            content: ({ record }) => <PracticesTable cell={record} cellIndex={record.cellIndex} />
-          }}
-        />
-      ) : null}
+      {cells.length > 0
+        ? (
+          <DataTable
+            columns={[
+              {
+                accessor: "day",
+                title: "Day",
+                width: 60,
+                render: cell => `Day ${(cell.cellIndex + 1).toString()}`
+              },
+              {
+                accessor: "hours",
+                title: "Hours Filled",
+                render: cell => (
+                  <Box mt={8}>
+                    {[...Array<number>(cell.maxHours)].map((_, ii) => {
+                      const filled = (cell.placed.length > 0 ? cell.placed.map(v => v.hours).reduce((pv, cv) => pv + cv) : 0);
+                      return (
+                        <PracticePlannerCellIcon
+                          key={ii}
+                          isDayFull={cell.maxHours === filled ? "full" : filled > 0 ? "partial" : "empty"}
+                          isCellFull={ii < filled}
+                        />
+                      );
+                    })}
+                  </Box>
+                )
+              },
+              {
+                accessor: "actions",
+                title: "",
+                width: 120,
+                textAlign: "right",
+                render: cell => (
+                  <Group gap={4} justify="flex-end" wrap="nowrap">
+                    <ActionIcon size="sm" variant="subtle" onClick={e => { e.stopPropagation(); changeCellHour(cell.cellIndex, -1, cells, setNotification); }}><CircleMinus size={16} /></ActionIcon>
+                    <ActionIcon size="sm" variant="subtle" onClick={e => { e.stopPropagation(); changeCellHour(cell.cellIndex, 1, cells, setNotification); }}><CirclePlus size={16} /></ActionIcon>
+                    <DeleteButton confirmText="Delete this day? Any practices placed in it will be lost." onDelete={() => { deleteCell(cell.cellIndex); }} />
+                  </Group>
+                )
+              }
+            ]}
+            records={records}
+            idAccessor="cellIndex"
+            rowExpansion={{
+              content: ({ record }) => <PracticesTable cell={record} cellIndex={record.cellIndex} />
+            }}
+          />
+        )
+        : null}
     </Box>
   );
 }

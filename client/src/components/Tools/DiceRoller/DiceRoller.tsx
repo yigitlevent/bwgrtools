@@ -53,7 +53,13 @@ export function DiceRoller(): React.JSX.Element {
   const [probabilities, setProbabilities] = useState<number[]>([]);
 
   const testType =
-    (dicePool === 1 && obstacle === 1) ? "Routine or Difficult" : (obstacle > dicePool) ? "Challenging" : (obstacle <= Tests[dicePool].routineMaxObstacle) ? "Routine" : "Difficult";
+    (dicePool === 1 && obstacle === 1)
+      ? "Routine or Difficult"
+      : (obstacle > dicePool)
+        ? "Challenging"
+        : (obstacle <= Tests[dicePool].routineMaxObstacle)
+          ? "Routine"
+          : "Difficult";
 
   const calculateResult = (dice: number[], usedFate: boolean): void => {
     let successes = 0;
@@ -104,13 +110,23 @@ export function DiceRoller(): React.JSX.Element {
 
           <AbilityButton
             style={{ height: "30px" }}
-            onClick={() => { setShade(v => v === "W" ? "B" : v === "B" ? "G" : "W"); }}
+            onClick={() => {
+              setShade(v => v === "W"
+                ? "B"
+                : v === "B"
+                  ? "G"
+                  : "W");
+            }}
           >
             {shade}
           </AbilityButton>
 
           <AbilityButtonWithArrows
-            onClick={() => { setDicePool(v => v === 20 ? v = 1 : Clamp(v + 1, 1, 20)); }}
+            onClick={() => {
+              setDicePool(v => v === 20
+                ? v = 1
+                : Clamp(v + 1, 1, 20));
+            }}
             onContextMenu={() => { setDicePool(v => Clamp(v - 1, 1, 20)); }}
           >
             {dicePool}
@@ -119,7 +135,11 @@ export function DiceRoller(): React.JSX.Element {
           <Text style={{ display: "inline-block", margin: "0 8px" }}>vs. Ob</Text>
 
           <AbilityButtonWithArrows
-            onClick={() => { setObstacle(v => v === 20 ? v = 1 : Clamp(v + 1, 1, 20)); }}
+            onClick={() => {
+              setObstacle(v => v === 20
+                ? v = 1
+                : Clamp(v + 1, 1, 20));
+            }}
             onContextMenu={() => { setObstacle(v => Clamp(v - 1, 1, 20)); }}
           >
             {obstacle}

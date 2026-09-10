@@ -44,11 +44,13 @@ export function FightPlanner(): React.JSX.Element {
 
               {action.map((action, actionIndex) => (
                 <Paper key={`${volleyIndex.toString()}-${actionIndex.toString()}`} shadow="sm" style={{ padding: "8px", marginBottom: "8px" }}>
-                  {action.visible ? <FightPlannerActionDetails action={action} volleyIndex={volleyIndex} actionIndex={actionIndex} /> : (
-                    <ActionIcon variant="subtle" style={{ width: "100%", height: "auto", padding: "16px" }} onClick={() => { toggleActionVisibility(volleyIndex, actionIndex); }}>
-                      <Eye size={100} />
-                    </ActionIcon>
-                  )}
+                  {action.visible
+                    ? <FightPlannerActionDetails action={action} volleyIndex={volleyIndex} actionIndex={actionIndex} />
+                    : (
+                      <ActionIcon variant="subtle" style={{ width: "100%", height: "auto", padding: "16px" }} onClick={() => { toggleActionVisibility(volleyIndex, actionIndex); }}>
+                        <Eye size={100} />
+                      </ActionIcon>
+                    )}
                 </Paper>
               ))}
 

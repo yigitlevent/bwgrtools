@@ -54,7 +54,9 @@ function SkillBlock({ title, skills, remove, addButton }: {
         {skills.map(skill => <Skill key={skill.id} skill={skill} remove={remove} />)}
       </Fragment>
 
-      {addButton !== undefined ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
+      {addButton !== undefined
+        ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button>
+        : null}
     </Fragment>
   );
 }
@@ -89,8 +91,13 @@ export function Skills({ openModal }: { openModal: (name: CharacterBurnerModals)
         <Text>{lifepathText}</Text>
       </Grid.Col>
 
-      {skills.existsAny("type", "Mandatory") > 0 ? <SkillBlock title="Mandatory" skills={skills.filter(s => s.type === "Mandatory")} /> : null}
-      {skills.existsAny("type", "Lifepath") > 0 ? <SkillBlock title="Lifepath" skills={skills.filter(s => s.type === "Lifepath")} /> : null}
+      {skills.existsAny("type", "Mandatory") > 0
+        ? <SkillBlock title="Mandatory" skills={skills.filter(s => s.type === "Mandatory")} />
+        : null}
+
+      {skills.existsAny("type", "Lifepath") > 0
+        ? <SkillBlock title="Lifepath" skills={skills.filter(s => s.type === "Lifepath")} />
+        : null}
 
       <SkillBlock
         title="General"

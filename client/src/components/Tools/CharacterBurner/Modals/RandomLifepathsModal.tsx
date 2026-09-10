@@ -219,43 +219,47 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
         </Grid.Col>
       </Grid>
 
-      {chosenLifepaths.length > 0 ? (
-        <Grid columns={2} mt="md">
-          {triedTooMuch ? (
-            <Grid.Col span={2}>
-              <Alert color="yellow">There might be lifepaths missing because of the chosen options.</Alert>
-            </Grid.Col>
-          ) : <Fragment />}
-
-          <Grid.Col span={{ base: 2, md: 1 }}>
-            <Divider label="Lifepaths" mb="6px" />
-
-            <Stack gap="md">
-              {chosenLifepaths.map((v, i) => (
-                <Paper key={i}>
-                  {i + 1}
-                  .
-                  {" "}
-                  {`${v.setting[1]} ➞ ${v.name ?? ""}`}
-                </Paper>
+      {chosenLifepaths.length > 0
+        ? (
+          <Grid columns={2} mt="md">
+            {triedTooMuch
+              ? (
+                <Grid.Col span={2}>
+                  <Alert color="yellow">There might be lifepaths missing because of the chosen options.</Alert>
+                </Grid.Col>
               )
-              )}
-            </Stack>
+              : <Fragment />}
 
-            <Divider label="Basic Information" mt="30px" mb="6px" />
-            <RandomLifepathsBasics chosenLifepaths={chosenLifepaths} />
-          </Grid.Col>
+            <Grid.Col span={{ base: 2, md: 1 }}>
+              <Divider label="Lifepaths" mb="6px" />
 
-          <Grid.Col span={{ base: 2, md: 1 }}>
-            <Divider label="Skills, Traits, and Misc" mb="6px" />
-            <RandomLifepathsLists chosenLifepaths={chosenLifepaths} />
-          </Grid.Col>
+              <Stack gap="md">
+                {chosenLifepaths.map((v, i) => (
+                  <Paper key={i}>
+                    {i + 1}
+                    .
+                    {" "}
+                    {`${v.setting[1]} ➞ ${v.name ?? ""}`}
+                  </Paper>
+                )
+                )}
+              </Stack>
 
-          <Grid.Col span={2}>
-            <Button variant="outline" onClick={() => { transferCharacter(); }} fullWidth>I like this Character</Button>
-          </Grid.Col>
-        </Grid>
-      ) : null}
+              <Divider label="Basic Information" mt="30px" mb="6px" />
+              <RandomLifepathsBasics chosenLifepaths={chosenLifepaths} />
+            </Grid.Col>
+
+            <Grid.Col span={{ base: 2, md: 1 }}>
+              <Divider label="Skills, Traits, and Misc" mb="6px" />
+              <RandomLifepathsLists chosenLifepaths={chosenLifepaths} />
+            </Grid.Col>
+
+            <Grid.Col span={2}>
+              <Button variant="outline" onClick={() => { transferCharacter(); }} fullWidth>I like this Character</Button>
+            </Grid.Col>
+          </Grid>
+        )
+        : null}
     </Modal>
   );
 }

@@ -54,11 +54,13 @@ export function ImportCharacterModal({ isOpen, close }: { isOpen: boolean; close
           <FileInput label="Character file" placeholder="Choose a .json file" accept="application/json" value={file} onChange={chooseFile} clearable />
         </Grid.Col>
 
-        {error !== null ? (
-          <Grid.Col span={1}>
-            <Text c="red" size="sm">{error}</Text>
-          </Grid.Col>
-        ) : null}
+        {error !== null
+          ? (
+            <Grid.Col span={1}>
+              <Text c="red" size="sm">{error}</Text>
+            </Grid.Col>
+          )
+          : null}
 
         <Grid.Col span={1}>
           <Button variant="outline" size="md" onClick={importCharacter} disabled={file === null} fullWidth>Import</Button>

@@ -50,32 +50,40 @@ export function BrutalLife(): React.JSX.Element {
 
   return (
     <Fragment>
-      {stock[1] === "Orc" ? lifepaths.length > 4 ? lifepaths.slice(4).map((v, i) => {
-        const traitId = special.stock.brutalLifeTraits[i];
-        return (
-          <Fragment key={i}>
-            <Grid.Col span={1}>
-              <Title order={6} style={{ display: "inline-block" }}>
-                {GetOrdinalSuffix(i + 5)}
-                {" "}
-                Lifepath:
-                {" "}
-                {v.name}
-              </Title>
-            </Grid.Col>
+      {stock[1] === "Orc"
+        ? lifepaths.length > 4
+          ? lifepaths.slice(4).map((v, i) => {
+            const traitId = special.stock.brutalLifeTraits[i];
+            return (
+              <Fragment key={i}>
+                <Grid.Col span={1}>
+                  <Title order={6} style={{ display: "inline-block" }}>
+                    {GetOrdinalSuffix(i + 5)}
+                    {" "}
+                    Lifepath:
+                    {" "}
+                    {v.name}
+                  </Title>
+                </Grid.Col>
 
-            <Grid.Col span={2}>
-              {traitId !== undefined ? traitId === "No Trait" ? <Text style={{ margin: "0 0 0 8px" }}>No Trait</Text> : <BlockTraitPopover trait={traitId} /> : <Button variant="outline" size="sm" onClick={() => { rollBrutalLife(i + 5); }}>Roll</Button>}
+                <Grid.Col span={2}>
+                  {traitId !== undefined
+                    ? traitId === "No Trait"
+                      ? <Text style={{ margin: "0 0 0 8px" }}>No Trait</Text>
+                      : <BlockTraitPopover trait={traitId} />
+                    : <Button variant="outline" size="sm" onClick={() => { rollBrutalLife(i + 5); }}>Roll</Button>}
+                </Grid.Col>
+              </Fragment>
+            );
+          })
+          : (
+            <Grid.Col span={3}>
+              <Alert color="blue">
+                Orc character only needs to roll for Brutal Life after 5th lifepath.
+              </Alert>
             </Grid.Col>
-          </Fragment>
-        );
-      }) : (
-        <Grid.Col span={3}>
-          <Alert color="blue">
-            Orc character only needs to roll for Brutal Life after 5th lifepath.
-          </Alert>
-        </Grid.Col>
-      ) : null}
+          )
+        : null}
     </Fragment>
   );
 }

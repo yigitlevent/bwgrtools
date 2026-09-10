@@ -20,9 +20,11 @@ export const LifepathTraits = memo(({ lifepath }: { lifepath: Lifepath; }): Reac
         {`${traitPool.toString()}${traitPool > 1 ? "pts: " : "pt: "}`}
       </Text>
 
-      {lifepathTraits !== undefined ? lifepathTraits.map((trait, i) =>
-        <PopoverLink key={trait.id} data={trait} hasComma={i < lifepathTraits.length - 1} />
-      ) : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
+      {lifepathTraits !== undefined
+        ? lifepathTraits.map((trait, i) =>
+          <PopoverLink key={trait.id} data={trait} hasComma={i < lifepathTraits.length - 1} />
+        )
+        : <Box style={{ padding: "0 4px", display: "inline-block" }}>—</Box>}
     </Box>
   );
 });

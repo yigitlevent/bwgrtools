@@ -125,7 +125,7 @@ export const baseRules = {
   "@stylistic/max-statements-per-line": "off",
   "@stylistic/quotes": ["error", "double", { "allowTemplateLiterals": "always" }],
   "@stylistic/quote-props": ["error", "consistent"],
-  "@stylistic/multiline-ternary": ["error", "never"],
+  "@stylistic/multiline-ternary": ["error", "always-multiline"],
   "@stylistic/no-multiple-empty-lines": ["error", { max: 2, maxBOF: 0 }],
   "@stylistic/no-tabs": "off",
   "@stylistic/comma-dangle": ["error", "never"],

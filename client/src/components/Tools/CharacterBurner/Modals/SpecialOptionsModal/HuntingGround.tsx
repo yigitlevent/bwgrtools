@@ -41,18 +41,23 @@ export function HuntingGround(): React.JSX.Element {
 
   return (
     <Fragment>
-      {stock[1] === "Great Wolf" ? (
-        <Fragment>
-          <Grid.Col span={1}>
-            <Title order={5} style={{ display: "inline-block" }}>Hunting Ground</Title>
-          </Grid.Col>
+      {stock[1] === "Great Wolf"
+        ? (
+          <Fragment>
+            <Grid.Col span={1}>
+              <Title order={5} style={{ display: "inline-block" }}>Hunting Ground</Title>
+            </Grid.Col>
 
-          <Grid.Col span={2}>
-            {special.stock.huntingGround !== undefined ? <Text>{special.stock.huntingGround}</Text> : <Fragment>—</Fragment>}
-            <Button variant="outline" size="sm" onClick={() => { rollTerritory(); }} disabled={special.stock.huntingGround !== undefined}>Roll</Button>
-          </Grid.Col>
-        </Fragment>
-      ) : null}
+            <Grid.Col span={2}>
+              {special.stock.huntingGround !== undefined
+                ? <Text>{special.stock.huntingGround}</Text>
+                : <Text>—</Text>}
+
+              <Button variant="outline" size="sm" onClick={() => { rollTerritory(); }} disabled={special.stock.huntingGround !== undefined}>Roll</Button>
+            </Grid.Col>
+          </Fragment>
+        )
+        : null}
     </Fragment>
   );
 }

@@ -53,35 +53,46 @@ export function CharacterBurner(): React.JSX.Element {
       <Group align="center" gap="sm">
         <Title order={3}>Character Burner</Title>
 
-        {autosaveFailed ? (
-          <Badge variant="light" color="yellow">Autosave unavailable - export to avoid losing progress</Badge>
-        ) : (
-          <Badge variant="light" color="green">Autosaved</Badge>
-        )}
+        {autosaveFailed
+          ? <Badge variant="light" color="yellow">Autosave unavailable - export to avoid losing progress</Badge>
+          : <Badge variant="light" color="green">Autosaved</Badge>}
       </Group>
 
-      {restorePayload !== null ? (
-        <RestoreCharacterModal
-          payload={restorePayload}
-          mismatch={IsRulesetMismatch(restorePayload)}
-          close={() => { setRestorePayload(null); }}
-        />
-      ) : null}
+      {restorePayload !== null
+        ? (
+          <RestoreCharacterModal
+            payload={restorePayload}
+            mismatch={IsRulesetMismatch(restorePayload)}
+            close={() => { setRestorePayload(null); }}
+          />
+        )
+        : null}
 
       <Basics openModal={openModal} />
       <Stats />
-      {skills.length > 0 ? <Skills openModal={openModal} /> : null}
-      {traits.length > 0 ? <Traits openModal={openModal} /> : null}
-      {attributes.length > 0 ? <Attributes /> : null}
 
-      {lifepaths.length > 0 ? (
-        <Fragment>
-          <Resources openModal={openModal} />
-          <Tolerances />
-          <Beliefs />
-          <Instincts />
-        </Fragment>
-      ) : null}
+      {skills.length > 0
+        ? <Skills openModal={openModal} />
+        : null}
+
+      {traits.length > 0
+        ? <Traits openModal={openModal} />
+        : null}
+
+      {attributes.length > 0
+        ? <Attributes />
+        : null}
+
+      {lifepaths.length > 0
+        ? (
+          <Fragment>
+            <Resources openModal={openModal} />
+            <Tolerances />
+            <Beliefs />
+            <Instincts />
+          </Fragment>
+        )
+        : null}
 
       <Checklist />
       <LifepathSelectionModal isOpen={currentModal === "lp"} close={closeModals} />

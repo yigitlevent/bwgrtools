@@ -19,29 +19,37 @@ export const LifepathSkills = memo(({ lifepath }: { lifepath: Lifepath; }): Reac
     <Box>
       <Text mr={4} fw={700} style={{ display: "inline-block" }}>Skills:</Text>
 
-      {hasGeneralSkill ? (
-        <Text mr={4} style={{ display: "inline-block" }}>
-          {lifepath.pools.generalSkillPool}
-          {(lifepath.pools.generalSkillPool ?? 0) > 1 ? "pts:" : "pt:"}
-        </Text>
-      ) : null}
+      {hasGeneralSkill
+        ? (
+          <Text mr={4} style={{ display: "inline-block" }}>
+            {lifepath.pools.generalSkillPool}
+            {(lifepath.pools.generalSkillPool ?? 0) > 1 ? "pts:" : "pt:"}
+          </Text>
+        )
+        : null}
 
-      {hasGeneralSkill ? <PopoverLink data={generalSkill} /> : null}
+      {hasGeneralSkill
+        ? <PopoverLink data={generalSkill} />
+        : null}
 
       <Box mr={4} style={{ display: "inline-block" }}>
         {(hasGeneralSkill && hasLifepathSkill) ? ";" : null}
       </Box>
 
-      {hasLifepathSkill ? (
-        <Text mr={4} style={{ display: "inline-block" }}>
-          {lifepath.pools.lifepathSkillPool}
-          {(lifepath.pools.lifepathSkillPool ?? 0) > 1 ? "pts:" : "pt:"}
-        </Text>
-      ) : null}
+      {hasLifepathSkill
+        ? (
+          <Text mr={4} style={{ display: "inline-block" }}>
+            {lifepath.pools.lifepathSkillPool}
+            {(lifepath.pools.lifepathSkillPool ?? 0) > 1 ? "pts:" : "pt:"}
+          </Text>
+        )
+        : null}
 
-      {hasLifepathSkill && lifepathSkills !== undefined ? lifepathSkills.map((skill, i) =>
-        <PopoverLink key={skill.id} data={skill} hasComma={i < lifepathSkills.length - 1} />
-      ) : null}
+      {hasLifepathSkill && lifepathSkills !== undefined
+        ? lifepathSkills.map((skill, i) =>
+          <PopoverLink key={skill.id} data={skill} hasComma={i < lifepathSkills.length - 1} />
+        )
+        : null}
     </Box>
   );
 });

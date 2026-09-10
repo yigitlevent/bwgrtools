@@ -3,7 +3,14 @@ import { useEffect } from "react";
 
 
 export function Notification({ text, severity, onClose }: { text: string; severity: "error" | "warning" | "info" | "success"; onClose: () => void; }): React.JSX.Element {
-  const color = severity === "error" ? "red" : severity === "warning" ? "yellow" : severity === "success" ? "green" : "blue";
+  const color =
+    severity === "error"
+      ? "red"
+      : severity === "warning"
+        ? "yellow"
+        : severity === "success"
+          ? "green"
+          : "blue";
 
   useEffect(() => {
     const timer = setTimeout(onClose, 5000);

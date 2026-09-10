@@ -23,59 +23,63 @@ function BlockAbilityPopover({ data, checkbox, deleteCallback }: BlockAbilityPop
 
   return (
     <Grid>
-      {checkbox !== undefined ? (
-        <Checkbox
-          checked={checkbox.checked}
-          disabled={checkbox.disabled}
-          onChange={checkbox.onToggle}
-          style={{ margin: "4px 0", padding: 0 }}
-        />
-      ) : null}
+      {checkbox !== undefined
+        ? (
+          <Checkbox
+            checked={checkbox.checked}
+            disabled={checkbox.disabled}
+            onChange={checkbox.onToggle}
+            style={{ margin: "4px 0", padding: 0 }}
+          />
+        )
+        : null}
 
       <Text component="div" style={{ display: "inline-block" }}>
         <PopoverLink data={data} />
       </Text>
 
-      {deleteCallback !== undefined ? (
-        <Popover opened={confirmingDelete} onChange={setConfirmingDelete} withArrow position="bottom" width={260}>
-          <Popover.Target>
-            <ActionIcon
-              variant="subtle"
-              aria-label={`Remove ${data.name ?? ""}`}
-              onClick={() => { setConfirmingDelete(true); }}
-              style={{ padding: 0, margin: "0 0 2px 6px" }}
-            >
-              <Trash2 size={18} />
-            </ActionIcon>
-          </Popover.Target>
+      {deleteCallback !== undefined
+        ? (
+          <Popover opened={confirmingDelete} onChange={setConfirmingDelete} withArrow position="bottom" width={260}>
+            <Popover.Target>
+              <ActionIcon
+                variant="subtle"
+                aria-label={`Remove ${data.name ?? ""}`}
+                onClick={() => { setConfirmingDelete(true); }}
+                style={{ padding: 0, margin: "0 0 2px 6px" }}
+              >
+                <Trash2 size={18} />
+              </ActionIcon>
+            </Popover.Target>
 
-          <Popover.Dropdown>
-            <Stack gap="xs">
-              <Text size="sm">
-                Remove
-                {" "}
-                <Text span fw={700}>{data.name}</Text>
-                ? This cannot be undone.
-              </Text>
-
-              <Group justify="flex-end" gap="xs">
-                <Button variant="subtle" size="xs" onClick={() => { setConfirmingDelete(false); }}>Cancel</Button>
-
-                <Button
-                  color="red"
-                  size="xs"
-                  onClick={() => {
-                    deleteCallback();
-                    setConfirmingDelete(false);
-                  }}
-                >
+            <Popover.Dropdown>
+              <Stack gap="xs">
+                <Text size="sm">
                   Remove
-                </Button>
-              </Group>
-            </Stack>
-          </Popover.Dropdown>
-        </Popover>
-      ) : null}
+                  {" "}
+                  <Text span fw={700}>{data.name}</Text>
+                  ? This cannot be undone.
+                </Text>
+
+                <Group justify="flex-end" gap="xs">
+                  <Button variant="subtle" size="xs" onClick={() => { setConfirmingDelete(false); }}>Cancel</Button>
+
+                  <Button
+                    color="red"
+                    size="xs"
+                    onClick={() => {
+                      deleteCallback();
+                      setConfirmingDelete(false);
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </Group>
+              </Stack>
+            </Popover.Dropdown>
+          </Popover>
+        )
+        : null}
     </Grid>
   );
 }

@@ -43,10 +43,12 @@ export const LifepathBox = memo(({ lifepath, noBorder }: { lifepath: Lifepath; n
 
   return (
     <Box
-      style={noBorder !== undefined ? undefined : {
-        padding: "12px 12px 8px",
-        border: "1px solid var(--mantine-color-gray-8)"
-      }}
+      style={noBorder !== undefined
+        ? undefined
+        : {
+          padding: "12px 12px 8px",
+          border: "1px solid var(--mantine-color-gray-8)"
+        }}
     >
       <Grid columns={18} gap={0}>
         <Grid.Col span={noBorder !== undefined ? 9 : { lg: 7, md: 12, sm: 18, base: 18 }}>

@@ -46,126 +46,142 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
         </Grid.Col>
 
         <Grid.Col span={resource.magical !== undefined ? 1 : 3}>
-          {resource.variableCost === true ? (
-            <Group gap={4} justify="start">
-              <Text fw={700}>Resources:</Text>
-              <Text>variable</Text>
-            </Group>
-          ) : null}
+          {resource.variableCost === true
+            ? (
+              <Group gap={4} justify="start">
+                <Text fw={700}>Resources:</Text>
+                <Text>variable</Text>
+              </Group>
+            )
+            : null}
 
-          {resource.costs.length === 1 ? (
-            <Group gap={4} justify="start">
-              <Text fw={700}>Resources:</Text>
-              <Text>{`${String(resource.costs[0][0])}${resource.costs[0][0] > 1 ? "rps" : "rp"}`}</Text>
-              {resource.costs[0][1].length > 0 && <Text>{`— ${resource.costs[0][1]}`}</Text>}
-            </Group>
-          ) : null}
+          {resource.costs.length === 1
+            ? (
+              <Group gap={4} justify="start">
+                <Text fw={700}>Resources:</Text>
+                <Text>{`${String(resource.costs[0][0])}${resource.costs[0][0] > 1 ? "rps" : "rp"}`}</Text>
+                {resource.costs[0][1].length > 0 && <Text>{`— ${resource.costs[0][1]}`}</Text>}
+              </Group>
+            )
+            : null}
 
-          {resource.costs.length > 1 ? (
-            <Stack gap={4} justify="start">
-              <Text fw={700}>Resources:</Text>
+          {resource.costs.length > 1
+            ? (
+              <Stack gap={4} justify="start">
+                <Text fw={700}>Resources:</Text>
 
-              {resource.costs.map((res, i) => (
-                <Group key={i} gap={4} justify="start">
-                  <Text>{`${String(res[0])}${res[0] > 1 ? "rps" : "rp"}`}</Text>
-                  {res[1].length > 0 && <Text>{`— ${res[1]}`}</Text>}
-                </Group>
-              ))}
-            </Stack>
-          ) : null}
+                {resource.costs.map((res, i) => (
+                  <Group key={i} gap={4} justify="start">
+                    <Text>{`${String(res[0])}${res[0] > 1 ? "rps" : "rp"}`}</Text>
+                    {res[1].length > 0 && <Text>{`— ${res[1]}`}</Text>}
+                  </Group>
+                ))}
+              </Stack>
+            )
+            : null}
         </Grid.Col>
 
-        {resource.modifiers.length > 0 ? (
-          <Grid.Col span={resource.magical !== undefined ? 1 : 3}>
-            <Text fw={700}>Resource Modifiers:</Text>
+        {resource.modifiers.length > 0
+          ? (
+            <Grid.Col span={resource.magical !== undefined ? 1 : 3}>
+              <Text fw={700}>Resource Modifiers:</Text>
 
-            {resource.modifiers.map((res, i) => (
-              <Group key={i} gap={4} justify="start">
-                {getModifier(res)}
-              </Group>
-            ))}
-          </Grid.Col>
-        ) : null}
-
-        {resource.magical !== undefined ? (
-          <Grid.Col span={1}>
-            <Group gap={4} justify="start">
-              <Text fw={700}>Actions:</Text>
-
-              <Text>
-                {resource.magical.doActionsMultiply === true ? "x" : ""}
-                {resource.magical.actions}
-              </Text>
-            </Group>
-          </Grid.Col>
-        ) : null}
-
-        {resource.magical?.obstacleDetails !== undefined ? (
-          <Grid.Col span={3}>
-            <Group gap={4} justify="start">
-              <Text fw={700}>Obstacles:</Text>
-              <Text>{GetObstacleString(resource, resource.magical.obstacleDetails)}</Text>
-            </Group>
-          </Grid.Col>
-        ) : null}
-
-        {resource.magical !== undefined ? (
-          <Fragment>
-            <Grid.Col span={3}><Divider /></Grid.Col>
-
-            <Grid.Col span={1}>
-              <Group gap={4} justify="start">
-                <Text fw={700}>Origin:</Text>
-                <Text>{resource.magical.origin[1]}</Text>
-              </Group>
+              {resource.modifiers.map((res, i) => (
+                <Group key={i} gap={4} justify="start">
+                  {getModifier(res)}
+                </Group>
+              ))}
             </Grid.Col>
+          )
+          : null}
 
+        {resource.magical !== undefined
+          ? (
             <Grid.Col span={1}>
               <Group gap={4} justify="start">
-                <Text fw={700}>Element:</Text>
-                <Text>{resource.magical.elements.map(x => x[1]).join("/")}</Text>
-              </Group>
-            </Grid.Col>
-
-            <Grid.Col span={1}>
-              <Group gap={4} justify="start">
-                <Text fw={700}>Duration:</Text>
-                <Text>{resource.magical.duration[1]}</Text>
-              </Group>
-            </Grid.Col>
-
-            <Grid.Col span={1}>
-              <Group gap={4} justify="start">
-                <Text fw={700}>Area of Effect:</Text>
+                <Text fw={700}>Actions:</Text>
 
                 <Text>
-                  {resource.magical.areaOfEffect[1]}
-                  {resource.magical.areaOfEffectDetails?.unit !== undefined || resource.magical.areaOfEffectDetails?.modifier !== undefined ? getAreaOfEffectDetails(resource.magical.areaOfEffectDetails) : ""}
+                  {resource.magical.doActionsMultiply === true ? "x" : ""}
+                  {resource.magical.actions}
                 </Text>
               </Group>
             </Grid.Col>
+          )
+          : null}
 
-            <Grid.Col span={1}>
+        {resource.magical?.obstacleDetails !== undefined
+          ? (
+            <Grid.Col span={3}>
               <Group gap={4} justify="start">
-                <Text fw={700}>Impetus:</Text>
-                <Text>{resource.magical.impetus.map(x => x[1]).join("/")}</Text>
+                <Text fw={700}>Obstacles:</Text>
+                <Text>{GetObstacleString(resource, resource.magical.obstacleDetails)}</Text>
               </Group>
             </Grid.Col>
-          </Fragment>
-        ) : null}
+          )
+          : null}
 
-        {resource.description !== undefined && resource.description.length > 0 ? (
-          <Fragment>
-            <Grid.Col span={3}><Divider /></Grid.Col>
+        {resource.magical !== undefined
+          ? (
+            <Fragment>
+              <Grid.Col span={3}><Divider /></Grid.Col>
 
-            <Grid.Col span={3}>
-              {resource.description.split("<br>").map((v, i) => {
-                if (resource.magical !== undefined && i === 0) return <Text key={i} fw={600}>{v}</Text>;
-                return <Text key={i}>{v}</Text>;
-              })}
-            </Grid.Col>
-          </Fragment>
-        ) : null}
+              <Grid.Col span={1}>
+                <Group gap={4} justify="start">
+                  <Text fw={700}>Origin:</Text>
+                  <Text>{resource.magical.origin[1]}</Text>
+                </Group>
+              </Grid.Col>
+
+              <Grid.Col span={1}>
+                <Group gap={4} justify="start">
+                  <Text fw={700}>Element:</Text>
+                  <Text>{resource.magical.elements.map(x => x[1]).join("/")}</Text>
+                </Group>
+              </Grid.Col>
+
+              <Grid.Col span={1}>
+                <Group gap={4} justify="start">
+                  <Text fw={700}>Duration:</Text>
+                  <Text>{resource.magical.duration[1]}</Text>
+                </Group>
+              </Grid.Col>
+
+              <Grid.Col span={1}>
+                <Group gap={4} justify="start">
+                  <Text fw={700}>Area of Effect:</Text>
+
+                  <Text>
+                    {resource.magical.areaOfEffect[1]}
+                    {resource.magical.areaOfEffectDetails?.unit !== undefined || resource.magical.areaOfEffectDetails?.modifier !== undefined ? getAreaOfEffectDetails(resource.magical.areaOfEffectDetails) : ""}
+                  </Text>
+                </Group>
+              </Grid.Col>
+
+              <Grid.Col span={1}>
+                <Group gap={4} justify="start">
+                  <Text fw={700}>Impetus:</Text>
+                  <Text>{resource.magical.impetus.map(x => x[1]).join("/")}</Text>
+                </Group>
+              </Grid.Col>
+            </Fragment>
+          )
+          : null}
+
+        {resource.description !== undefined && resource.description.length > 0
+          ? (
+            <Fragment>
+              <Grid.Col span={3}><Divider /></Grid.Col>
+
+              <Grid.Col span={3}>
+                {resource.description.split("<br>").map((v, i) => {
+                  if (resource.magical !== undefined && i === 0) return <Text key={i} fw={600}>{v}</Text>;
+                  return <Text key={i}>{v}</Text>;
+                })}
+              </Grid.Col>
+            </Fragment>
+          )
+          : null}
       </Grid>
     </Paper>
   );
