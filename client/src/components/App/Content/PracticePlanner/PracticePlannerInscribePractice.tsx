@@ -57,7 +57,7 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
   return (
     <Modal opened={isOpen} onClose={close} size="auto" title="Inscribe Practice">
       <Grid columns={12} justify="space-between" align="center" mb="16px">
-        <Grid.Col span={{ base: 10, sm: 4, md: 3 }}>
+        <Grid.Col span={{ base: 10, sm: 4, md: 5 }}>
           <Select
             label="Practice Type"
             variant="filled"
@@ -91,7 +91,7 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
             : <TextInput label="Name" variant="filled" defaultValue={typeof practiceName === "string" ? practiceName : (practiceName.name ?? "")} disabled />}
         </Grid.Col>
 
-        <Grid.Col span={{ base: 10, sm: 4, md: 3 }}>
+        <Grid.Col span={{ base: 10, sm: 4, md: 2 }}>
           <Select
             label="Test Type"
             variant="filled"
@@ -106,8 +106,8 @@ export function PracticePlannerInscribePractice({ isOpen, close, setNotification
         <Grid.Col span={{ base: 10, sm: 4, md: 2 }} style={{ alignSelf: "end" }}>
           <Button
             type="submit"
-            variant="outline"
-            size="md"
+            variant="light"
+            size="sm"
             disabled={cells.length < 1}
             onClick={() => { handleAddPractice(); }}
           >

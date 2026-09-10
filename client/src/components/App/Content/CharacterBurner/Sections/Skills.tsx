@@ -55,7 +55,7 @@ function SkillBlock({ title, skills, remove, addButton }: {
       </Fragment>
 
       {addButton !== undefined
-        ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button>
+        ? <Button variant="light" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button>
         : null}
     </Fragment>
   );

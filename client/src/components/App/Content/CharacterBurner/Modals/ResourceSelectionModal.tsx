@@ -279,7 +279,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
 
         {costs !== undefined
           ? (
-            <Grid.Col span="content">
+            <Grid.Col span={6}>
               <Text my="sm" c={totalCost !== undefined && totalCost > resourcePool.remaining ? "red" : undefined}>
                 Total Cost:
                 {totalCost}
@@ -293,8 +293,8 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
           )
           : null}
 
-        <Grid.Col span="content">
-          <Button variant="outline" size="md" onClick={() => { createResource(); }} disabled={!canAffordResource}>Add Resource</Button>
+        <Grid.Col span={6}>
+          <Button variant="light" size="compact-md" onClick={() => { createResource(); }} disabled={!canAffordResource}>Add Resource</Button>
         </Grid.Col>
       </Grid>
     </Modal>

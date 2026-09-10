@@ -184,7 +184,7 @@ export function DiceRoller(): React.JSX.Element {
           </Group>
         </Stack>
 
-        <Button variant="outline" size="md" onClick={resolveDiceRoll}>Roll Dice</Button>
+        <Button variant="light" size="md" onClick={resolveDiceRoll}>Roll Dice</Button>
       </Group>
 
       <DiceRollerProbabilities probabilities={probabilities} isDoubleObstacle={isDoubleObstacle} obstacle={obstacle} />

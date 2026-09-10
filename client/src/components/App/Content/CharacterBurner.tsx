@@ -21,19 +21,13 @@ import { Stats } from "./CharacterBurner/Sections/Stats";
 import { Tolerances } from "./CharacterBurner/Sections/Tolerances";
 import { Traits } from "./CharacterBurner/Sections/Traits";
 import { IsRulesetMismatch, ReadPersistedCharacter, SubscribeCharacterBurnerAutosave } from "../../../hooks/featureStores/CharacterBurnerStores/characterBurnerAutosave";
-import { useCharacterBurnerAttributeStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerAttribute";
 import { useCharacterBurnerBasicsStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerBasics";
 import { useCharacterBurnerLifepathStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
-import { useCharacterBurnerSkillStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSkill";
-import { useCharacterBurnerTraitStore } from "../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerTrait";
 
 
 export function CharacterBurner(): React.JSX.Element {
   const { stock } = useCharacterBurnerBasicsStore();
   const { lifepaths, updateAvailableLifepaths } = useCharacterBurnerLifepathStore();
-  const { skills } = useCharacterBurnerSkillStore();
-  const { traits } = useCharacterBurnerTraitStore();
-  const { attributes } = useCharacterBurnerAttributeStore();
 
   const [currentModal, setCurrentModal] = useState<CharacterBurnerModals | null>(null);
   const [restorePayload, setRestorePayload] = useState<CharacterBurnerAutosavePayload | null>(() => ReadPersistedCharacter());
@@ -69,30 +63,20 @@ export function CharacterBurner(): React.JSX.Element {
         : null}
 
       <Basics openModal={openModal} />
-      <Stats />
-
-      {skills.length > 0
-        ? <Skills openModal={openModal} />
-        : null}
-
-      {traits.length > 0
-        ? <Traits openModal={openModal} />
-        : null}
-
-      {attributes.length > 0
-        ? <Attributes />
-        : null}
 
       {lifepaths.length > 0
-        ? (
+        && (
           <Fragment>
+            <Stats />
+            <Skills openModal={openModal} />
+            <Traits openModal={openModal} />
+            <Attributes />
             <Resources openModal={openModal} />
             <Tolerances />
             <Beliefs />
             <Instincts />
           </Fragment>
-        )
-        : null}
+        )}
 
       <Checklist />
       <LifepathSelectionModal isOpen={currentModal === "lp"} close={closeModals} />

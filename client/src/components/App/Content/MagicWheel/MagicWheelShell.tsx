@@ -63,7 +63,7 @@ export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, band
             {magicWheel.prayed
               ? (
                 <Button
-                  variant="outline"
+                  variant="light"
                   disabled={magicWheel.isRotating}
                   onClick={() => { magicWheel.reset(); }}
                   fullWidth
@@ -73,7 +73,7 @@ export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, band
               )
               : (
                 <Button
-                  variant="outline"
+                  variant="light"
                   disabled={magicWheel.isRotating}
                   onClick={() => { magicWheel.setTargetAmounts(); }}
                   fullWidth

@@ -5,9 +5,11 @@ import { PracticePlannerCells } from "./PracticePlanner/PracticePlannerCells";
 import { PracticePlannerInscribePractice } from "./PracticePlanner/PracticePlannerInscribePractice";
 import { PracticePlannerInscribeTimetable } from "./PracticePlanner/PracticePlannerInscribeTimetable";
 import { PracticePlannerTimetable } from "./PracticePlanner/PracticePlannerTimetable";
+import { usePracticePlannerStore } from "../../../hooks/featureStores/usePracticePlannerStore";
 
 
 export function PracticePlanner(): React.JSX.Element {
+  const { cells } = usePracticePlannerStore();
   const [notification, setNotification] = useState<null | React.JSX.Element>(null);
   const [openModal, setOpenModal] = useState<null | "practice" | "timetable">(null);
 
@@ -15,12 +17,12 @@ export function PracticePlanner(): React.JSX.Element {
     <Fragment>
       <Title order={3}>Practice Planner</Title>
 
-      <Group mt={16}>
-        <Button variant="light" fullWidth onClick={() => { setOpenModal("timetable"); }}>
+      <Group mt={16} grow>
+        <Button variant="light" onClick={() => { setOpenModal("timetable"); }}>
           Inscribe Timetable
         </Button>
 
-        <Button variant="light" fullWidth onClick={() => { setOpenModal("practice"); }}>
+        <Button variant="light" onClick={() => { setOpenModal("practice"); }} disabled={cells.length < 1}>
           Inscribe Practice
         </Button>
       </Group>

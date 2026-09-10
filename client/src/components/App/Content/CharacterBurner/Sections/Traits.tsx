@@ -71,7 +71,7 @@ function TraitBlock({ title, traits, remove, addButton }: {
         {traits.map(trait => <Trait key={trait.id} trait={trait} remove={remove} />)}
       </Fragment>
 
-      {addButton !== undefined ? <Button variant="outline" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
+      {addButton !== undefined ? <Button variant="light" style={{ margin: "10px" }} onClick={addButton.onClick}>{addButton.label}</Button> : null}
     </Fragment>
   );
 }

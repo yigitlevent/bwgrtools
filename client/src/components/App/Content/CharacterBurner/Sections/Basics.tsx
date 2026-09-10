@@ -128,27 +128,27 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
       </Grid.Col>
 
       <Grid.Col span={{ base: 6, sm: 2 }}>
-        <Button variant="outline" size="md" onClick={() => { openModal("lp"); }} fullWidth>Select</Button>
+        <Button variant="light" size="md" onClick={() => { openModal("lp"); }} fullWidth>Select Lifepaths</Button>
       </Grid.Col>
 
       <Grid.Col span={{ base: 6, sm: 2 }}>
-        <Button variant="outline" size="md" onClick={() => { openModal("randLp"); }} fullWidth>Random</Button>
+        <Button variant="light" size="md" onClick={() => { openModal("randLp"); }} fullWidth>Random Lifepaths</Button>
       </Grid.Col>
 
       <Grid.Col span={{ base: 6, sm: 2 }}>
-        <Button variant="outline" size="md" onClick={() => { openModal("qu"); }} disabled={lifepaths.length === 0} fullWidth>Questions</Button>
+        <Button variant="light" size="md" onClick={() => { openModal("qu"); }} disabled={lifepaths.length === 0} fullWidth>Questions</Button>
       </Grid.Col>
 
       <Grid.Col span={{ base: 6, sm: 2 }}>
-        <Button variant="outline" size="md" onClick={() => { openModal("so"); }} disabled={disableSpecialOptionsModal} fullWidth>Special</Button>
+        <Button variant="light" size="md" onClick={() => { openModal("so"); }} disabled={disableSpecialOptionsModal} fullWidth>Special</Button>
       </Grid.Col>
 
       <Grid.Col span={{ base: 6, sm: 2 }}>
-        <Button variant="outline" size="md" onClick={() => { openModal("import"); }} fullWidth>Import</Button>
+        <Button variant="light" size="md" onClick={() => { openModal("import"); }} fullWidth>Import</Button>
       </Grid.Col>
 
       <Grid.Col span={{ base: 6, sm: 2 }}>
-        <Button variant="outline" size="md" onClick={exportChar} fullWidth>Export</Button>
+        <Button variant="light" size="md" onClick={exportChar} fullWidth>Export</Button>
       </Grid.Col>
 
       <Modal opened={pendingStock !== null} onClose={() => { setPendingStock(null); }} size="600px">
@@ -160,7 +160,7 @@ export function Basics({ openModal }: { openModal: (name: CharacterBurnerModals)
           <Grid.Col span={1}>
             <Grid columns={2} gap="md">
               <Grid.Col span={1}>
-                <Button variant="outline" size="md" onClick={() => { setPendingStock(null); }} fullWidth>Cancel</Button>
+                <Button variant="light" size="md" onClick={() => { setPendingStock(null); }} fullWidth>Cancel</Button>
               </Grid.Col>
 
               <Grid.Col span={1}>

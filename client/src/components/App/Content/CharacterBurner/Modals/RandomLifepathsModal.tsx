@@ -215,7 +215,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
         </Grid.Col>
 
         <Grid.Col span={8}>
-          <Button variant="outline" onClick={() => { createRandom(); }} fullWidth>Generate Random Character</Button>
+          <Button variant="light" onClick={() => { createRandom(); }} fullWidth>Generate Random Character</Button>
         </Grid.Col>
       </Grid>
 
@@ -255,7 +255,7 @@ export function RandomLifepathsModal({ isOpen, close }: { isOpen: boolean; close
             </Grid.Col>
 
             <Grid.Col span={2}>
-              <Button variant="outline" onClick={() => { transferCharacter(); }} fullWidth>I like this Character</Button>
+              <Button variant="light" onClick={() => { transferCharacter(); }} fullWidth>I like this Character</Button>
             </Grid.Col>
           </Grid>
         )

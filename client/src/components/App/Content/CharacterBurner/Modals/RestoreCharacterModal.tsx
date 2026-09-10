@@ -51,11 +51,11 @@ export function RestoreCharacterModal({ payload, mismatch, close }: { payload: C
             : (
               <Grid columns={2} gap="md">
                 <Grid.Col span={1}>
-                  <Button variant="outline" size="md" onClick={discard} fullWidth>Start Fresh</Button>
+                  <Button variant="light" size="md" onClick={discard} fullWidth>Start Fresh</Button>
                 </Grid.Col>
 
                 <Grid.Col span={1}>
-                  <Button size="md" onClick={resume} fullWidth>Resume</Button>
+                  <Button variant="light" size="md" onClick={resume} fullWidth>Resume</Button>
                 </Grid.Col>
               </Grid>
             )}

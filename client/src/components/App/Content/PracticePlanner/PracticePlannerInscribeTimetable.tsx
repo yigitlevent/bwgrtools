@@ -33,7 +33,7 @@ export function PracticePlannerInscribeTimetable({ isOpen, close, setNotificatio
           variant="filled"
         />
 
-        <Button variant="outline" onClick={() => { addCells(days, hours); }} style={{ alignSelf: "end" }}>Add Days</Button>
+        <Button variant="light" onClick={() => { addCells(days, hours); }} style={{ alignSelf: "end" }}>Add Days</Button>
       </Group>
     </Modal>
   );

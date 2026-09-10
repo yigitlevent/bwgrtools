@@ -68,7 +68,7 @@ export function Resources({ openModal }: { openModal: (name: CharacterBurnerModa
       </Grid.Col>
 
       <Grid.Col span={{ base: 6, sm: 1 }}>
-        <Button variant="outline" size="sm" onClick={() => { openModal("re"); }} fullWidth>Add Resource</Button>
+        <Button variant="light" size="sm" onClick={() => { openModal("re"); }} fullWidth>Add Resource</Button>
       </Grid.Col>
 
       <Fragment>

@@ -25,7 +25,7 @@ export function PracticePlannerTimetable(): React.JSX.Element {
             <Grid.Col span={{ base: 4, sm: 2, md: 1 }} key={i} style={{ flexGrow: 1 }}>
               <Text fw={700} display="inline-block">{v.name}</Text>
               <Text ml={4} display="inline-block">{`(${v.testType}): `}</Text>
-              <Text ml={4} display="inline-block">{v.days}</Text>
+              <Text ml={4} display="inline-block">{`${String(v.days)} days`}</Text>
             </Grid.Col>
           ))}
       </Grid>
