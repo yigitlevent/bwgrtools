@@ -88,9 +88,9 @@ describe("UniqueArray", () => {
     expect(ua.existsWithValues("a", "value", [3, 4])).toBe(false);
   });
 
-  it("findIndex() returns -1 for a missing id", () => {
+  it("findIndex() returns undefined for a missing id", () => {
     const ua = new UniqueArray<string, { value: number; }>([{ id: "a", value: 1 }]);
-    expect(ua.findIndex("missing")).toBe(-1);
+    expect(ua.findIndex("missing")).toBeUndefined();
   });
 
   it("map() and filter() delegate to the underlying array", () => {

@@ -13,8 +13,8 @@ describe("RandomNumber", () => {
     expect(RandomNumber(1, 10)).toBe(1);
   });
 
-  it("returns max when Math.random is 1", () => {
-    vi.spyOn(Math, "random").mockReturnValue(1);
+  it("returns max when Math.random is just below 1", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.9999999999);
     expect(RandomNumber(1, 10)).toBe(10);
   });
 
