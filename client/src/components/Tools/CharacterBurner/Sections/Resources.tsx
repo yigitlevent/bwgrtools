@@ -12,11 +12,7 @@ function DeleteResourceButton({ name, onDelete }: { name: string; onDelete: () =
   return (
     <Popover opened={confirming} onChange={setConfirming} withArrow position="bottom" width={260}>
       <Popover.Target>
-        <ActionIcon
-          variant="subtle"
-          aria-label={`Remove ${name}`}
-          onClick={e => { e.stopPropagation(); setConfirming(true); }}
-        >
+        <ActionIcon variant="subtle" onClick={e => { e.stopPropagation(); setConfirming(true); }}>
           <Trash2 size={18} />
         </ActionIcon>
       </Popover.Target>

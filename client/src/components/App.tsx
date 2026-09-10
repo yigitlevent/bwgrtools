@@ -8,6 +8,7 @@ import "mantine-datatable/styles.css";
 import { useEffect, useRef } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
+import { GithubLink } from "./Menus/GithubLink";
 import { CharacterBurner } from "./Tools/CharacterBurner/CharacterBurner";
 import { DiceRoller } from "./Tools/DiceRoller/DiceRoller";
 import { DuelOfWitsPlanner } from "./Tools/DuelOfWitsPlanner/DuelOfWitsPlanner";
@@ -61,6 +62,7 @@ export function App(): React.JSX.Element {
             <Title mt={8}>BWGR Tools</Title>
 
             <Group align="center" justify="flex-end">
+              <GithubLink />
               <RulesetSelector expanded={menu === "Datasets"} />
               <Tools expanded={menu === "Tools"} />
             </Group>

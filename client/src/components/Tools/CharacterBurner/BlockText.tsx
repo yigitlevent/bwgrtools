@@ -44,7 +44,6 @@ function BlockAbilityPopover({ data, checkbox, deleteCallback }: BlockAbilityPop
             <Popover.Target>
               <ActionIcon
                 variant="subtle"
-                aria-label={`Remove ${data.name ?? ""}`}
                 onClick={() => { setConfirmingDelete(true); }}
                 style={{ padding: 0, margin: "0 0 2px 6px" }}
               >

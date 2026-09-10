@@ -61,7 +61,7 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
     <Menu opened={expanded} onClose={cancel} closeOnItemClick={false} position="bottom-end" withArrow>
       <Menu.Target>
         <Tooltip color="gray" label="Datasets">
-          <ActionIcon size="lg" mt={16} p={4} variant="light" onClick={() => { toggleMenu("Datasets"); }} aria-label="Datasets">
+          <ActionIcon size="lg" mt={16} p={4} variant="subtle" onClick={() => { toggleMenu("Datasets"); }}>
             <Database />
           </ActionIcon>
         </Tooltip>

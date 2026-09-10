@@ -32,7 +32,7 @@ export function Tools({ expanded }: { expanded: boolean; }): React.JSX.Element {
     <Menu opened={expanded} onClose={() => { toggleMenu(); }} position="bottom-end" withArrow>
       <Menu.Target>
         <Tooltip color="gray" label="Tools">
-          <ActionIcon size="lg" mt={16} p={4} variant="light" onClick={() => { toggleMenu("Tools"); }} aria-label="Tools">
+          <ActionIcon size="lg" mt={16} p={4} variant="subtle" onClick={() => { toggleMenu("Tools"); }}>
             <ClipboardList />
           </ActionIcon>
         </Tooltip>
