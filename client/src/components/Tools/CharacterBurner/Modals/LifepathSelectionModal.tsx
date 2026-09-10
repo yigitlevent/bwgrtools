@@ -40,7 +40,7 @@ export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; clo
 
   return (
     <Modal opened={isOpen} onClose={() => { close(); }} size="1000px">
-      <Grid columns={5} gap="md" align="center" justify="center">
+      <Grid columns={5} gap="md" align="end" justify="center">
         <Grid.Col span={{ base: 5, sm: 3, md: 3 }}>
           <Select
             label="Lifepath"
@@ -55,7 +55,7 @@ export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; clo
         </Grid.Col>
 
         <Grid.Col span={{ base: 5, sm: 1, md: 1 }}>
-          <Button variant="outline" size="md" onClick={() => { handle(chosen); }} fullWidth disabled={disabled}>Add Lifepath</Button>
+          <Button variant="outline" size="sm" onClick={() => { handle(chosen); }} fullWidth disabled={disabled}>Add Lifepath</Button>
         </Grid.Col>
 
         <Grid.Col span={{ base: 5, sm: 1, md: 1 }}>
@@ -63,7 +63,7 @@ export function LifepathSelectionModal({ isOpen, close }: { isOpen: boolean; clo
             <Popover.Target>
               <Button
                 variant="outline"
-                size="md"
+                size="sm"
                 onClick={() => { setConfirmingRemove(true); }}
                 fullWidth
                 disabled={disabled || lastLifepath === undefined}
