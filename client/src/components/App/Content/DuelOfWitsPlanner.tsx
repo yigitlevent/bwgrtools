@@ -24,36 +24,43 @@ export function DuelOfWitsPlanner(): React.JSX.Element {
         {actions.map((action, volleyIndex) => (
           <Grid.Col key={volleyIndex} span={{ base: 3, md: 1 }} style={{ minWidth: "30%" }}>
             <Card style={{ padding: "10px" }}>
-              <Title order={5}>
-                Volley
-                {volleyIndex + 1}
-              </Title>
-
+              <Title order={5}>{`Volley ${String(volleyIndex + 1)}`}</Title>
               <Divider my="8px" />
 
-              <Paper key={volleyIndex} shadow="sm" style={{ padding: "8px", marginBottom: "8px" }}>
-                {action !== undefined
-                  ? action.visible
-                    ? <DuelOfWitsActionDetails action={action} volleyIndex={volleyIndex} />
-                    : (
-                      <ActionIcon variant="subtle" style={{ width: "100%", height: "auto", padding: "16px" }} onClick={() => { toggleActionVisibility(volleyIndex); }}>
-                        <Eye size={100} />
-                      </ActionIcon>
-                    )
+              {action !== undefined
+                ? action.visible
+                  ? (
+                    <Paper withBorder style={{ padding: "8px", marginBottom: "8px" }}>
+                      <DuelOfWitsActionDetails action={action} volleyIndex={volleyIndex} />
+                    </Paper>
+                  )
                   : (
-                    <Fragment>
-                      <Select
-                        value={selectedAction[volleyIndex]}
-                        onChange={v => { if (v !== null) changeSelectedAction(v, volleyIndex); }}
-                        data={sortedActionNames}
-                        allowDeselect={false}
-                        searchable
-                      />
+                    <ActionIcon variant="subtle" style={{ width: "100%", height: "auto", padding: "16px" }} onClick={() => { toggleActionVisibility(volleyIndex); }}>
+                      <Eye size={100} />
+                    </ActionIcon>
+                  )
+                : (
+                  <Fragment>
+                    <Select
+                      value={selectedAction[volleyIndex]}
+                      onChange={v => { if (v !== null) changeSelectedAction(v, volleyIndex); }}
+                      data={sortedActionNames}
+                      allowDeselect={false}
+                      searchable
+                    />
 
-                      <Button size="lg" fullWidth style={{ padding: "16px", margin: "16px 0 8px" }} onClick={() => { addAction(dowActions, volleyIndex, selectedAction[volleyIndex]); }}>Add Action</Button>
-                    </Fragment>
-                  )}
-              </Paper>
+                    <Button
+                      size="md"
+                      mt={16}
+                      mb={8}
+                      variant="light"
+                      fullWidth
+                      onClick={() => { addAction(dowActions, volleyIndex, selectedAction[volleyIndex]); }}
+                    >
+                      Add Action
+                    </Button>
+                  </Fragment>
+                )}
             </Card>
           </Grid.Col>
         ))}

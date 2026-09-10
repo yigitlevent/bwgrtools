@@ -35,15 +35,11 @@ export function FightPlanner(): React.JSX.Element {
         {actions.map((action, volleyIndex) => (
           <Grid.Col key={volleyIndex} span={{ base: 3, md: 1 }} style={{ minWidth: "30%" }}>
             <Card style={{ padding: "10px" }}>
-              <Title order={5}>
-                Volley
-                {volleyIndex + 1}
-              </Title>
-
+              <Title order={5}>{`Volley ${String(volleyIndex + 1)}`}</Title>
               <Divider my="8px" />
 
               {action.map((action, actionIndex) => (
-                <Paper key={`${volleyIndex.toString()}-${actionIndex.toString()}`} shadow="sm" style={{ padding: "8px", marginBottom: "8px" }}>
+                <Paper key={`${volleyIndex.toString()}-${actionIndex.toString()}`} withBorder style={{ padding: "8px", marginBottom: "8px" }}>
                   {action.visible
                     ? <FightPlannerActionDetails action={action} volleyIndex={volleyIndex} actionIndex={actionIndex} />
                     : (
@@ -62,7 +58,16 @@ export function FightPlanner(): React.JSX.Element {
                 searchable
               />
 
-              <Button size="lg" fullWidth style={{ padding: "16px", margin: "16px 0 8px" }} onClick={() => { addAction(fightActions, volleyIndex, selectedAction[volleyIndex]); }}>Add Action</Button>
+              <Button
+                size="md"
+                mt={16}
+                mb={8}
+                variant="light"
+                fullWidth
+                onClick={() => { addAction(fightActions, volleyIndex, selectedAction[volleyIndex]); }}
+              >
+                Add Action
+              </Button>
             </Card>
           </Grid.Col>
         ))}
