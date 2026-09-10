@@ -6,7 +6,7 @@ import { useCharacterBurnerBasicsStore } from "../../../../../hooks/featureStore
 import { useCharacterBurnerLifepathStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerLifepath";
 import { useCharacterBurnerSpecialStore } from "../../../../../hooks/featureStores/CharacterBurnerStores/useCharacterBurnerSpecial";
 import { GetOrdinalSuffix } from "../../../../../utils/GetOrdinalSuffix";
-import { RandomNumber } from "../../../../../utils/RandomNumber";
+import { RandomInteger } from "../../../../../utils/RandomInteger";
 import { BlockTraitPopover } from "../../BlockText";
 
 
@@ -18,7 +18,7 @@ export function BrutalLife(): React.JSX.Element {
 
   const rollBrutalLife = useCallback((lifepathNumber: number) => {
     const isBrutal =
-      (lifepathNumber < 10) ? RandomNumber(1, 6) <= 4 : RandomNumber(1, 6) <= 2;
+      (lifepathNumber < 10) ? RandomInteger(1, 6) <= 4 : RandomInteger(1, 6) <= 2;
 
     let traitToAdd: [id: dat.TraitId, name: string] | "No Trait" | undefined = "No Trait";
 

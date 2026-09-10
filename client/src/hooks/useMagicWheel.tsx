@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { RandomNumber } from "../utils/RandomNumber";
+import { RandomInteger } from "../utils/RandomInteger";
 
 
 export interface BandBlock {
@@ -107,7 +107,7 @@ export function useMagicWheel<T extends OneOfWheelObjects>({ spellFacets, bands,
     setIsRotating(true);
 
     const getRandomRotation = (): number =>
-      steps !== undefined && direction !== undefined ? steps * direction : ((Math.random() > 0.5) ? 1 : -1) * RandomNumber(1, 6);
+      steps !== undefined && direction !== undefined ? steps * direction : ((Math.random() > 0.5) ? 1 : -1) * RandomInteger(1, 6);
 
     const revisedBands = mapBands((key, band) => isAvailable(key) ? band.targetAmount + getRandomRotation() : band.currentAmount);
 
