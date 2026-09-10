@@ -96,7 +96,7 @@ describe("GetRulesetsList", () => {
     await GetRulesetsList(request, reply);
 
     expect(reply.code).toHaveBeenCalledWith(200);
-    expect(reply.send).toHaveBeenCalledWith({ rulesets: [{ id: 1, name: "Core" }] });
+    expect(reply.send).toHaveBeenCalledWith({ version: expect.any(String), rulesets: [{ id: 1, name: "Core" }] });
   });
 
   it("returns 403 when GetRulesets rejects", async () => {

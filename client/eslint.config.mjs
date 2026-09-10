@@ -18,8 +18,8 @@ export default defineConfig([
       "import/no-restricted-paths": ["error", {
         zones: [{
           target: "./src",
-          from: ["../shared/db", "../shared/server"],
-          message: "client/ may only import shared/protocol/ and shared/domain/ — shared/db/ and shared/server/ touch Postgres or hold server secrets and must never reach the browser bundle."
+          from: ["../shared/db", "../shared/utils"],
+          message: "shared/db/ and shared/utils/ touch Postgres or hold server secrets and must never reach the browser bundle."
         }]
       }]
     }

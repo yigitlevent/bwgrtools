@@ -13,6 +13,7 @@ import { GetAltSpellFacets } from "../services/spellFacets.alt.service";
 import { GetSpellFacets } from "../services/spellFacets.service";
 import { GetStocks } from "../services/stocks.service";
 import { GetTraits } from "../services/traits.service";
+import { ApiVersion } from "../utils/apiVersion";
 import { HandleControllerError } from "../utils/controllerError";
 import { Logger } from "../utils/logger";
 
@@ -53,7 +54,7 @@ export async function GetRulesetsList(request: FastifyRequest, reply: FastifyRep
   try {
     const data = await GetRulesets();
 
-    const responseData: RulesetsResponse = { rulesets: data };
+    const responseData: RulesetsResponse = { version: ApiVersion, rulesets: data };
 
     reply.code(200).send(responseData);
   }

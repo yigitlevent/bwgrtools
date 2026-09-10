@@ -89,10 +89,10 @@ export function TraitLists(): React.JSX.Element {
               <Fragment key={letter}>
                 <Divider label={letter} labelPosition="left" mt="sm" mb="xs" />
 
-                <Grid>
-                  {items.map(trait => (
+                <Grid gap={4}>
+                  {items.map((trait, i) => (
                     <Grid.Col span="content" key={trait.id}>
-                      <PopoverLink data={trait} />
+                      <PopoverLink data={trait} hasComma={i < items.length - 1} />
                     </Grid.Col>
                   ))}
                 </Grid>

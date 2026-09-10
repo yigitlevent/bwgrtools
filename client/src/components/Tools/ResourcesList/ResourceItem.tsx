@@ -60,7 +60,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
               <Group gap={4} justify="start">
                 <Text fw={700}>Resources:</Text>
                 <Text>{`${String(resource.costs[0][0])}${resource.costs[0][0] > 1 ? "rps" : "rp"}`}</Text>
-                {resource.costs[0][1].length > 0 && <Text>{`— ${resource.costs[0][1]}`}</Text>}
+                {resource.costs[0][1] !== null && resource.costs[0][1].length > 0 && <Text>{`— ${resource.costs[0][1]}`}</Text>}
               </Group>
             )
             : null}
@@ -73,7 +73,7 @@ export const ResourceItem = memo(({ resource }: { resource: Resource; }): React.
                 {resource.costs.map((res, i) => (
                   <Group key={i} gap={4} justify="start">
                     <Text>{`${String(res[0])}${res[0] > 1 ? "rps" : "rp"}`}</Text>
-                    {res[1].length > 0 && <Text>{`— ${res[1]}`}</Text>}
+                    {res[1] !== null && res[1].length > 0 && <Text>{`— ${res[1]}`}</Text>}
                   </Group>
                 ))}
               </Stack>

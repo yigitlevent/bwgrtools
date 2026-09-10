@@ -148,7 +148,7 @@ export const useCharacterBurnerResourceStore = create<CharacterBurnerResourceSta
           if (rulesetReputation === undefined) return;
           if (rulesetReputation.type[0] === null) return;
 
-          const cost = rulesetReputation.costs.find(c => c[1].startsWith(`${tierCost.toString()}D`))?.[0] ?? rulesetReputation.costs[0][0];
+          const cost = rulesetReputation.costs.find(c => c[1] !== null ? c[1].startsWith(`${tierCost.toString()}D`) : false)?.[0] ?? rulesetReputation.costs[0][0];
 
           const trait = ruleset.getTrait("Lesson of One");
           if (trait.id === null) return;
