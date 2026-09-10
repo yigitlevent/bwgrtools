@@ -20,7 +20,7 @@ interface MagicWheelShellProps<T extends OneOfWheelObjects> {
 }
 
 export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, bands, setBands, isAvailable, selectedElementCategory, setSelectedElementCategory }: MagicWheelShellProps<T>): React.JSX.Element {
-  const { isFontLoaded } = useFontLoading("/fonts/SourceCodePro-SemiBold.woff");
+  const { isFontLoaded } = useFontLoading(`${import.meta.env.BASE_URL}fonts/SourceCodePro-SemiBold.woff`);
 
   const wrapperRef = createRef<HTMLDivElement>();
   const canvasRef = createRef<HTMLCanvasElement>();

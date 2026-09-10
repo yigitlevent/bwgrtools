@@ -33,7 +33,7 @@ export function FrontCanvas({ constants }: { constants: MagicWheelConstants; }):
         context.drawImage(img, xOffset, yOffset, constants.innerCircleRadius, constants.innerCircleRadius);
         context.restore();
       });
-      img.src = "/images/burningwheel.png";
+      img.src = `${import.meta.env.BASE_URL}images/burningwheel.png`;
     }
   }, [canvasRef, constants.canvasSize, constants.innerCircleRadius, constants.circleOffset, constants.circleRadius, constants.ringCount]);
 
