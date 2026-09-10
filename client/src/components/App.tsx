@@ -8,7 +8,6 @@ import "mantine-datatable/styles.css";
 import { useEffect, useRef } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import { Menu } from "./Menu/Menu";
 import { CharacterBurner } from "./Tools/CharacterBurner/CharacterBurner";
 import { DiceRoller } from "./Tools/DiceRoller/DiceRoller";
 import { DuelOfWitsPlanner } from "./Tools/DuelOfWitsPlanner/DuelOfWitsPlanner";
@@ -23,6 +22,9 @@ import { SkillLists } from "./Tools/SkillLists/SkillLists";
 import { TraitLists } from "./Tools/TraitLists/TraitLists";
 import { useRulesetStore } from "../hooks/apiStores/useRulesetStore";
 import { useCursorStore } from "../hooks/useCursorStore";
+import { useMenuStore } from "../hooks/useMenuStore";
+import { RulesetSelector } from "./Menus/RulesetSelector";
+import { Tools } from "./Menus/Tools";
 
 import "../theme/overwrite.css";
 
@@ -30,6 +32,7 @@ import "../theme/overwrite.css";
 export function App(): React.JSX.Element {
   const { fetchState, fetchList, fetchData, setFetchState } = useRulesetStore();
   const cursorType = useCursorStore(s => s.cursorType);
+  const { menu } = useMenuStore();
   const theme = useMantineTheme();
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -55,7 +58,11 @@ export function App(): React.JSX.Element {
         <Stack gap={0} justify="start" style={{ height: "100svh" }}>
           <Group justify="space-between" style={{ height: "54px", minHeight: "54px" }}>
             <Title mt={8}>BWGR Tools</Title>
-            <Menu />
+
+            <Group align="center" justify="flex-end">
+              <RulesetSelector expanded={menu === "Datasets"} />
+              <Tools expanded={menu === "Tools"} />
+            </Group>
           </Group>
 
           <Box style={{ height: "calc(100svh - 54px)", minHeight: "calc(100svh - 54px)" }}>

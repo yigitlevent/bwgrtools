@@ -1,10 +1,10 @@
 import { ActionIcon, Alert, Button, Grid, Menu, Modal, Stack, Tooltip } from "@mantine/core";
-import { Check, ChevronRight, CircleCheck, Database, X } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
+import { Check, CircleCheck, Database, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { useRulesetStore } from "../../../hooks/apiStores/useRulesetStore";
-import { HasCharacterBurnerProgress, ResetCharacterBurnerCompletely } from "../../../hooks/featureStores/CharacterBurnerStores/characterBurnerFullReset";
-import { useDrawerStore } from "../../../hooks/useDrawerStore";
+import { useRulesetStore } from "../../hooks/apiStores/useRulesetStore";
+import { HasCharacterBurnerProgress, ResetCharacterBurnerCompletely } from "../../hooks/featureStores/CharacterBurnerStores/characterBurnerFullReset";
+import { useMenuStore } from "../../hooks/useMenuStore";
 
 
 function TogglePendingRuleset(pending: dat.RulesetId[], rulesets: Ruleset[], ruleset: dat.RulesetId): dat.RulesetId[] {
@@ -15,7 +15,7 @@ function TogglePendingRuleset(pending: dat.RulesetId[], rulesets: Ruleset[], rul
 
 export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX.Element {
   const { rulesets, chosenRulesets, applyChosenRulesets } = useRulesetStore();
-  const { toggleDrawer } = useDrawerStore();
+  const { toggleMenu } = useMenuStore();
 
   const [pending, setPending] = useState(chosenRulesets);
   const [confirmingApply, setConfirmingApply] = useState(false);
@@ -32,7 +32,7 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
   const cancel = (): void => {
     if (confirmingApply) return;
     setPending(chosenRulesets);
-    toggleDrawer();
+    toggleMenu();
   };
 
   const reset = (): void => {
@@ -48,7 +48,7 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
     applyChosenRulesets(pending);
     ResetCharacterBurnerCompletely();
     setConfirmingApply(false);
-    toggleDrawer();
+    toggleMenu();
   };
 
   const apply = (): void => {
@@ -61,7 +61,7 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
     <Menu opened={expanded} onClose={cancel} closeOnItemClick={false} position="bottom-end" withArrow>
       <Menu.Target>
         <Tooltip color="gray" label="Datasets">
-          <ActionIcon size="lg" mt={16} p={4} variant="light" onClick={() => { toggleDrawer("Datasets"); }} aria-label="Datasets">
+          <ActionIcon size="lg" mt={16} p={4} variant="light" onClick={() => { toggleMenu("Datasets"); }} aria-label="Datasets">
             <Database />
           </ActionIcon>
         </Tooltip>
@@ -99,12 +99,6 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
               <Menu.Sub.Target>
                 <Menu.Sub.Item
                   leftSection={rulesetLeftSection}
-                  rightSection={(
-                    <Fragment>
-                      {rulesetRightSection}
-                      <ChevronRight size={14} />
-                    </Fragment>
-                  )}
                   onClick={() => { setPending(p => TogglePendingRuleset(p, rulesets, rulesetId)); }}
                 >
                   {ruleset.name}
@@ -123,11 +117,6 @@ export function RulesetSelector({ expanded }: { expanded: boolean; }): React.JSX
                           key={ii}
                           disabled={!isPendingChecked(rulesetId)}
                           leftSection={isPendingExactChecked([rulesetId, expansionId2]) ? <Check size={18} color="var(--mantine-color-green-6)" /> : <X size={18} color="var(--mantine-color-red-6)" />}
-                          rightSection={ruleset.isOfficial === true
-                            ? (
-                              <Tooltip color="gray" label="Official"><CircleCheck size={16} /></Tooltip>
-                            )
-                            : null}
                           onClick={() => { setPending(p => TogglePendingRuleset(p, rulesets, expansionId2)); }}
                         >
                           {expansion.name}
