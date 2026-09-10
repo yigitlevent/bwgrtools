@@ -2,7 +2,7 @@ import { Anchor, Box, Divider, Grid, Group, Popover, Text } from "@mantine/core"
 import { memo } from "react";
 
 import { useRulesetStore } from "../../hooks/apiStores/useRulesetStore";
-import { LifepathBox } from "../Tools/LifepathLists/LifepathBox";
+import { LifepathBox } from "../App/Content/LifepathLists/LifepathBox";
 
 
 function GetSkillRestrictionString(skill: Skill): string {
