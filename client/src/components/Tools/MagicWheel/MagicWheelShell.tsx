@@ -24,6 +24,7 @@ export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, band
 
   const wrapperRef = createRef<HTMLDivElement>();
   const canvasRef = createRef<HTMLCanvasElement>();
+  const [initialRun, setInitialRun] = useState(false);
   const [size, setSize] = useState("0px");
   const [context, setContext] = useState<CanvasRenderingContext2D>();
 
@@ -37,6 +38,13 @@ export function MagicWheelShell<T extends OneOfWheelObjects>({ spellFacets, band
     const context = canvasRef.current?.getContext("2d");
     if (context !== null && context !== undefined) setContext(context);
   }, [canvasRef]);
+
+  useEffect(() => {
+    if (!magicWheel.isRotating && !initialRun) {
+      setInitialRun(true);
+      magicWheel.reset();
+    }
+  }, [initialRun, magicWheel]);
 
   return (
     <Fragment>
