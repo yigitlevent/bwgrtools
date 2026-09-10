@@ -25,6 +25,7 @@ import { useCursorStore } from "../hooks/useCursorStore";
 import { useMenuStore } from "../hooks/useMenuStore";
 import { RulesetSelector } from "./Menus/RulesetSelector";
 import { Tools } from "./Menus/Tools";
+import { NotFound } from "./Shared/NotFound";
 
 import "../theme/overwrite.css";
 
@@ -93,6 +94,7 @@ export function App(): React.JSX.Element {
                   <Route path="/racplanner" element={<RangeAndCoverPlanner />} />
                   <Route path="/fightplanner" element={<FightPlanner />} />
                   <Route path="/characterburner" element={<CharacterBurner />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               )
               : null}
