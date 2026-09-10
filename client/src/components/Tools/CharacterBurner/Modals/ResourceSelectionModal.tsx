@@ -211,7 +211,7 @@ export function ResourceSelectionModal({ isOpen, close }: { isOpen: boolean; clo
 
               <Radio.Group value={costs.baseCost.toString()} onChange={v => { changeCost(parseInt(v)); }}>
                 {resource.costs.map((v, i) => {
-                  if (v[1] === "") return null;
+                  if (v[1] === null || v[1] === "") return null;
                   return <Radio key={i} label={`${v[1]} (${v[0].toString()}rps)`} value={(v[0]).toString()} />;
                 })}
               </Radio.Group>

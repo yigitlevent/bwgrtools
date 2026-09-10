@@ -1,4 +1,4 @@
-type NamedTuple<Id> = [id: Id, name: string];
+type NamedTuple<Id, Name = string> = [id: Id, name: Name];
 
 interface Ability {
   id: dat.AbilityId | null;
@@ -189,7 +189,7 @@ interface Resource {
   name: string;
   stock: NamedTuple<dat.StockId | null>;
   type: NamedTuple<dat.ResourceTypeId | null>;
-  costs: NamedTuple<number>[];
+  costs: NamedTuple<number, string | null>[];
   modifiers: [id: number, isPerCost: boolean, description: string][];
   variableCost?: boolean;
   description?: string;
