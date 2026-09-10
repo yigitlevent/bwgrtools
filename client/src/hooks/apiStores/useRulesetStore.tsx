@@ -2,6 +2,7 @@ import { produce } from "immer";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
+import { DeriveRulesetData } from "../../utils/DeriveRulesetData";
 import { RequestRulesetsData, RequestRulesetsList } from "../../utils/Fetch";
 
 
@@ -16,6 +17,7 @@ type FetchState =
 interface RulesetStore {
   readonly fetchState: FetchState;
 
+  readonly apiVersion: string | undefined;
   readonly rulesets: Ruleset[];
   readonly chosenRulesets: dat.RulesetId[];
 
@@ -90,6 +92,7 @@ export const useRulesetStore = create<RulesetStore>()(
       (set, get) => ({
         fetchState: "fetch-full",
 
+        apiVersion: undefined,
         rulesets: [],
         chosenRulesets: [],
 
@@ -159,12 +162,24 @@ export const useRulesetStore = create<RulesetStore>()(
               if (firstRuleset.id === null) throw new Error("no rulesets returned");
               const firstRulesetId = firstRuleset.id;
 
+              const previousVersion = get().apiVersion;
+              const previousChosenRulesets = get().chosenRulesets;
+              const hasCachedData = get().abilities.length > 0;
+
+              // Only trust the persisted selection if every ruleset in it still exists in the fresh list.
+              const validIds = new Set(response.rulesets.map(v => v.id).filter((id): id is dat.RulesetId => id !== null));
+              const previousSelectionStillValid = previousChosenRulesets.length > 0 && previousChosenRulesets.every(id => validIds.has(id));
+
+              const sameVersion = previousVersion !== undefined && previousVersion === response.version;
+              const canSkipDataFetch = sameVersion && previousSelectionStillValid && hasCachedData;
+
               set(produce<RulesetStore>(state => {
+                state.apiVersion = response.version;
                 state.rulesets = response.rulesets;
-                state.chosenRulesets = [firstRulesetId, ...firstRuleset.expansionIds ?? []];
+                if (!previousSelectionStillValid) state.chosenRulesets = [firstRulesetId, ...firstRuleset.expansionIds ?? []];
               }));
 
-              setFetchState("fetch-data");
+              setFetchState(canSkipDataFetch ? "done" : "fetch-data");
             })
             .catch((reason: unknown) => {
               console.error(reason);
@@ -188,88 +203,10 @@ export const useRulesetStore = create<RulesetStore>()(
               .then(response => {
                 if (controller.signal.aborted) return;
 
-                const abilities = response.ruleset.abilities;
-                const abilityTypes = [...response.ruleset.abilities.reduce((a, v) => a.add(v.abilityType[1]), new Set<string>())];
-                const stocks = response.ruleset.stocks;
-                const settings = response.ruleset.settings;
-                const skills = response.ruleset.skills;
-                const skillCategories = [...response.ruleset.skills.reduce((a, v) => a.add(v.category[1]), new Set<string>())];
-                const skillTypes = [...response.ruleset.skills.reduce((a, v) => a.add(v.type[1]), new Set<string>())];
-
-                const traits = response.ruleset.traits;
-                const traitCategories = [...response.ruleset.traits.reduce((a, v) => a.add(v.category[1]), new Set<string>())];
-                const traitTypes = [...response.ruleset.traits.reduce((a, v) => a.add(v.type[1]), new Set<string>())];
-
-                const toIdMap = <TId, TRow extends { id: TId | null; }>(rows: TRow[]): Map<TId, TRow> =>
-                  new Map(rows.filter((v): v is TRow & { id: TId; } => v.id !== null).map(v => [v.id, v]));
+                const derived = DeriveRulesetData(response.ruleset);
 
                 set(produce<RulesetStore>(state => {
-                  state.abilities = abilities;
-                  state.abilitiesById = toIdMap(abilities);
-                  state.abilityTypes = abilityTypes;
-
-                  state.stocks = stocks;
-                  state.stocksById = toIdMap(stocks);
-                  state.settings = settings;
-                  state.settingsById = toIdMap(settings);
-
-                  state.skills = skills;
-                  state.skillsById = toIdMap(skills);
-                  state.skillCategories = skillCategories;
-                  state.skillTypes = skillTypes;
-
-                  state.traits = traits;
-                  state.traitsById = toIdMap(traits);
-                  state.traitCategories = traitCategories;
-                  state.traitTypes = traitTypes;
-
-                  state.lifepaths =
-                    response.ruleset.lifepaths
-                      .map(lifepath => {
-                        const lp = { ...lifepath };
-                        if (lifepath.leads !== undefined) lp.leads = lifepath.leads.filter(leadId => settings.some(x => x.id === leadId));
-                        if (lifepath.skills !== undefined) lp.skills = lifepath.skills.filter(skillId => skills.some(x => x.id === skillId));
-                        if (lifepath.traits !== undefined) lp.traits = lifepath.traits.filter(traitId => traits.some(x => x.id === traitId));
-
-                        if (lp.requirements !== undefined) {
-                          lp.requirements =
-                            lp.requirements
-                              .map(rb => {
-                                return {
-                                  ...rb,
-                                  items: rb.items
-                                    .filter(item => {
-                                      const setting = item.setting;
-                                      const lifepath = item.lifepath;
-                                      const skill = item.skill;
-                                      const trait = item.trait;
-                                      if (setting !== undefined) return state.settings.some(x => x.id === setting[0]);
-                                      else if (lifepath !== undefined) return response.ruleset.lifepaths.some(x => x.id === lifepath[0]);
-                                      else if (skill !== undefined) return state.skills.some(x => x.id === skill[0]);
-                                      else if (trait !== undefined) return state.traits.some(x => x.id === trait[0]);
-                                      return true;
-                                    })
-                                };
-                              });
-                        }
-
-                        return lp;
-                      });
-                  state.lifepathsById = toIdMap(state.lifepaths);
-
-                  state.resources = response.ruleset.resources;
-                  state.resourcesById = toIdMap(response.ruleset.resources);
-                  state.resourceTypes = [...response.ruleset.resources.reduce((a, v) => a.add(v.type[1]), new Set<string>())];
-
-                  state.spellFacets = response.ruleset.spellFacets;
-                  state.spellAltFacets = response.ruleset.spellAltFacets;
-
-                  state.dowActions = response.ruleset.dowActions;
-                  state.racActions = response.ruleset.racActions;
-                  state.fightActions = response.ruleset.fightActions;
-
-                  state.practices = response.ruleset.practices;
-                  state.questions = response.ruleset.questions;
+                  Object.assign(state, derived);
                 }));
 
                 FetchDataController = undefined;
@@ -395,7 +332,35 @@ export const useRulesetStore = create<RulesetStore>()(
           return allowed.every(ruleset => state.chosenRulesets.includes(ruleset));
         }
       }),
-      { name: "RulesetStore", version: 1, partialize: state => ({ chosenRulesets: state.chosenRulesets }) }
+      {
+        name: "RulesetStore",
+        version: 2,
+        partialize: state => ({
+          apiVersion: state.apiVersion,
+          chosenRulesets: state.chosenRulesets,
+          rulesets: state.rulesets,
+          abilities: state.abilities,
+          stocks: state.stocks,
+          settings: state.settings,
+          skills: state.skills,
+          traits: state.traits,
+          lifepaths: state.lifepaths,
+          resources: state.resources,
+          spellFacets: state.spellFacets,
+          spellAltFacets: state.spellAltFacets,
+          dowActions: state.dowActions,
+          racActions: state.racActions,
+          fightActions: state.fightActions,
+          practices: state.practices,
+          questions: state.questions
+        }),
+        // Maps (*ById) don't survive JSON persistence, so rebuild them -- along with the
+        // derived category/type lists -- from the persisted raw arrays on rehydration.
+        merge: (persisted, current) => {
+          const merged = { ...current, ...(persisted as Partial<RulesetStore>) };
+          return { ...merged, ...DeriveRulesetData(merged) };
+        }
+      }
     ),
     { name: "RulesetStore" }
   )

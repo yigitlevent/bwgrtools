@@ -43,6 +43,7 @@ function EmptyRulesetData(): RulesetResponse["ruleset"] {
 function ResetStore(): void {
   useRulesetStore.setState({
     fetchState: "fetch-full",
+    apiVersion: undefined,
     rulesets: [],
     chosenRulesets: [],
     abilities: [],
@@ -101,6 +102,60 @@ describe("useRulesetStore", () => {
           resolve();
         }, 0);
       });
+    });
+
+    it("skips fetch-data and goes straight to done when the api version and selection match cached data", async () => {
+      const rulesets: Ruleset[] = [
+        { id: "core" as unknown as dat.RulesetId, name: "Core", isOfficial: true, isPublic: true, isExpansion: false },
+        { id: "exp" as unknown as dat.RulesetId, name: "Expansion", isOfficial: true, isPublic: true, isExpansion: true }
+      ];
+      useRulesetStore.setState({
+        apiVersion: "v1",
+        chosenRulesets: ["core" as unknown as dat.RulesetId],
+        abilities: [Ability()]
+      });
+      MockFetchResponse(true, { version: "v1", rulesets });
+
+      useRulesetStore.getState().fetchList();
+      await vi.waitFor(() => expect(useRulesetStore.getState().fetchState).toBe("done"));
+
+      const state = useRulesetStore.getState();
+      expect(state.chosenRulesets).toEqual(["core"]);
+      expect(state.abilities).toEqual([Ability()]);
+    });
+
+    it("moves to fetch-data when the api version changed even if the selection still matches", async () => {
+      const rulesets: Ruleset[] = [
+        { id: "core" as unknown as dat.RulesetId, name: "Core", isOfficial: true, isPublic: true, isExpansion: false }
+      ];
+      useRulesetStore.setState({
+        apiVersion: "v1",
+        chosenRulesets: ["core" as unknown as dat.RulesetId],
+        abilities: [Ability()]
+      });
+      MockFetchResponse(true, { version: "v2", rulesets });
+
+      useRulesetStore.getState().fetchList();
+      await vi.waitFor(() => expect(useRulesetStore.getState().fetchState).toBe("fetch-data"));
+
+      expect(useRulesetStore.getState().apiVersion).toBe("v2");
+    });
+
+    it("moves to fetch-data and resets the selection when a persisted chosen ruleset no longer exists", async () => {
+      const rulesets: Ruleset[] = [
+        { id: "core" as unknown as dat.RulesetId, name: "Core", isOfficial: true, isPublic: true, isExpansion: false }
+      ];
+      useRulesetStore.setState({
+        apiVersion: "v1",
+        chosenRulesets: ["removed" as unknown as dat.RulesetId],
+        abilities: [Ability()]
+      });
+      MockFetchResponse(true, { version: "v1", rulesets });
+
+      useRulesetStore.getState().fetchList();
+      await vi.waitFor(() => expect(useRulesetStore.getState().fetchState).toBe("fetch-data"));
+
+      expect(useRulesetStore.getState().chosenRulesets).toEqual(["core"]);
     });
 
     it("marks fetchState as failed when the first returned ruleset has a null id", async () => {

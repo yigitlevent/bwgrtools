@@ -310,6 +310,7 @@ interface RulesetResponse {
 }
 
 interface RulesetsResponse {
+  version: string;
   rulesets: Ruleset[];
 }
 
